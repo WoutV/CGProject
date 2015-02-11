@@ -82,7 +82,8 @@ public class Sphere implements Shape {
 
 	@Override
 	public Color getColor(Ray ray, PointLight light, Point p) {
-		Vector normal = p.toVector3D().scale(1/p.toVector3D().length());
+		Point trans = transformation.transformInverse(p);
+		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		System.out.println(normal+"NORMAL");
 		return this.color.getColor(ray, light, p, normal);
 	}
@@ -107,6 +108,6 @@ public class Sphere implements Shape {
 
 		double t0 = Math.min(t1, t2);
 		
-		return ray.origin.add(ray.direction.scale(-t0));
+		return ray.origin.add(ray.direction.scale(t0));
 	}
 }

@@ -7,6 +7,7 @@ import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
+import shading.Diffuse;
 
 public class Triangle implements Shape {
 	
@@ -18,7 +19,11 @@ public class Triangle implements Shape {
 	private Point point2;
 	private Point point3;
 	
-	public Triangle(Transformation transformation, Point p1, Point p2, Point p3) {
+	private Diffuse color;
+
+	private Vector normal;
+	
+	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Diffuse color) {
 		if (transformation == null)
 			throw new NullPointerException("the given origin is null!");
 		if ( p1 == null | p2 == null | p3 == null)
@@ -27,6 +32,8 @@ public class Triangle implements Shape {
 		this.point1 = p1;
 		this.point2 = p2;
 		this.point3 = p3;
+		this.color = color;
+		this.normal = point2.subtract(point1).cross(point3.subtract(point1));
 	}
 
 	@Override
@@ -34,7 +41,6 @@ public class Triangle implements Shape {
 		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector o = transformed.origin.toVector3D();
-		Vector normal = point2.toVector3D().subtract(point1.toVector3D()).cross(point3.toVector3D().subtract(point1.toVector3D()));
 		
 		Double t = -(o.subtract(point1.toVector3D()).dot(normal)/(transformed.direction.dot(normal)));
 		
@@ -70,14 +76,23 @@ public class Triangle implements Shape {
 
 	@Override
 	public Color getColor(Ray ray, PointLight light, Point p) {
-		// TODO Auto-generated method stub
-		return null;
+		Point trans1 = transformation.transformInverse(point1);
+		Point trans2 = transformation.transformInverse(point2);
+		Point trans3 = transformation.transformInverse(point3);
+		Vector newNormal = trans2.subtract(trans1).cross(trans3.subtract(trans1));
+		newNormal = newNormal.scale(newNormal.length());
+		System.out.println(normal+"NORMAL");
+		return this.color.getColor(ray, light, p, newNormal);
 	}
 
 	@Override
 	public Point getIntersection(Ray ray) {
-		// TODO Auto-generated method stub
-		return null;
+		Ray transformed = transformation.transformInverse(ray);
+		Vector o = transformed.origin.toVector3D();
+		Double t = -(o.subtract(point1.toVector3D()).dot(normal)/(transformed.direction.dot(normal)));
+		Point p = ray.origin.add(ray.direction.scale(t));
+		System.out.println(p+"HITPOINT");
+		return p;
 	}
 
 	

@@ -90,38 +90,37 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 		
 		// initialize the scene
-		Diffuse d1 = new Diffuse(0.9, new Color(255,0,0));
-		Diffuse d2 = new Diffuse(0.9, Color.MAGENTA);
-		Diffuse d3 = new Diffuse(0.9, Color.CYAN);
+		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255,0,0));
+		Diffuse d2 = new Diffuse(0.9, 0.1,Color.MAGENTA);
+		Diffuse d3 = new Diffuse(0.9, 0.0,Color.CYAN);
 		Transformation t1 = Transformation.createTranslation(0, 0, 10);
 		Transformation t2 = Transformation.createTranslation(4, -4, 12);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 12);
-//		Transformation t4 = Transformation.createTranslation(4, 4, 12);
+		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 //		Transformation t5 = Transformation.createTranslation(-4, 4, 12);
-//		Transformation t6 = Transformation.createTranslation(5, 5, 12);
+		Transformation t6 = Transformation.createTranslation(5, 5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
-		PointLight light = new PointLight(new Point(5.0,5.0,0.0), Color.WHITE);
-		shapes.add(new Sphere(t1, 5,d1));
-		shapes.add(new Sphere(t2, 4,d2));
-		shapes.add(new Sphere(t3, 4, d3));
-//		shapes.add(new Sphere(t4, 4),);
+		PointLight light = new PointLight(new Point(15.0,0.0,0.0), Color.WHITE);
+//		shapes.add(new Sphere(t1, 5,d1));
+//		shapes.add(new Sphere(t2, 4,d2));
+//		shapes.add(new Sphere(t3, 4, d3));
+//		shapes.add(new Sphere(t4, 4, d2));
 //		shapes.add(new Sphere(t5, 4));
 //		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), new Point(0.0,0.0,0.0),t1));
-//		shapes.add(new Triangle(t6, new Point(0.0,0.0,0.0), new Point(0.0,10.0,0.0), new Point(10.0,0.0,0.0)));
+		shapes.add(new Triangle(t1, new Point(0.0,0.0,0.0), new Point(0.0,4.0,0.0), new Point(4.0,0.0,0.0), d1));
 
 		// render the scene
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
-				System.out.println(ray.direction + "DIR");
+				//System.out.println(ray.direction + "DIR");
 				Color color = null;
 				boolean hit = false;
 				for (Shape shape : shapes)
 					if (shape.intersect(ray)) {
 						hit = true;
 						Point p = shape.getIntersection(ray);
-						System.out.println(p+"POINT");
 						color = shape.getColor(ray, light, p);
 						break;
 					}
