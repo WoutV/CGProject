@@ -1,5 +1,9 @@
 package shape;
 
+import java.awt.Color;
+
+import light.PointLight;
+import math.Point;
 import math.Ray;
 
 /**
@@ -18,4 +22,8 @@ public interface Shape {
 	 * @return true when the given {@link Ray} intersects this {@link Shape}.
 	 */
 	public boolean intersect(Ray ray);
+
+	public Color getColor(Ray ray, PointLight light, Point p);
+
+	public Point getIntersection(Ray ray);
 }

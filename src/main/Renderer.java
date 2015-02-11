@@ -4,6 +4,7 @@ import gui.ImagePanel;
 import gui.ProgressReporter;
 import gui.RenderFrame;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,13 +12,17 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import light.PointLight;
 import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
 import sampling.Sample;
+import shading.Diffuse;
+import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
+import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -34,8 +39,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 640;
-		int height = 640;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -85,32 +90,46 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 		
 		// initialize the scene
+		Diffuse d1 = new Diffuse(0.9, new Color(255,0,0));
+		Diffuse d2 = new Diffuse(0.9, Color.MAGENTA);
+		Diffuse d3 = new Diffuse(0.9, Color.CYAN);
 		Transformation t1 = Transformation.createTranslation(0, 0, 10);
 		Transformation t2 = Transformation.createTranslation(4, -4, 12);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 12);
-		Transformation t4 = Transformation.createTranslation(4, 4, 12);
-		Transformation t5 = Transformation.createTranslation(-4, 4, 12);
-
+//		Transformation t4 = Transformation.createTranslation(4, 4, 12);
+//		Transformation t5 = Transformation.createTranslation(-4, 4, 12);
+//		Transformation t6 = Transformation.createTranslation(5, 5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
-		shapes.add(new Sphere(t1, 5));
-		shapes.add(new Sphere(t2, 4));
-		shapes.add(new Sphere(t3, 4));
-		shapes.add(new Sphere(t4, 4));
-		shapes.add(new Sphere(t5, 4));
+		PointLight light = new PointLight(new Point(5.0,5.0,0.0), Color.WHITE);
+		shapes.add(new Sphere(t1, 5,d1));
+		shapes.add(new Sphere(t2, 4,d2));
+		shapes.add(new Sphere(t3, 4, d3));
+//		shapes.add(new Sphere(t4, 4),);
+//		shapes.add(new Sphere(t5, 4));
+//		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), new Point(0.0,0.0,0.0),t1));
+//		shapes.add(new Triangle(t6, new Point(0.0,0.0,0.0), new Point(0.0,10.0,0.0), new Point(10.0,0.0,0.0)));
 
 		// render the scene
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
-
+				System.out.println(ray.direction + "DIR");
+				Color color = null;
 				boolean hit = false;
 				for (Shape shape : shapes)
 					if (shape.intersect(ray)) {
 						hit = true;
+						Point p = shape.getIntersection(ray);
+						System.out.println(p+"POINT");
+						color = shape.getColor(ray, light, p);
 						break;
 					}
-				panel.set(x, y, 255, hit ? 255 : 0, 0, 0);
+				if(hit) {
+					panel.set(x, y, 255, color.getRed(),color.getGreen(),color.getBlue());
+				} else { 
+					panel.set(x, y, 255, 0,0,0);
+				}
 			}
 			reporter.update(height);
 		}

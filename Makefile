@@ -16,7 +16,7 @@ EXECUTABLENAME = cgproject.jar
 ENTRYPOINT = main.Renderer
 						
 # specify the packages where the code can be found
-PACKAGES = camera gui main math sampling shape
+PACKAGES = camera gui main math sampling shape light shading
 
 ################################################################################
 # Only the code above this line has to be edited if more classes are added     #

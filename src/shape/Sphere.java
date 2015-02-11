@@ -1,5 +1,10 @@
 package shape;
 
+import java.awt.Color;
+
+import shading.Diffuse;
+import light.PointLight;
+import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
@@ -13,6 +18,7 @@ import math.Vector;
 public class Sphere implements Shape {
 	public Transformation transformation;
 	public final double radius;
+	private Diffuse color;
 
 	/**
 	 * Creates a new {@link Sphere} with the given radius and which is
@@ -27,7 +33,7 @@ public class Sphere implements Shape {
 	 * @throws IllegalArgumentException
 	 *             when the radius is smaller than zero.
 	 */
-	public Sphere(Transformation transformation, double radius) {
+	public Sphere(Transformation transformation, double radius, Diffuse diffuse) {
 		if (transformation == null)
 			throw new NullPointerException("the given origin is null!");
 		if (radius < 0)
@@ -35,6 +41,7 @@ public class Sphere implements Shape {
 					"the given radius cannot be smaller than zero!");
 		this.transformation = transformation;
 		this.radius = radius;
+		this.setColor(diffuse);
 	}
 
 	/*
@@ -63,5 +70,43 @@ public class Sphere implements Shape {
 		double t1 = c / q;
 
 		return t0 >= 0 || t1 >= 0;
+	}
+
+	public Diffuse getColor() {
+		return color;
+	}
+
+	public void setColor(Diffuse color) {
+		this.color = color;
+	}
+
+	@Override
+	public Color getColor(Ray ray, PointLight light, Point p) {
+		Vector normal = p.toVector3D().scale(1/p.toVector3D().length());
+		System.out.println(normal+"NORMAL");
+		return this.color.getColor(ray, light, p, normal);
+	}
+
+	@Override
+	public Point getIntersection(Ray ray) {
+		Ray transformed = transformation.transformInverse(ray);
+
+		Vector o = transformed.origin.toVector3D();
+
+		double a = transformed.direction.dot(transformed.direction);
+		double b = 2.0 * (transformed.direction.dot(o));
+		double c = o.dot(o) - radius * radius;
+
+		double d = b * b - 4.0 * a * c;
+
+		if (d < 0)
+			return null;
+		double dr = Math.sqrt(d);
+		double t1 = (-b+dr)/(2*a);
+		double t2 = (-b-dr)/(2*a);
+
+		double t0 = Math.min(t1, t2);
+		
+		return ray.origin.add(ray.direction.scale(-t0));
 	}
 }
