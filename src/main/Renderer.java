@@ -19,10 +19,8 @@ import math.Transformation;
 import math.Vector;
 import sampling.Sample;
 import shading.Diffuse;
-import shape.Plane;
+import shape.Cylinder;
 import shape.Shape;
-import shape.Sphere;
-import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -93,21 +91,24 @@ public class Renderer {
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255,0,0));
 		Diffuse d2 = new Diffuse(0.9, 0.1,Color.MAGENTA);
 		Diffuse d3 = new Diffuse(0.9, 0.0,Color.CYAN);
-		Transformation t1 = Transformation.createTranslation(0, 0, 10);
+		Transformation t1 = Transformation.createTranslation(0, 0, 5);
 		Transformation t2 = Transformation.createTranslation(4, -4, 12);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 12);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 //		Transformation t5 = Transformation.createTranslation(-4, 4, 12);
 		Transformation t6 = Transformation.createTranslation(5, 5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
-		PointLight light = new PointLight(new Point(15.0,0.0,0.0), Color.WHITE);
+		List<PointLight> lights = new ArrayList<PointLight>();
+		PointLight light = new PointLight(new Point(0.0,0.0,0.0), Color.WHITE);
 //		shapes.add(new Sphere(t1, 5,d1));
 //		shapes.add(new Sphere(t2, 4,d2));
 //		shapes.add(new Sphere(t3, 4, d3));
 //		shapes.add(new Sphere(t4, 4, d2));
 //		shapes.add(new Sphere(t5, 4));
 //		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), new Point(0.0,0.0,0.0),t1));
-		shapes.add(new Triangle(t1, new Point(0.0,0.0,0.0), new Point(0.0,4.0,0.0), new Point(4.0,0.0,0.0), d1));
+//		shapes.add(new Triangle(t1, new Point(0.0,0.0,2.0), new Point(0.0,4.0,2.0), new Point(4.0,0.0,0.0), d1));
+		shapes.add(new Cylinder(t1, d1, 3, 1));
+		lights.add(light);
 
 		// render the scene
 		for (int x = 0; x < width; ++x) {
@@ -118,14 +119,17 @@ public class Renderer {
 				Color color = null;
 				boolean hit = false;
 				for (Shape shape : shapes)
-					if (shape.intersect(ray)) {
-						hit = true;
-						Point p = shape.getIntersection(ray);
-						color = shape.getColor(ray, light, p);
-						break;
+					for(PointLight pl : lights) {
+						if (shape.intersect(ray)) {
+							hit = true;
+							Point p = shape.getIntersection(ray);
+							color = shape.getColor(ray, pl, p);
+							break;
+						}
 					}
 				if(hit) {
 					panel.set(x, y, 255, color.getRed(),color.getGreen(),color.getBlue());
+//					panel.set(x,y,255,255,0,0);
 				} else { 
 					panel.set(x, y, 255, 0,0,0);
 				}
