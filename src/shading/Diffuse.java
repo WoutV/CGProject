@@ -21,7 +21,6 @@ public class Diffuse {
 	public Color getColor(Ray ray, PointLight light, Point p, Vector normal) {
 		Vector direction = light.getLocation().toVector3D().subtract(p.toVector3D());
 		System.out.println(direction+"TOTHELIGHT");
-		//Vector direction = p.subtract(light.getLocation());
 		System.out.println(normal);
 		double cos = normal.dot(direction)/(normal.length()*direction.length());
 		System.out.println(cos+"COS");

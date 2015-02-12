@@ -37,7 +37,7 @@ public class Triangle implements Shape {
 	}
 
 	@Override
-	public boolean intersect(Ray ray) {
+	public Double intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector o = transformed.origin.toVector3D();
@@ -47,7 +47,10 @@ public class Triangle implements Shape {
 		Point p = transformed.origin.add(transformed.direction.scale(t));
 		System.out.println(p);
 		
-		return isInTriangle(p);
+		if(isInTriangle(p)){
+			return t;
+		}
+		return -1.0;
 	}
 
 	/**
@@ -94,7 +97,4 @@ public class Triangle implements Shape {
 		System.out.println(p+"HITPOINT");
 		return p;
 	}
-
-	
-
 }

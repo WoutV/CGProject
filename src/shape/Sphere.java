@@ -50,7 +50,7 @@ public class Sphere implements Shape {
 	 * @see shape.Shape#intersect(geometry3d.Ray3D)
 	 */
 	@Override
-	public boolean intersect(Ray ray) {
+	public Double intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
 
 		Vector o = transformed.origin.toVector3D();
@@ -62,14 +62,22 @@ public class Sphere implements Shape {
 		double d = b * b - 4.0 * a * c;
 
 		if (d < 0)
-			return false;
+			return -1.0;
 		double dr = Math.sqrt(d);
 		double q = b < 0 ? -0.5 * (b - dr) : -0.5 * (b + dr);
 
 		double t0 = q / a;
 		double t1 = c / q;
 
-		return t0 >= 0 || t1 >= 0;
+		if( t0 >= 0 & t1 >= 0) {
+			return Math.min(t0, t1);
+		} else if (t0 < 0 & t1 >= 0) {
+			return t1;
+		} else if (t1 < 0 & t0 >= 0) {
+			return t0;
+		}
+		return -1.0;
+			
 	}
 
 	public Diffuse getColor() {

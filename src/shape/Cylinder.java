@@ -24,7 +24,7 @@ public class Cylinder implements Shape {
 	}
 
 	@Override
-	public boolean intersect(Ray ray) {
+	public Double intersect(Ray ray) {
 		System.out.println("INTERSECTIN");
 		Ray transformed = transformation.transformInverse(ray);
 		
@@ -40,7 +40,7 @@ public class Cylinder implements Shape {
 		System.out.println(d);
 		if (d < 0) {
 			System.out.println("D too small");
-			return false;
+			return -1.0;
 		}
 		double dr = Math.sqrt(d);
 		double q = b < 0 ? -0.5 * (b - dr) : -0.5 * (b + dr);
@@ -65,7 +65,16 @@ public class Cylinder implements Shape {
 		Double hitBottomPlane = (onBottom.toVector3D().subtract(transformed.origin.toVector3D()).dot(bottomNormal))/(transformed.direction.dot(bottomNormal));
 		boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2)<=radius &  hitBottomPlane >= 0;
 		
-		return  hitTop | hitShell | hitBottom;
+		if(hitShell){
+			return t0;
+		}
+		if(hitTop) {
+			return hitTopPlane;
+		}
+		if(hitBottom) {
+			return hitBottomPlane;
+		}
+		return -1.0;
 	}
 
 	@Override

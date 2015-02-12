@@ -19,8 +19,9 @@ import math.Transformation;
 import math.Vector;
 import sampling.Sample;
 import shading.Diffuse;
-import shape.Cylinder;
 import shape.Shape;
+import shape.Sphere;
+import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -37,8 +38,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 300;
+		int height =300;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -88,26 +89,26 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 		
 		// initialize the scene
-		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255,0,0));
+		Diffuse d1 = new Diffuse(0.9, 0.1, new Color(255,0,0));
 		Diffuse d2 = new Diffuse(0.9, 0.1,Color.MAGENTA);
-		Diffuse d3 = new Diffuse(0.9, 0.0,Color.CYAN);
-		Transformation t1 = Transformation.createTranslation(0, 0, 5);
+		Diffuse d3 = new Diffuse(0.9, 0.1,Color.CYAN);
+		Transformation t1 = Transformation.createTranslation(0, 0, 10);
 		Transformation t2 = Transformation.createTranslation(4, -4, 12);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 12);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
-//		Transformation t5 = Transformation.createTranslation(-4, 4, 12);
+		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
 		Transformation t6 = Transformation.createTranslation(5, 5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
 		List<PointLight> lights = new ArrayList<PointLight>();
-		PointLight light = new PointLight(new Point(0.0,0.0,0.0), Color.WHITE);
-//		shapes.add(new Sphere(t1, 5,d1));
+		PointLight light = new PointLight(new Point(15.0,0.0,10.0), Color.WHITE);
+		shapes.add(new Sphere(t1, 5,d1));
 //		shapes.add(new Sphere(t2, 4,d2));
 //		shapes.add(new Sphere(t3, 4, d3));
 //		shapes.add(new Sphere(t4, 4, d2));
 //		shapes.add(new Sphere(t5, 4));
 //		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), new Point(0.0,0.0,0.0),t1));
-//		shapes.add(new Triangle(t1, new Point(0.0,0.0,2.0), new Point(0.0,4.0,2.0), new Point(4.0,0.0,0.0), d1));
-		shapes.add(new Cylinder(t1, d1, 3, 1));
+//		shapes.add(new Triangle(t1, new Point(0.0,0.0,5.0), new Point(0.0,4.0,2.0), new Point(4.0,0.0,0.0), d1));
+//		shapes.add(new Cylinder(t1, d1, 3, 1));
 		lights.add(light);
 
 		// render the scene
@@ -118,16 +119,37 @@ public class Renderer {
 				//System.out.println(ray.direction + "DIR");
 				Color color = null;
 				boolean hit = false;
-				for (Shape shape : shapes)
+				Point hitPoint = null;
+				Shape hitShape = null;
+				Double min = Double.MAX_VALUE;
+				for (Shape shape : shapes) {
+					System.out.println("IN SHAPE LOOP");
 					for(PointLight pl : lights) {
-						if (shape.intersect(ray)) {
+						Double intersection = shape.intersect(ray);
+						System.out.println(intersection);
+						if (!intersection.equals(-1.0)) {
 							hit = true;
-							Point p = shape.getIntersection(ray);
-							color = shape.getColor(ray, pl, p);
-							break;
+							if (intersection < min) {
+								min = intersection;
+								hitShape = shape;
+							}
+							
 						}
+						
 					}
+				}
+				
 				if(hit) {
+					hitPoint = hitShape.getIntersection(ray);
+					color = hitShape.getColor(ray, light , hitPoint);
+//					for(Shape other : shapes) {
+//						for(PointLight shadowLight : lights) {
+//							Ray shadowRay = new Ray(hitPoint,shadowLight.getLocation().subtract(hitPoint));
+//							if(!other.intersect(shadowRay).equals(-1.0)) {
+//								color = Color.BLACK;
+//							}
+//						}
+//					}
 					panel.set(x, y, 255, color.getRed(),color.getGreen(),color.getBlue());
 //					panel.set(x,y,255,255,0,0);
 				} else { 

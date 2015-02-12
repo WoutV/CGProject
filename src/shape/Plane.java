@@ -7,6 +7,7 @@ import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
+import shading.Diffuse;
 
 public class Plane implements Shape {
 	
@@ -14,34 +15,46 @@ public class Plane implements Shape {
 	private Vector normal;
 	private Point point;
 	private Transformation transformation;
+	private Diffuse shading;
 	
-	public Plane(Vector normal, Point point, Transformation transformation) {
+	public Plane(Vector normal, Diffuse diff, Point point, Transformation transformation) {
 		this.normal = normal;
 		this.point = point;
 		this.transformation = transformation;
+		this.shading = diff;
 	}
 	
 	@Override
-	public boolean intersect(Ray ray) {
+	public Double intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector o = transformed.origin.toVector3D();
 		
 		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
 		System.out.println(t);
-		return t >= (0 + EPSILON);
+		if(t >= (0 + EPSILON)) {
+			return t;
+		}
+		return -1.0;
 	}
 
 	@Override
 	public Color getColor(Ray ray, PointLight light, Point p) {
-		// TODO Auto-generated method stub
-		return null;
+		Point trans = transformation.transformInverse(p);
+		Vector newNormal = transformation.transformInverse(this.normal);
+		
+		return this.shading.getColor(ray, light, p, newNormal);
 	}
 
 	@Override
 	public Point getIntersection(Ray ray) {
-		// TODO Auto-generated method stub
-		return null;
+		Ray transformed = transformation.transformInverse(ray);
+		
+		Vector o = transformed.origin.toVector3D();
+		
+		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
+		System.out.println(t);
+		return ray.origin.add(ray.direction.scale(t));
 	}
 
 }

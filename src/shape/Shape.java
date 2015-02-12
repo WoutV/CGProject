@@ -21,7 +21,7 @@ public interface Shape {
 	 *            the ray to intersect with.
 	 * @return true when the given {@link Ray} intersects this {@link Shape}.
 	 */
-	public boolean intersect(Ray ray);
+	public Double intersect(Ray ray);
 
 	public Color getColor(Ray ray, PointLight light, Point p);
 
