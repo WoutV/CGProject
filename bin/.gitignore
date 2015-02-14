@@ -1,8 +1,8 @@
-/main
-/shape
-/camera
-/gui
-/light
-/math
-/sampling
-/shading
+/camera/
+/gui/
+/light/
+/main/
+/math/
+/sampling/
+/shading/
+/shape/

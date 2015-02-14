@@ -9,6 +9,7 @@ package math;
 public class Transformation implements Cloneable {
 	private final Matrix matrix;
 	private final Matrix inverse;
+	private final Matrix transpose;
 
 	/**
 	 * Reference to the identity {@link Transformation}.
@@ -27,6 +28,7 @@ public class Transformation implements Cloneable {
 	private Transformation(Matrix matrix, Matrix inverse) {
 		this.matrix = matrix;
 		this.inverse = inverse;
+		this.transpose = matrix.transpose();
 	}
 
 	/**
@@ -41,6 +43,7 @@ public class Transformation implements Cloneable {
 			throws NullPointerException {
 		this.matrix = transformation.matrix;
 		this.inverse = transformation.inverse;
+		this.transpose = transformation.matrix.transpose();
 	}
 
 	/**
@@ -114,6 +117,10 @@ public class Transformation implements Cloneable {
 	public Point transformInverse(Point point) throws NullPointerException {
 		return inverse.transform(point);
 	}
+	
+	public Point transformTranspose(Point point) throws NullPointerException {
+		return transpose.transform(point);
+	}
 
 	/**
 	 * Transforms the given {@link Vector} with this {@link Transformation}.
@@ -142,6 +149,10 @@ public class Transformation implements Cloneable {
 	 */
 	public Vector transformInverse(Vector vector) throws NullPointerException {
 		return inverse.transform(vector);
+	}
+	
+	public Vector transformTranspose(Vector vector) throws NullPointerException {
+		return transpose.transform(vector);
 	}
 
 	/**
@@ -324,5 +335,9 @@ public class Transformation implements Cloneable {
 	public String toString() {
 		return new StringBuilder("[Transformation3D]\n").append(
 				matrix.toString()).toString();
+	}
+
+	public Vector inverseTransposeTransform(Vector normal) {
+		return inverse.transpose().transform(normal);
 	}
 }

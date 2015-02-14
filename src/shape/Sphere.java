@@ -92,7 +92,7 @@ public class Sphere implements Shape {
 	public Color getColor(Ray ray, PointLight light, Point p) {
 		Point trans = transformation.transformInverse(p);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
-		System.out.println(normal+"NORMAL");
+		normal = transformation.inverseTransposeTransform(normal);
 		return this.color.getColor(ray, light, p, normal);
 	}
 

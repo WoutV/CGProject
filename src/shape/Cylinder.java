@@ -11,6 +11,7 @@ import shading.Diffuse;
 
 public class Cylinder implements Shape {
 	
+	private static final double EPSILON = 0.00001;
 	private final double height;
 	private final double radius;
 	private Transformation transformation;
@@ -80,13 +81,22 @@ public class Cylinder implements Shape {
 	@Override
 	public Color getColor(Ray ray, PointLight light, Point p) {
 		Point trans = transformation.transformInverse(p);
-		Vector normal = new Vector(trans.x,0.0, trans.z);
+		Vector normal = null;
+		if(Math.abs(trans.y-height) < EPSILON) {
+			normal = new Vector(0.0,1.0,0.0);
+		} else if(Math.abs(trans.y) < EPSILON) {
+			normal = new Vector(0.0,1.0,0.0);
+		} else {
+			normal = new Vector(trans.x,0.0, trans.z);
+		}
+		normal = transformation.inverseTransposeTransform(normal);
+		transformation.getInverseTransformationMatrix().transpose();
 		return this.shading.getColor(ray, light, p, normal);
 	}
 
 	@Override
 	public Point getIntersection(Ray ray) {
-Ray transformed = transformation.transformInverse(ray);
+		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector dir = transformed.direction;
 

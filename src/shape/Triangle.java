@@ -79,11 +79,12 @@ public class Triangle implements Shape {
 
 	@Override
 	public Color getColor(Ray ray, PointLight light, Point p) {
-		Point trans1 = transformation.transformInverse(point1);
-		Point trans2 = transformation.transformInverse(point2);
-		Point trans3 = transformation.transformInverse(point3);
-		Vector newNormal = trans2.subtract(trans1).cross(trans3.subtract(trans1));
-		newNormal = newNormal.scale(newNormal.length());
+//		Point trans1 = transformation.transformInverse(point1);
+//		Point trans2 = transformation.transformInverse(point2);
+//		Point trans3 = transformation.transformInverse(point3);
+//		Vector newNormal = trans2.subtract(trans1).cross(trans3.subtract(trans1));
+//		newNormal = newNormal.scale(newNormal.length());
+		Vector newNormal = transformation.inverseTransposeTransform(normal);
 		System.out.println(normal+"NORMAL");
 		return this.color.getColor(ray, light, p, newNormal);
 	}

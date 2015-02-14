@@ -24,6 +24,7 @@ public class Diffuse {
 		System.out.println(normal);
 		double cos = normal.dot(direction)/(normal.length()*direction.length());
 		System.out.println(cos+"COS");
+		if(cos < 0) {cos = 0;}
 		int r = (int) (cr.getRed()*kd*cos/Math.PI + cr.getRed()*ka);
 		int g = (int) (cr.getGreen()*kd*cos/Math.PI+ cr.getGreen()*ka);
 		int b = (int) (cr.getBlue()*kd*cos/Math.PI+ cr.getBlue()*ka);
