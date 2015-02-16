@@ -1,6 +1,7 @@
 package shape;
 
 import java.awt.Color;
+import java.util.List;
 
 import light.PointLight;
 import math.Point;
@@ -23,7 +24,7 @@ public interface Shape {
 	 */
 	public Double intersect(Ray ray);
 
-	public Color getColor(Ray ray, PointLight light, Point p);
+	public Color getColor(Ray ray, List<PointLight> lights, Point p);
 
 	public Point getIntersection(Ray ray);
 }

@@ -1,6 +1,7 @@
 package shape;
 
 import java.awt.Color;
+import java.util.List;
 
 import shading.Diffuse;
 import light.PointLight;
@@ -89,11 +90,12 @@ public class Sphere implements Shape {
 	}
 
 	@Override
-	public Color getColor(Ray ray, PointLight light, Point p) {
+	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
 		Point trans = transformation.transformInverse(p);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		normal = transformation.inverseTransposeTransform(normal);
-		return this.color.getColor(ray, light, p, normal);
+		
+		return this.color.getColor(ray, lights, p, normal);
 	}
 
 	@Override

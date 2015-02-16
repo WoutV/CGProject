@@ -10,6 +10,8 @@ import java.util.Locale;
  * @version 1.0
  */
 public class Point implements Cloneable, Comparable<Point> {
+	private static final double EPSILON = 0.0000001;
+
 	/**
 	 * x coordinate of this {@link Point}.
 	 */
@@ -278,6 +280,24 @@ public class Point implements Cloneable, Comparable<Point> {
 			return 1;
 		else
 			return 0;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(!(other instanceof Point )) {
+			return false;
+		}
+		Point point = (Point) other;
+		if(Math.abs(this.x - point.x) > EPSILON) {
+			return false;
+		}
+		if(Math.abs(this.y - point.y) > EPSILON) {
+			return false;
+		}
+		if(Math.abs(this.z - point.z) > EPSILON) {
+			return false;
+		}
+		return true;
 	}
 
 	/*

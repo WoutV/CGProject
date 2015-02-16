@@ -38,42 +38,47 @@ public class Cylinder implements Shape {
 		double c = o.x*o.x+o.z*o.z - radius*radius;
 		
 		double d = b * b - 4.0 * a * c;
-		System.out.println(d);
 		if (d < 0) {
-			System.out.println("D too small");
 			return -1.0;
 		}
 		double dr = Math.sqrt(d);
-		double q = b < 0 ? -0.5 * (b - dr) : -0.5 * (b + dr);
+		
+		double t1 = (-b+dr)/(2*a);
+		double t2 = (-b-dr)/(2*a);
 
-		double t0 = q / a;
-		double t1 = c / q;
+		double t0 = Math.min(t1, t2);
 		
 		System.out.println(t0);
 		System.out.println(t1);
 		
 		
 
-		boolean hitShell = (t0 >= 0 || t1 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= 0 & transformed.origin.add(dir.scale(t0)).y <=height);
+		boolean hitShell = (t1 >= 0 || t2 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
 		
 		Point onTop = new Point(0.0,height,0.0);
 		Vector normal = new Vector(0.0,1.0,0.0);
 		Double hitTopPlane = (onTop.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
-		boolean hitTop = Math.pow(o.add(dir.scale(hitTopPlane)).x,2)+ Math.pow(o.add(dir.scale(hitTopPlane)).z,2)<=radius &  hitTopPlane >= 0;
+		boolean hitTop = Math.pow(o.add(dir.scale(hitTopPlane)).x,2)+ Math.pow(o.add(dir.scale(hitTopPlane)).z,2)- radius <= EPSILON &  Math.abs(hitTopPlane) >= EPSILON;
 		
 		Point onBottom = new Point();
 		Vector bottomNormal = new Vector(0.0,-1.0,0.0);
 		Double hitBottomPlane = (onBottom.toVector3D().subtract(transformed.origin.toVector3D()).dot(bottomNormal))/(transformed.direction.dot(bottomNormal));
-		boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2)<=radius &  hitBottomPlane >= 0;
+		boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2) - radius <= EPSILON &  Math.abs(hitBottomPlane) >= EPSILON;
+		
+		
 		
 		if(hitShell){
 			return t0;
 		}
-		if(hitTop) {
-			return hitTopPlane;
-		}
-		if(hitBottom) {
+		if(hitTop & hitBottom) {
+			if(hitTopPlane < hitBottomPlane) {
+				return hitTopPlane;
+			}
 			return hitBottomPlane;
+		} else if(hitBottom) {
+			return hitBottomPlane;
+		} else if(hitTop) {
+			return hitTopPlane;
 		}
 		return -1.0;
 	}
@@ -96,27 +101,9 @@ public class Cylinder implements Shape {
 
 	@Override
 	public Point getIntersection(Ray ray) {
-		Ray transformed = transformation.transformInverse(ray);
+		Double t = intersect(ray);
 		
-		Vector dir = transformed.direction;
-
-		Vector o = transformed.origin.toVector3D();
-		
-		double a = dir.x*dir.x + dir.z*dir.z;
-		double b = 2*o.x*dir.x + 2*o.z*dir.z;
-		double c = o.x*o.x+o.z*o.z - radius*radius;
-		
-		double d = b * b - 4.0 * a * c;
-
-		if (d < 0)
-			return null;
-		double dr = Math.sqrt(d);
-		double t1 = (-b+dr)/(2*a);
-		double t2 = (-b-dr)/(2*a);
-
-		double t0 = Math.min(t1, t2);
-		
-		return ray.origin.add(ray.direction.scale(t0));
+		return ray.origin.add(ray.direction.scale(t));
 	}
 
 }
