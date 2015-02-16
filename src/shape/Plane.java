@@ -1,6 +1,7 @@
 package shape;
 
 import java.awt.Color;
+import java.util.List;
 
 import light.PointLight;
 import math.Point;
@@ -39,22 +40,22 @@ public class Plane implements Shape {
 	}
 
 	@Override
-	public Color getColor(Ray ray, PointLight light, Point p) {
-		Point trans = transformation.transformInverse(p);
+	public Color getColor(Ray ray, List <PointLight> lights, List<Shape> shapes, Point p) {
+		
 		Vector newNormal = transformation.transformInverse(this.normal);
 		
-		return this.shading.getColor(ray, light, p, newNormal);
+		return this.shading.getColor(ray, lights,shapes, p, newNormal);
 	}
 
-	@Override
-	public Point getIntersection(Ray ray) {
-		Ray transformed = transformation.transformInverse(ray);
-		
-		Vector o = transformed.origin.toVector3D();
-		
-		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
-		System.out.println(t);
-		return ray.origin.add(ray.direction.scale(t));
-	}
+//	@Override
+//	public Point getIntersection(Ray ray) {
+//		Ray transformed = transformation.transformInverse(ray);
+//		
+//		Vector o = transformed.origin.toVector3D();
+//		
+//		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
+//		System.out.println(t);
+//		return ray.origin.add(ray.direction.scale(t));
+//	}
 
 }

@@ -89,35 +89,43 @@ public class Sphere implements Shape {
 		this.color = color;
 	}
 
+//	@Override
+//	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
+//		Point trans = transformation.transformInverse(p);
+//		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
+//		normal = transformation.inverseTransposeTransform(normal);
+//		
+//		return this.color.getColor(ray, lights, p, normal);
+//	}
+
 	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
+	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
 		Point trans = transformation.transformInverse(p);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		normal = transformation.inverseTransposeTransform(normal);
-		
-		return this.color.getColor(ray, lights, p, normal);
+		return this.color.getColor(ray, lights,shapes, p, normal, this);
 	}
 
-	@Override
-	public Point getIntersection(Ray ray) {
-		Ray transformed = transformation.transformInverse(ray);
-
-		Vector o = transformed.origin.toVector3D();
-
-		double a = transformed.direction.dot(transformed.direction);
-		double b = 2.0 * (transformed.direction.dot(o));
-		double c = o.dot(o) - radius * radius;
-
-		double d = b * b - 4.0 * a * c;
-
-		if (d < 0)
-			return null;
-		double dr = Math.sqrt(d);
-		double t1 = (-b+dr)/(2*a);
-		double t2 = (-b-dr)/(2*a);
-
-		double t0 = Math.min(t1, t2);
-		
-		return ray.origin.add(ray.direction.scale(t0));
-	}
+//	@Override
+//	public Point getIntersection(Ray ray) {
+//		Ray transformed = transformation.transformInverse(ray);
+//
+//		Vector o = transformed.origin.toVector3D();
+//
+//		double a = transformed.direction.dot(transformed.direction);
+//		double b = 2.0 * (transformed.direction.dot(o));
+//		double c = o.dot(o) - radius * radius;
+//
+//		double d = b * b - 4.0 * a * c;
+//
+//		if (d < 0)
+//			return null;
+//		double dr = Math.sqrt(d);
+//		double t1 = (-b+dr)/(2*a);
+//		double t2 = (-b-dr)/(2*a);
+//
+//		double t0 = Math.min(t1, t2);
+//		
+//		return ray.origin.add(ray.direction.scale(t0));
+//	}
 }

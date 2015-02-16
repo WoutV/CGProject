@@ -24,7 +24,5 @@ public interface Shape {
 	 */
 	public Double intersect(Ray ray);
 
-	public Color getColor(Ray ray, List<PointLight> lights, Point p);
-
-	public Point getIntersection(Ray ray);
+	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p);
 }

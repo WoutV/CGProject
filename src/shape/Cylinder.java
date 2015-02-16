@@ -85,30 +85,66 @@ public class Cylinder implements Shape {
 	}
 
 //	@Override
-//	public Color getColor(Ray ray, PointLight light, Point p) {
-//		Point trans = transformation.transformInverse(p);
-//		Vector normal = null;
-//		if(Math.abs(trans.y-height) < EPSILON) {
-//			normal = new Vector(0.0,1.0,0.0);
-//		} else if(Math.abs(trans.y) < EPSILON) {
-//			normal = new Vector(0.0,1.0,0.0);
-//		} else {
-//			normal = new Vector(trans.x,0.0, trans.z);
+//	public Point getIntersection(Ray ray) {
+//		System.out.println("INTERSECTIN");
+//		Ray transformed = transformation.transformInverse(ray);
+//		
+//		Vector dir = transformed.direction;
+//
+//		Vector o = transformed.origin.toVector3D();
+//		
+//		double a = dir.x*dir.x + dir.z*dir.z;
+//		double b = 2*o.x*dir.x + 2*o.z*dir.z;
+//		double c = o.x*o.x+o.z*o.z - radius*radius;
+//		
+//		double d = b * b - 4.0 * a * c;
+//		if (d < 0) {
+//			return null;
 //		}
-//		normal = transformation.inverseTransposeTransform(normal);
-//		transformation.getInverseTransformationMatrix().transpose();
-//		return this.shading.getColor(ray, light, p, normal);
+//		double dr = Math.sqrt(d);
+//		
+//		double t1 = (-b+dr)/(2*a);
+//		double t2 = (-b-dr)/(2*a);
+//
+//		double t0 = Math.min(t1, t2);
+//		
+//		System.out.println(t0);
+//		System.out.println(t1);
+//		
+//		
+//
+//		boolean hitShell = (t1 >= 0 || t2 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
+//		
+//		Point onTop = new Point(0.0,height,0.0);
+//		Vector normal = new Vector(0.0,1.0,0.0);
+//		Double hitTopPlane = (onTop.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
+//		boolean hitTop = Math.pow(o.add(dir.scale(hitTopPlane)).x,2)+ Math.pow(o.add(dir.scale(hitTopPlane)).z,2)- radius <= EPSILON &  Math.abs(hitTopPlane) >= EPSILON;
+//		
+//		Point onBottom = new Point();
+//		Vector bottomNormal = new Vector(0.0,-1.0,0.0);
+//		Double hitBottomPlane = (onBottom.toVector3D().subtract(transformed.origin.toVector3D()).dot(bottomNormal))/(transformed.direction.dot(bottomNormal));
+//		boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2) - radius <= EPSILON &  Math.abs(hitBottomPlane) >= EPSILON;
+//		
+//		
+//		
+//		if(hitShell){
+//			return ray.origin.add(ray.direction.scale(t0));
+//		}
+//		if(hitTop & hitBottom) {
+//			if(hitTopPlane < hitBottomPlane) {
+//				return ray.origin.add(ray.direction.scale(hitTopPlane));
+//			}
+//			return ray.origin.add(ray.direction.scale(hitBottomPlane));
+//		} else if(hitBottom) {
+//			return ray.origin.add(ray.direction.scale(hitBottomPlane));
+//		} else if(hitTop) {
+//			return ray.origin.add(ray.direction.scale(hitTopPlane));
+//		}
+//		return null;
 //	}
 
 	@Override
-	public Point getIntersection(Ray ray) {
-		Double t = intersect(ray);
-		
-		return ray.origin.add(ray.direction.scale(t));
-	}
-
-	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
+	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
 		Point trans = transformation.transformInverse(p);
 		Vector normal = null;
 		if(Math.abs(trans.y-height) < EPSILON) {
@@ -120,7 +156,13 @@ public class Cylinder implements Shape {
 		}
 		normal = transformation.inverseTransposeTransform(normal);
 		transformation.getInverseTransformationMatrix().transpose();
-		return this.shading.getColor(ray, lights, p, normal);
+		return this.shading.getColor(ray, lights,shapes, p, normal);
 	}
+
+//	@Override
+//	public Point getIntersection(Ray ray) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }
