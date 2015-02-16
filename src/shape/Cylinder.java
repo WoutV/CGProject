@@ -1,6 +1,7 @@
 package shape;
 
 import java.awt.Color;
+import java.util.List;
 
 import light.PointLight;
 import math.Point;
@@ -83,8 +84,31 @@ public class Cylinder implements Shape {
 		return -1.0;
 	}
 
+//	@Override
+//	public Color getColor(Ray ray, PointLight light, Point p) {
+//		Point trans = transformation.transformInverse(p);
+//		Vector normal = null;
+//		if(Math.abs(trans.y-height) < EPSILON) {
+//			normal = new Vector(0.0,1.0,0.0);
+//		} else if(Math.abs(trans.y) < EPSILON) {
+//			normal = new Vector(0.0,1.0,0.0);
+//		} else {
+//			normal = new Vector(trans.x,0.0, trans.z);
+//		}
+//		normal = transformation.inverseTransposeTransform(normal);
+//		transformation.getInverseTransformationMatrix().transpose();
+//		return this.shading.getColor(ray, light, p, normal);
+//	}
+
 	@Override
-	public Color getColor(Ray ray, PointLight light, Point p) {
+	public Point getIntersection(Ray ray) {
+		Double t = intersect(ray);
+		
+		return ray.origin.add(ray.direction.scale(t));
+	}
+
+	@Override
+	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
 		Point trans = transformation.transformInverse(p);
 		Vector normal = null;
 		if(Math.abs(trans.y-height) < EPSILON) {
@@ -96,14 +120,7 @@ public class Cylinder implements Shape {
 		}
 		normal = transformation.inverseTransposeTransform(normal);
 		transformation.getInverseTransformationMatrix().transpose();
-		return this.shading.getColor(ray, light, p, normal);
-	}
-
-	@Override
-	public Point getIntersection(Ray ray) {
-		Double t = intersect(ray);
-		
-		return ray.origin.add(ray.direction.scale(t));
+		return this.shading.getColor(ray, lights, p, normal);
 	}
 
 }

@@ -1,6 +1,7 @@
 package shape;
 
 import java.awt.Color;
+import java.util.List;
 
 import light.PointLight;
 import math.Point;
@@ -77,17 +78,17 @@ public class Triangle implements Shape {
 		return alpha <= 1 && alpha >= EPSILON && (beta <= 1) && beta >= EPSILON && (gamma <= 1) && gamma >= EPSILON;
 	}
 
-	@Override
-	public Color getColor(Ray ray, PointLight light, Point p) {
-//		Point trans1 = transformation.transformInverse(point1);
-//		Point trans2 = transformation.transformInverse(point2);
-//		Point trans3 = transformation.transformInverse(point3);
-//		Vector newNormal = trans2.subtract(trans1).cross(trans3.subtract(trans1));
-//		newNormal = newNormal.scale(newNormal.length());
-		Vector newNormal = transformation.inverseTransposeTransform(normal);
-		System.out.println(normal+"NORMAL");
-		return this.color.getColor(ray, light, p, newNormal);
-	}
+//	@Override
+//	public Color getColor(Ray ray, PointLight light, Point p) {
+////		Point trans1 = transformation.transformInverse(point1);
+////		Point trans2 = transformation.transformInverse(point2);
+////		Point trans3 = transformation.transformInverse(point3);
+////		Vector newNormal = trans2.subtract(trans1).cross(trans3.subtract(trans1));
+////		newNormal = newNormal.scale(newNormal.length());
+//		Vector newNormal = transformation.inverseTransposeTransform(normal);
+//		System.out.println(normal+"NORMAL");
+//		return this.color.getColor(ray, light, p, newNormal);
+//	}
 
 	@Override
 	public Point getIntersection(Ray ray) {
@@ -97,5 +98,12 @@ public class Triangle implements Shape {
 		Point p = ray.origin.add(ray.direction.scale(t));
 		System.out.println(p+"HITPOINT");
 		return p;
+	}
+
+	@Override
+	public Color getColor(Ray ray, List<PointLight> lights, Point p) {
+		Vector newNormal = transformation.inverseTransposeTransform(normal);
+		System.out.println(normal+"NORMAL");
+		return this.color.getColor(ray, lights, p, newNormal);
 	}
 }
