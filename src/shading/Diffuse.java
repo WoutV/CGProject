@@ -13,6 +13,7 @@ public class Diffuse {
 	private double kd;
 	private double ka;
 	private Color cr;
+	private static final double EPSILON = 0.00000001;
 
 	public Diffuse(double kd, double ka, Color color) {
 		this.kd = kd;
@@ -20,39 +21,70 @@ public class Diffuse {
 		this.cr = color;
 	}
 
-	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes,  Point p, Vector normal, Shape hitShape) {
+	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p, Vector normal, Shape hitShape) {
 		Color color = Color.BLACK;
 		for (PointLight pl : lights) {
 			Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
+			p = p.add(direction.scale(EPSILON));
 			Ray shadow = new Ray(p, direction);
-			for (Shape other : shapes) {
-				if (Math.abs(other.intersect(shadow)+1 )< 0.00001 & !other.equals(hitShape)) {
-					double cos = normal.dot(direction) / (normal.length() * direction.length());
-					double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-					if (cos < 0 & viewingCos > 0) {
-						cos = 0;
+			if (shapes.size() == 1) {
+				double cos = normal.dot(direction)
+						/ (normal.length() * direction.length());
+				double viewingCos = normal.dot(ray.direction)
+						/ (normal.length() * ray.direction.length());
+				if (cos < 0 & viewingCos > 0) {
+					cos = 0;
+				}
+				int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed()
+						* ka);
+				int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
+						.getGreen() * ka);
+				int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()
+						* ka);
+				r = trim(r);
+				g = trim(g);
+				b = trim(b);
+				color = addColor(color, new Color(r, g, b));
+			} else {
+				for (Shape other : shapes) {
+					if (Math.abs(other.intersect(shadow) + 1) < EPSILON	| !other.equals(hitShape)) {
+						double cos = normal.dot(direction) / (normal.length() * direction.length());
+						double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
+						if (cos < 0 & viewingCos > 0) {
+							cos = 0;
+						}
+						int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
+								.getRed() * ka);
+						int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
+								.getGreen() * ka);
+						int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
+								.getBlue() * ka);
+						r = trim(r);
+						g = trim(g);
+						b = trim(b);
+						color = addColor(color, new Color(r, g, b));
+					} else {
+						color = Color.black;
 					}
-					int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed() * ka);
-					int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr.getGreen()* ka);
-					int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()* ka);
-					r = trim(r);
-					g = trim(g); 
-					b = trim(b);
-					color = addColor(color, new Color(r,g,b));
 				}
 			}
-//			double cos = normal.dot(direction) / (normal.length() * direction.length());
-//			double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-//			if (cos < 0 & viewingCos > 0) {
-//				cos = 0;
-//			}
-//			int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed() * ka);
-//			int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr.getGreen()* ka);
-//			int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()* ka);
-//			r = trim(r);
-//			g = trim(g); 
-//			b = trim(b);
-//			color = addColor(color, new Color(r,g,b));
+			// double cos = normal.dot(direction) / (normal.length() *
+			// direction.length());
+			// double viewingCos = normal.dot(ray.direction) / (normal.length()
+			// * ray.direction.length());
+			// if (cos < 0 & viewingCos > 0) {
+			// cos = 0;
+			// }
+			// int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed() *
+			// ka);
+			// int g = (int) (cr.getGreen() * kd * cos / Math.PI +
+			// cr.getGreen()* ka);
+			// int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()*
+			// ka);
+			// r = trim(r);
+			// g = trim(g);
+			// b = trim(b);
+			// color = addColor(color, new Color(r,g,b));
 		}
 		return color;
 	}
@@ -65,9 +97,11 @@ public class Diffuse {
 		else
 			return number;
 	}
-	
+
 	private Color addColor(Color color, Color color2) {
-		return new Color(trim(color.getRed() + color2.getRed()), trim(color.getGreen()+ color2.getGreen()), trim(color.getBlue() + color2.getBlue()));
+		return new Color(trim(color.getRed() + color2.getRed()),
+				trim(color.getGreen() + color2.getGreen()),
+				trim(color.getBlue() + color2.getBlue()));
 	}
 
 }

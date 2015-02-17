@@ -42,9 +42,9 @@ public class Plane implements Shape {
 	@Override
 	public Color getColor(Ray ray, List <PointLight> lights, List<Shape> shapes, Point p) {
 		
-		Vector newNormal = transformation.transformInverse(this.normal);
+		Vector newNormal = transformation.inverseTransposeTransform(this.normal);
 		
-		return this.shading.getColor(ray, lights,shapes, p, newNormal);
+		return this.shading.getColor(ray, lights,shapes, p, newNormal, this);
 	}
 
 //	@Override
