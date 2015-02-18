@@ -82,6 +82,6 @@ public class Triangle implements Shape {
 	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes,  Point p) {
 		Vector newNormal = transformation.inverseTransposeTransform(normal);
 		System.out.println(normal+"NORMAL");
-		return this.color.getColor(ray, lights,shapes, p, newNormal);
+		return this.color.getColor(ray, lights,shapes, p, newNormal, this);
 	}
 }

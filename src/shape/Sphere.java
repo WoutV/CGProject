@@ -42,7 +42,7 @@ public class Sphere implements Shape {
 					"the given radius cannot be smaller than zero!");
 		this.transformation = transformation;
 		this.radius = radius;
-		this.setColor(diffuse);
+		this.color = diffuse;
 	}
 
 	/*
@@ -78,14 +78,6 @@ public class Sphere implements Shape {
 			return t0;
 		}
 		return -1.0;	
-	}
-
-	public Diffuse getColor() {
-		return color;
-	}
-
-	public void setColor(Diffuse color) {
-		this.color = color;
 	}
 
 	@Override

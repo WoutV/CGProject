@@ -28,12 +28,9 @@ public class Plane implements Shape {
 	@Override
 	public Double intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
-		
-		Vector o = transformed.origin.toVector3D();
-		
 		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
-		System.out.println(t);
-		if(t >= (0 + EPSILON)) {
+		
+		if(t >=  EPSILON) {
 			return t;
 		}
 		return -1.0;
@@ -46,16 +43,4 @@ public class Plane implements Shape {
 		
 		return this.shading.getColor(ray, lights,shapes, p, newNormal, this);
 	}
-
-//	@Override
-//	public Point getIntersection(Ray ray) {
-//		Ray transformed = transformation.transformInverse(ray);
-//		
-//		Vector o = transformed.origin.toVector3D();
-//		
-//		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
-//		System.out.println(t);
-//		return ray.origin.add(ray.direction.scale(t));
-//	}
-
 }

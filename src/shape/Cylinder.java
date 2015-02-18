@@ -101,10 +101,4 @@ public class Cylinder implements Shape {
 		return this.shading.getColor(ray, lights,shapes, p, normal, this);
 	}
 
-//	@Override
-//	public Point getIntersection(Ray ray) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 }

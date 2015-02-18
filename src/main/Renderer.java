@@ -93,7 +93,7 @@ public class Renderer {
 		// initialize the scene
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
 		Diffuse d2 = new Diffuse(0.9, 0.0, Color.BLUE);
-		Diffuse d3 = new Diffuse(0.9, 0.3, Color.white);
+		Diffuse d3 = new Diffuse(0.9, 0.5, Color.white);
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
@@ -142,24 +142,8 @@ public class Renderer {
 
 				if (hit) {
 					Point hitPoint = ray.origin.add(ray.direction.scale(min));
-//					hitPoint = hitShape.getIntersection(ray);
 					color = hitShape.getColor(ray, lights, shapes, hitPoint);
-					// for (PointLight pl : lights) {
-					// color = addColor(color, hitShape.getColor(ray, pl,
-					// hitPoint));
-					// for (Shape other : shapes) {
-					// for (PointLight shadowLight : lights) {
-					// Ray shadowRay = new Ray(hitPoint,
-					// shadowLight.getLocation().subtract(hitPoint));
-					// if (!other.intersect(shadowRay).equals(-1.0) &
-					// !other.equals(hitShape)) {
-					// color = Color.BLACK;
-					// }
-					// }
-					// }
-					// }
 					panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
-					// panel.set(x,y,255,255,0,0);
 				} else {
 					panel.set(x, y, 255, 0, 0, 0);
 				}

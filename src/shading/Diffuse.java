@@ -21,6 +21,16 @@ public class Diffuse {
 		this.cr = color;
 	}
 
+	
+	/**
+	 * @param ray
+	 * @param lights
+	 * @param shapes
+	 * @param p
+	 * @param normal
+	 * @param hitShape
+	 * @return the color of the given point, depending on the lights and shapes in the scene, and the surface normal of the shape to be shaded
+	 */
 	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p, Vector normal, Shape hitShape) {
 		Color color = Color.BLACK;
 		for (PointLight pl : lights) {
@@ -32,25 +42,8 @@ public class Diffuse {
 			p = p.add(direction.scale(EPSILON));
 			Ray shadow = new Ray(p, direction);
 			if (shapes.size() == 1) {
-				double cos = normal.dot(direction)
-						/ (normal.length() * direction.length());
-				double viewingCos = normal.dot(ray.direction)
-						/ (normal.length() * ray.direction.length());
-				if (cos < 0 & viewingCos > 0) {
-					cos = 0;
-				}
-				int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed()
-						* ka);
-				int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
-						.getGreen() * ka);
-				int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()
-						* ka);
-				r = trim(r);
-				g = trim(g);
-				b = trim(b);
-				color = addColor(color, new Color(r, g, b));
+				color = getShading(ray, normal, color, direction);
 			} else {
-				
 				Double min = distanceToLight;
 				for (Shape other : shapes) {
 					Double intersection = other.intersect(shadow);
@@ -64,62 +57,28 @@ public class Diffuse {
 				}
 			}
 			if(!shaded | hitShape.equals(shadowShape)) {
-				double cos = normal.dot(direction) / (normal.length() * direction.length());
-				double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-				if (cos < 0 & viewingCos > 0) {
-					cos = 0;
-				}
-				int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
-						.getRed() * ka);
-				int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
-						.getGreen() * ka);
-				int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
-						.getBlue() * ka);
-				r = trim(r);
-				g = trim(g);
-				b = trim(b);
-				color = addColor(color, new Color(r, g, b));
+				color = getShading(ray, normal, color, direction);
 			}
-				
-//					if (Math.abs(other.intersect(shadow) + 1) < EPSILON	| !other.equals(hitShape)) {
-//						double cos = normal.dot(direction) / (normal.length() * direction.length());
-//						double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-//						if (cos < 0 & viewingCos > 0) {
-//							cos = 0;
-//						}
-//						int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
-//								.getRed() * ka);
-//						int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
-//								.getGreen() * ka);
-//						int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
-//								.getBlue() * ka);
-//						r = trim(r);
-//						g = trim(g);
-//						b = trim(b);
-//						color = addColor(color, new Color(r, g, b));
-//					} else {
-//						color = Color.black;
-//					}
-//				}
-//			}
-			// double cos = normal.dot(direction) / (normal.length() *
-			// direction.length());
-			// double viewingCos = normal.dot(ray.direction) / (normal.length()
-			// * ray.direction.length());
-			// if (cos < 0 & viewingCos > 0) {
-			// cos = 0;
-			// }
-			// int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed() *
-			// ka);
-			// int g = (int) (cr.getGreen() * kd * cos / Math.PI +
-			// cr.getGreen()* ka);
-			// int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()*
-			// ka);
-			// r = trim(r);
-			// g = trim(g);
-			// b = trim(b);
-			// color = addColor(color, new Color(r,g,b));
 		}
+		return color;
+	}
+
+	private Color getShading(Ray ray, Vector normal, Color color, Vector toTheLight) {
+		double cos = normal.dot(toTheLight) / (normal.length() * toTheLight.length());
+		double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
+		if (cos < 0 & viewingCos > 0) {
+			cos = 0;
+		}
+		int r = (int) (cr.getRed() * kd * cos / Math.PI + cr.getRed()
+				* ka);
+		int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
+				.getGreen() * ka);
+		int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr.getBlue()
+				* ka);
+		r = trim(r);
+		g = trim(g);
+		b = trim(b);
+		color = addColor(color, new Color(r, g, b));
 		return color;
 	}
 
