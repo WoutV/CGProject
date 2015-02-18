@@ -25,6 +25,10 @@ public class Diffuse {
 		Color color = Color.BLACK;
 		for (PointLight pl : lights) {
 			Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
+			Double distanceToLight = direction.length();
+			direction = direction.scale(1/direction.length());
+			boolean shaded = false;
+			Shape shadowShape = null;
 			p = p.add(direction.scale(EPSILON));
 			Ray shadow = new Ray(p, direction);
 			if (shapes.size() == 1) {
@@ -46,28 +50,58 @@ public class Diffuse {
 				b = trim(b);
 				color = addColor(color, new Color(r, g, b));
 			} else {
+				
+				Double min = distanceToLight;
 				for (Shape other : shapes) {
-					if (Math.abs(other.intersect(shadow) + 1) < EPSILON	| !other.equals(hitShape)) {
-						double cos = normal.dot(direction) / (normal.length() * direction.length());
-						double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-						if (cos < 0 & viewingCos > 0) {
-							cos = 0;
+					Double intersection = other.intersect(shadow);
+					if (!intersection.equals(-1.0)) {
+						if (intersection < min) {
+							shaded = true;
+							min = intersection;
+							shadowShape = other;
 						}
-						int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
-								.getRed() * ka);
-						int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
-								.getGreen() * ka);
-						int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
-								.getBlue() * ka);
-						r = trim(r);
-						g = trim(g);
-						b = trim(b);
-						color = addColor(color, new Color(r, g, b));
-					} else {
-						color = Color.black;
 					}
 				}
 			}
+			if(!shaded | hitShape.equals(shadowShape)) {
+				double cos = normal.dot(direction) / (normal.length() * direction.length());
+				double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
+				if (cos < 0 & viewingCos > 0) {
+					cos = 0;
+				}
+				int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
+						.getRed() * ka);
+				int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
+						.getGreen() * ka);
+				int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
+						.getBlue() * ka);
+				r = trim(r);
+				g = trim(g);
+				b = trim(b);
+				color = addColor(color, new Color(r, g, b));
+			}
+				
+//					if (Math.abs(other.intersect(shadow) + 1) < EPSILON	| !other.equals(hitShape)) {
+//						double cos = normal.dot(direction) / (normal.length() * direction.length());
+//						double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
+//						if (cos < 0 & viewingCos > 0) {
+//							cos = 0;
+//						}
+//						int r = (int) (cr.getRed() * kd * cos / Math.PI + cr
+//								.getRed() * ka);
+//						int g = (int) (cr.getGreen() * kd * cos / Math.PI + cr
+//								.getGreen() * ka);
+//						int b = (int) (cr.getBlue() * kd * cos / Math.PI + cr
+//								.getBlue() * ka);
+//						r = trim(r);
+//						g = trim(g);
+//						b = trim(b);
+//						color = addColor(color, new Color(r, g, b));
+//					} else {
+//						color = Color.black;
+//					}
+//				}
+//			}
 			// double cos = normal.dot(direction) / (normal.length() *
 			// direction.length());
 			// double viewingCos = normal.dot(ray.direction) / (normal.length()

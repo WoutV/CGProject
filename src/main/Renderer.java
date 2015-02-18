@@ -40,8 +40,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 1000;
+		int height = 1000;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -93,7 +93,7 @@ public class Renderer {
 		// initialize the scene
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
 		Diffuse d2 = new Diffuse(0.9, 0.0, Color.BLUE);
-		Diffuse d3 = new Diffuse(0.9, 0.0, Color.white);
+		Diffuse d3 = new Diffuse(0.9, 0.3, Color.white);
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
@@ -117,7 +117,7 @@ public class Renderer {
 		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		shapes.add(new Triangle(id, new Point(0.0,0.0,3.0), new Point(0.0, 1.0, 3.0), new Point(1.0, 0.0, 0.0), d1));
 		shapes.add(new Cylinder(t6, d2, 3, 1));
-//		lights.add(light);
+		lights.add(light);
 		lights.add(light2);
 
 		// render the scene
@@ -158,8 +158,7 @@ public class Renderer {
 					// }
 					// }
 					// }
-					panel.set(x, y, 255, color.getRed(), color.getGreen(),
-							color.getBlue());
+					panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 					// panel.set(x,y,255,255,0,0);
 				} else {
 					panel.set(x, y, 255, 0, 0, 0);
