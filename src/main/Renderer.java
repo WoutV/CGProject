@@ -163,9 +163,10 @@ public class Renderer {
 						}
 					}
 					color = addColor(color,hitIntersection.getConstantColor());
-				} else {
-					panel.set(x, y, 255, 0, 0, 0);
-				}
+				} 
+//				else {
+//					panel.set(x, y, 255, 0, 0, 0);
+//				}
 				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 			}
 			reporter.update(height);
