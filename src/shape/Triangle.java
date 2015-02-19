@@ -38,20 +38,24 @@ public class Triangle implements Shape {
 	}
 
 	@Override
-	public Double intersect(Ray ray) {
+	public Intersection intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector o = transformed.origin.toVector3D();
 		
 		Double t = -(o.subtract(point1.toVector3D()).dot(normal)/(transformed.direction.dot(normal)));
-		
+		Double intersection;
 		Point p = transformed.origin.add(transformed.direction.scale(t));
 		System.out.println(p);
 		
 		if(isInTriangle(p)){
-			return t;
+			intersection = t;
+		} else {
+			intersection =  -1.0;
 		}
-		return -1.0;
+		Point hitPoint = ray.origin.add(ray.direction.scale(t));
+		Vector newNormal = transformation.inverseTransposeTransform(normal);
+		return new Intersection(hitPoint, ray, color, newNormal, intersection);
 	}
 
 	/**
@@ -78,10 +82,10 @@ public class Triangle implements Shape {
 		return alpha <= 1 && alpha >= EPSILON && (beta <= 1) && beta >= EPSILON && (gamma <= 1) && gamma >= EPSILON;
 	}
 
-	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes,  Point p) {
-		Vector newNormal = transformation.inverseTransposeTransform(normal);
-		System.out.println(normal+"NORMAL");
-		return this.color.getColor(ray, lights,shapes, p, newNormal, this);
-	}
+//	@Override
+//	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes,  Point p) {
+//		Vector newNormal = transformation.inverseTransposeTransform(normal);
+//		System.out.println(normal+"NORMAL");
+//		return this.color.getColor(ray, lights,shapes, p, newNormal, this);
+//	}
 }

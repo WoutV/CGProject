@@ -24,6 +24,7 @@ import shape.Intersection;
 import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
+import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -79,7 +80,7 @@ public class Renderer {
 
 		// initialize the camera
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0,1,0), new Vector(0, 0, 1), new Vector(0, 1, 0), 90);
+				new Point(), new Vector(0, 0, 1), new Vector(0, 1, 0), 90);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -98,7 +99,7 @@ public class Renderer {
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
 				Transformation.createRotationX(-45));
-		Transformation ts = Transformation.createTranslation(-2.0, 0.0, 10);
+		Transformation ts = Transformation.createTranslation(0.0, 0.0, 10);
 		Transformation tt = Transformation.createTranslation(0.0, -3.0, 9);
 		Transformation t2 = Transformation.createTranslation(0, -4, 10);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
@@ -107,16 +108,16 @@ public class Renderer {
 		Transformation t6 = Transformation.createTranslation(5, -5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
 		List<PointLight> lights = new ArrayList<PointLight>();
-		PointLight light = new PointLight(new Point(20.0, 1.0, 4.0), Color.WHITE);
-		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.WHITE);
+		PointLight light = new PointLight(new Point(20.0, 1.0, 4.0), Color.CYAN);
+		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.MAGENTA);
 		shapes.add(new Sphere(tt, 2, d1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-//		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
-//		shapes.add(new Triangle(id, new Point(0.0,0.0,3.0), new Point(0.0, 1.0, 3.0), new Point(1.0, 0.0, 0.0), d1));
-//		shapes.add(new Cylinder(t6, d2, 3, 1));
+		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
+		shapes.add(new Cylinder(t6, d2, 3, 1));
 		lights.add(light);
 		lights.add(light2);
 
@@ -132,7 +133,7 @@ public class Renderer {
 				for (Shape shape : shapes) {
 					Intersection intersection = shape.intersect(ray);
 					Double t = intersection.getT();
-					if (!t.equals(-1.0)) {
+					if (t+1 > 0.000001) {
 						hit = true;
 						if (t < min) {
 							min = t;
@@ -140,12 +141,12 @@ public class Renderer {
 						}
 					}
 				}
-
 				if (hit) {
 //					Point hitPoint = ray.origin.add(ray.direction.scale(min));
 					color = hitIntersection.getColor(lights);
 					panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 				} else {
+					System.err.println("NOTHIGN WAS HIT");
 					panel.set(x, y, 255, 0, 0, 0);
 				}
 			}

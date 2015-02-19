@@ -26,10 +26,10 @@ public class Cylinder implements Shape {
 	}
 
 	@Override
-	public Double intersect(Ray ray) {
+	public Intersection intersect(Ray ray) {
 		System.out.println("INTERSECTIN");
 		Ray transformed = transformation.transformInverse(ray);
-		
+		Double intersection;
 		Vector dir = transformed.direction;
 
 		Vector o = transformed.origin.toVector3D();
@@ -40,7 +40,7 @@ public class Cylinder implements Shape {
 		
 		double d = b * b - 4.0 * a * c;
 		if (d < 0) {
-			return -1.0;
+			intersection = -1.0;
 		}
 		double dr = Math.sqrt(d);
 		
@@ -69,26 +69,22 @@ public class Cylinder implements Shape {
 		
 		
 		if(hitShell){
-			return t0;
-		}
-		if(hitTop & hitBottom) {
+			intersection = t0;
+		} else if(hitTop & hitBottom) {
 			if(hitTopPlane < hitBottomPlane) {
-				return hitTopPlane > 0 ? hitTopPlane : -1.0;
+				intersection = hitTopPlane > 0 ? hitTopPlane : -1.0;
+			} else {
+				intersection = hitBottomPlane > 0 ? hitBottomPlane : -1.0;
 			}
-			return hitBottomPlane > 0 ? hitBottomPlane : -1.0;
 		} else if(hitBottom) {
-			return hitTopPlane > 0 ? hitTopPlane : -1.0;
+			intersection =  hitTopPlane > 0 ? hitTopPlane : -1.0;
 		} else if(hitTop) {
-			return hitTopPlane > 0 ? hitTopPlane : -1.0;
+			intersection =  hitTopPlane > 0 ? hitTopPlane : -1.0;
+		} else {
+			intersection =  -1.0;
 		}
-		return -1.0;
-	}
-
-
-	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
-		Point trans = transformation.transformInverse(p);
-		Vector normal = null;
+		Point hitPoint = ray.origin.add(ray.direction.scale(intersection));
+		Point trans = transformation.transformInverse(hitPoint);
 		if(Math.abs(trans.y-height) < EPSILON) {
 			normal = new Vector(0.0,1.0,0.0);
 		} else if(Math.abs(trans.y) < EPSILON) {
@@ -98,7 +94,24 @@ public class Cylinder implements Shape {
 		}
 		normal = transformation.inverseTransposeTransform(normal);
 		transformation.getInverseTransformationMatrix().transpose();
-		return this.shading.getColor(ray, lights,shapes, p, normal, this);
+		return new Intersection(hitPoint, ray, shading, normal, intersection);
 	}
+
+
+//	@Override
+//	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
+//		Point trans = transformation.transformInverse(p);
+//		Vector normal = null;
+//		if(Math.abs(trans.y-height) < EPSILON) {
+//			normal = new Vector(0.0,1.0,0.0);
+//		} else if(Math.abs(trans.y) < EPSILON) {
+//			normal = new Vector(0.0,1.0,0.0);
+//		} else {
+//			normal = new Vector(trans.x,0.0, trans.z);
+//		}
+//		normal = transformation.inverseTransposeTransform(normal);
+//		transformation.getInverseTransformationMatrix().transpose();
+//		return this.shading.getColor(ray, lights,shapes, p, normal, this);
+//	}
 
 }
