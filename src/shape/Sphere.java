@@ -51,7 +51,7 @@ public class Sphere implements Shape {
 	 * @see shape.Shape#intersect(geometry3d.Ray3D)
 	 */
 	@Override
-	public Double intersect(Ray ray) {
+	public Intersection intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
 
 		Vector o = transformed.origin.toVector3D();
@@ -61,30 +61,40 @@ public class Sphere implements Shape {
 		double c = o.dot(o) - radius * radius;
 
 		double d = b * b - 4.0 * a * c;
-
-		if (d < 0)
-			return -1.0;
-		double dr = Math.sqrt(d);
-		double q = b < 0 ? -0.5 * (b - dr) : -0.5 * (b + dr);
-
-		double t0 = q / a;
-		double t1 = c / q;
-
-		if( t0 >= 0 & t1 >= 0) {
-			return Math.min(t0, t1);
-		} else if (t0 < 0 & t1 >= 0) {
-			return t1;
-		} else if (t1 < 0 & t0 >= 0) {
-			return t0;
+		
+		Double t;
+		if (d < 0) {
+			t = -1.0;
+		} else { 
+			double dr = Math.sqrt(d);
+			double q = b < 0 ? -0.5 * (b - dr) : -0.5 * (b + dr);
+	
+			double t0 = q / a;
+			double t1 = c / q;
+	
+			if( t0 >= 0 & t1 >= 0) {
+				t = Math.min(t0, t1);
+			} else if (t0 < 0 & t1 >= 0) {
+				t =  t1;
+			} else if (t1 < 0 & t0 >= 0) {
+				t =  t0;
+			} else {
+				t =  -1.0;	
+			}
+			
 		}
-		return -1.0;	
-	}
-
-	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
-		Point trans = transformation.transformInverse(p);
+		Point hitPoint = ray.origin.add(ray.direction.scale(t));
+		Point trans = transformation.transformInverse(hitPoint);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		normal = transformation.inverseTransposeTransform(normal);
-		return this.color.getColor(ray, lights,shapes, p, normal, this);
+		return new Intersection(hitPoint, ray, color, normal, t);
 	}
+
+//	@Override
+//	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
+//		Point trans = transformation.transformInverse(p);
+//		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
+//		normal = transformation.inverseTransposeTransform(normal);
+//		return this.intersection.getColor(lights);
+//	}
 }

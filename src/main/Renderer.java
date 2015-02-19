@@ -20,10 +20,10 @@ import math.Vector;
 import sampling.Sample;
 import shading.Diffuse;
 import shape.Cylinder;
+import shape.Intersection;
 import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
-import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -114,9 +114,9 @@ public class Renderer {
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+//		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		shapes.add(new Triangle(id, new Point(0.0,0.0,3.0), new Point(0.0, 1.0, 3.0), new Point(1.0, 0.0, 0.0), d1));
-		shapes.add(new Cylinder(t6, d2, 3, 1));
+//		shapes.add(new Cylinder(t6, d2, 3, 1));
 		lights.add(light);
 		lights.add(light2);
 
@@ -127,22 +127,23 @@ public class Renderer {
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
 				Color color = new Color(0, 0, 0);
 				boolean hit = false;
-				Shape hitShape = null;
+				Intersection hitIntersection = null;
 				Double min = Double.MAX_VALUE;
 				for (Shape shape : shapes) {
-					Double intersection = shape.intersect(ray);
-					if (!intersection.equals(-1.0)) {
+					Intersection intersection = shape.intersect(ray);
+					Double t = intersection.getT();
+					if (!t.equals(-1.0)) {
 						hit = true;
-						if (intersection < min) {
-							min = intersection;
-							hitShape = shape;
+						if (t < min) {
+							min = t;
+							hitIntersection = intersection;
 						}
 					}
 				}
 
 				if (hit) {
-					Point hitPoint = ray.origin.add(ray.direction.scale(min));
-					color = hitShape.getColor(ray, lights, shapes, hitPoint);
+//					Point hitPoint = ray.origin.add(ray.direction.scale(min));
+					color = hitIntersection.getColor(lights);
 					panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 				} else {
 					panel.set(x, y, 255, 0, 0, 0);

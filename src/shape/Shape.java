@@ -22,7 +22,7 @@ public interface Shape {
 	 *            the ray to intersect with.
 	 * @return true when the given {@link Ray} intersects this {@link Shape}.
 	 */
-	public Double intersect(Ray ray);
+	public Intersection intersect(Ray ray);
 
-	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p);
+//	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p);
 }
