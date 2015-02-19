@@ -32,13 +32,12 @@ public class Diffuse extends Material {
 	 * @return the color of the given point, depending on the lights and shapes in the scene, and the surface normal of the shape to be shaded
 	 */
 	@Override
-	public Color getColor(Ray ray, List<PointLight> lights, Point p, Vector normal) {
+	public Color getColor(Ray ray, PointLight light, Point p, Vector normal) {
 		Color color = Color.BLACK;
-		for (PointLight pl : lights) {
-			Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
-			color = getShading(ray, normal, color, direction, pl.getColor());
-		}
-		return addColor(color,new Color((int)(cr.getRed()*ka),(int)(cr.getGreen()*ka),(int)(cr.getBlue()*ka)));
+		Vector direction = light.getLocation().toVector3D().subtract(p.toVector3D());
+		color = getShading(ray, normal, color, direction, light.getColor());
+//		return addColor(color,new Color((int)(cr.getRed()*ka),(int)(cr.getGreen()*ka),(int)(cr.getBlue()*ka)));
+		return color;
 	}
 
 	private Color getShading(Ray ray, Vector normal, Color color, Vector toTheLight, Color lightColor) {
@@ -70,6 +69,12 @@ public class Diffuse extends Material {
 		return new Color(trim(color.getRed() + color2.getRed()),
 				trim(color.getGreen() + color2.getGreen()),
 				trim(color.getBlue() + color2.getBlue()));
+	}
+
+
+	@Override
+	public Color getAmbientColor() {
+		return new Color((int)(cr.getRed()*ka),(int)(cr.getGreen()*ka),(int)(cr.getBlue()*ka));
 	}
 
 

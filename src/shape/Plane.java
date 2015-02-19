@@ -29,7 +29,6 @@ public class Plane implements Shape {
 		if(t >=  EPSILON) {
 			intersection =  t;
 		}else {
-			System.err.println("PLANE NOT HIT");
 			intersection = -1.0;
 		}
 		Point hitPoint = ray.origin.add(ray.direction.scale(intersection));

@@ -27,7 +27,6 @@ public class Cylinder implements Shape {
 
 	@Override
 	public Intersection intersect(Ray ray) {
-		System.out.println("INTERSECTIN");
 		Ray transformed = transformation.transformInverse(ray);
 		Double intersection;
 		Vector dir = transformed.direction;
@@ -48,11 +47,6 @@ public class Cylinder implements Shape {
 		double t2 = (-b-dr)/(2*a);
 
 		double t0 = Math.min(t1, t2);
-		
-		System.out.println(t0);
-		System.out.println(t1);
-		
-		
 
 		boolean hitShell = (t1 >= 0 || t2 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
 		

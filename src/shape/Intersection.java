@@ -15,6 +15,7 @@ public class Intersection {
 	private Material material;
 	private Vector normal;
 	private Double t;
+	private Color color = Color.BLACK;
 	
 	public Intersection(Point point, Ray ray, Material material, Vector normal, Double t) {
 		this.point = point;
@@ -54,8 +55,16 @@ public class Intersection {
 	public void setT(Double t) {
 		this.t = t;
 	}
-	public Color getColor(List<PointLight> lights) {
-		return material.getColor(ray, lights, point	, normal);
+	
+	public Color getColor(PointLight pl) {
+		return material.getColor(ray, pl, point	, normal);
 	}
 
+	public Color getConstantColor() {
+		return material.getAmbientColor();
+	}
+
+//	public Color addColor(PointLight pl) {
+//		
+//	}
 }

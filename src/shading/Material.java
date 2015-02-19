@@ -12,6 +12,8 @@ import math.Vector;
 
 public abstract class Material {
 
-	public abstract Color getColor(Ray ray, List<PointLight> lights, Point p, Vector normal);
+	public abstract Color getColor(Ray ray, PointLight pl, Point p, Vector normal);
+
+	public abstract Color getAmbientColor();
 
 }

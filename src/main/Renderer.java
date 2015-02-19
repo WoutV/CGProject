@@ -93,7 +93,7 @@ public class Renderer {
 
 		// initialize the scene
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
-		Diffuse d2 = new Diffuse(0.9, 0.0, Color.BLUE);
+		Diffuse d2 = new Diffuse(0.9, 0.2, Color.BLUE);
 		Diffuse d3 = new Diffuse(0.9, 0.5, Color.white);
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
@@ -105,21 +105,21 @@ public class Renderer {
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
-		Transformation t6 = Transformation.createTranslation(5, -5, 12);
+		Transformation t6 = Transformation.createTranslation(5.5, -4, 12).append(Transformation.createRotationX(-45));
 		List<Shape> shapes = new ArrayList<Shape>();
 		List<PointLight> lights = new ArrayList<PointLight>();
-		PointLight light = new PointLight(new Point(20.0, 1.0, 4.0), Color.CYAN);
+		PointLight light = new PointLight(new Point(20.0, 5.0, 4.0), Color.WHITE);
 		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.MAGENTA);
-		shapes.add(new Sphere(tt, 2, d1));
+//		shapes.add(new Sphere(tt, 2, d1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
 		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
-		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
+//		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
 		shapes.add(new Cylinder(t6, d2, 3, 1));
 		lights.add(light);
-		lights.add(light2);
+//		lights.add(light2);
 
 		// render the scene
 		for (int x = 0; x < width; ++x) {
@@ -133,7 +133,7 @@ public class Renderer {
 				for (Shape shape : shapes) {
 					Intersection intersection = shape.intersect(ray);
 					Double t = intersection.getT();
-					if (t+1 > 0.000001) {
+					if (t+1 > 0.000001 & t > 0.00001) {
 						hit = true;
 						if (t < min) {
 							min = t;
@@ -142,13 +142,31 @@ public class Renderer {
 					}
 				}
 				if (hit) {
-//					Point hitPoint = ray.origin.add(ray.direction.scale(min));
-					color = hitIntersection.getColor(lights);
-					panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
+					Point hitPoint = ray.origin.add(ray.direction.scale(min));
+					for(PointLight pl : lights) {
+						boolean inShadow = false;
+						Vector toTheLight = pl.getLocation().toVector3D().subtract(hitPoint.toVector3D());
+						Double distanceToLight = toTheLight.length();
+						Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.00001)),toTheLight);
+						for (Shape shape : shapes) {
+							Intersection intersection = shape.intersect(shadowRay);
+							Double t = intersection.getT();
+							if (Math.abs(t+1)>0.00001 & t > 0.00001 & t < distanceToLight ) {
+								inShadow = true;
+								System.err.println("SHADOWED");
+								break;
+							}
+						}
+						if(!inShadow) {
+							System.err.println("KLEUR");
+							color = addColor(color, hitIntersection.getColor(pl));
+						}
+					}
+					color = addColor(color,hitIntersection.getConstantColor());
 				} else {
-					System.err.println("NOTHIGN WAS HIT");
 					panel.set(x, y, 255, 0, 0, 0);
 				}
+				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 			}
 			reporter.update(height);
 		}
@@ -159,6 +177,21 @@ public class Renderer {
 			ImageIO.write(panel.getImage(), "png", new File("output.png"));
 		} catch (IOException e) {
 		}
+	}
+
+	private static  int trim(int number) {
+		if (number > 255)
+			return 255;
+		if (number < 0)
+			return 0;
+		else
+			return number;
+	}
+
+	private static Color addColor(Color color, Color color2) {
+		return new Color(trim(color.getRed() + color2.getRed()),
+				trim(color.getGreen() + color2.getGreen()),
+				trim(color.getBlue() + color2.getBlue()));
 	}
 
 }
