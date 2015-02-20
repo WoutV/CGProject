@@ -94,7 +94,7 @@ public class Renderer {
 		// initialize the scene
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
 		Diffuse d2 = new Diffuse(0.9, 0.2, Color.BLUE);
-		Diffuse d3 = new Diffuse(0.9, 0.5, Color.white);
+		Diffuse d3 = new Diffuse(1, 0.0, Color.white);
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
@@ -105,12 +105,12 @@ public class Renderer {
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
-		Transformation t6 = Transformation.createTranslation(5.5, -4, 12).append(Transformation.createRotationX(-45));
+		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
 		List<PointLight> lights = new ArrayList<PointLight>();
 		PointLight light = new PointLight(new Point(20.0, 5.0, 4.0), Color.WHITE);
 		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.MAGENTA);
-//		shapes.add(new Sphere(tt, 2, d1));
+		shapes.add(new Sphere(tt, 2, d1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
@@ -119,7 +119,7 @@ public class Renderer {
 //		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
 		shapes.add(new Cylinder(t6, d2, 3, 1));
 		lights.add(light);
-//		lights.add(light2);
+		lights.add(light2);
 
 		// render the scene
 		for (int x = 0; x < width; ++x) {
