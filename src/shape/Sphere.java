@@ -1,10 +1,6 @@
 package shape;
 
-import java.awt.Color;
-import java.util.List;
-
-import shading.Diffuse;
-import light.PointLight;
+import shading.Material;
 import math.Point;
 import math.Ray;
 import math.Transformation;
@@ -19,7 +15,7 @@ import math.Vector;
 public class Sphere implements Shape {
 	public Transformation transformation;
 	public final double radius;
-	private Diffuse color;
+	private Material shading;
 
 	/**
 	 * Creates a new {@link Sphere} with the given radius and which is
@@ -34,7 +30,7 @@ public class Sphere implements Shape {
 	 * @throws IllegalArgumentException
 	 *             when the radius is smaller than zero.
 	 */
-	public Sphere(Transformation transformation, double radius, Diffuse diffuse) {
+	public Sphere(Transformation transformation, double radius, Material shading) {
 		if (transformation == null)
 			throw new NullPointerException("the given origin is null!");
 		if (radius < 0)
@@ -42,7 +38,7 @@ public class Sphere implements Shape {
 					"the given radius cannot be smaller than zero!");
 		this.transformation = transformation;
 		this.radius = radius;
-		this.color = diffuse;
+		this.shading = shading;
 	}
 
 	/*
@@ -87,7 +83,7 @@ public class Sphere implements Shape {
 		Point trans = transformation.transformInverse(hitPoint);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		normal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, color, normal, t);
+		return new Intersection(hitPoint, ray, shading, normal, t);
 	}
 
 //	@Override

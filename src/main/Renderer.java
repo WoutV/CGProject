@@ -19,12 +19,13 @@ import math.Transformation;
 import math.Vector;
 import sampling.Sample;
 import shading.Diffuse;
+import shading.Material;
+import shading.Phong;
 import shape.Cylinder;
 import shape.Intersection;
 import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
-import shape.Triangle;
 import camera.PerspectiveCamera;
 
 /**
@@ -93,8 +94,9 @@ public class Renderer {
 
 		// initialize the scene
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
-		Diffuse d2 = new Diffuse(0.9, 0.2, Color.BLUE);
-		Diffuse d3 = new Diffuse(1, 0.0, Color.white);
+		Material d2 = new Diffuse(0.9, 0.2, Color.BLUE);
+		Material d3 = new Diffuse(1, 0.0, Color.white);x
+		Material p1 = new Phong(Color.YELLOW, 0.0, 25.0, 0.5, d1);
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
@@ -108,16 +110,16 @@ public class Renderer {
 		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
 		List<Shape> shapes = new ArrayList<Shape>();
 		List<PointLight> lights = new ArrayList<PointLight>();
-		PointLight light = new PointLight(new Point(20.0, 5.0, 4.0), Color.WHITE);
-		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.MAGENTA);
-		shapes.add(new Sphere(tt, 2, d1));
+		PointLight light = new PointLight(new Point(0.0, 5.0, 35.0), Color.WHITE);
+		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.CYAN);
+		shapes.add(new Sphere(tt, 2, p1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
 		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
-		shapes.add(new Cylinder(t6, d2, 3, 1));
+//		shapes.add(new Cylinder(t6, d2, 3, 1));
 		lights.add(light);
 		lights.add(light2);
 

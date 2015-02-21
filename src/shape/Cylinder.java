@@ -1,14 +1,10 @@
 package shape;
 
-import java.awt.Color;
-import java.util.List;
-
-import light.PointLight;
 import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
-import shading.Diffuse;
+import shading.Material;
 
 public class Cylinder implements Shape {
 	
@@ -16,13 +12,13 @@ public class Cylinder implements Shape {
 	private final double height;
 	private final double radius;
 	private Transformation transformation;
-	private Diffuse shading;
+	private Material shading;
 	
-	public Cylinder (Transformation transformation, Diffuse diffuse, double height, double radius) {
+	public Cylinder (Transformation transformation, Material shading, double height, double radius) {
 		this.height = height;
 		this.radius = radius;
 		this.transformation = transformation;
-		this.shading = diffuse;
+		this.shading = shading;
 	}
 
 	@Override

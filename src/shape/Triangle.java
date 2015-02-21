@@ -1,14 +1,10 @@
 package shape;
 
-import java.awt.Color;
-import java.util.List;
-
-import light.PointLight;
 import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
-import shading.Diffuse;
+import shading.Material;
 
 public class Triangle implements Shape {
 	
@@ -20,11 +16,11 @@ public class Triangle implements Shape {
 	private Point point2;
 	private Point point3;
 	
-	private Diffuse color;
+	private Material shading;
 
 	private Vector normal;
 	
-	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Diffuse color) {
+	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Material shading) {
 		if (transformation == null)
 			throw new NullPointerException("the given origin is null!");
 		if ( p1 == null | p2 == null | p3 == null)
@@ -33,7 +29,7 @@ public class Triangle implements Shape {
 		this.point1 = p1;
 		this.point2 = p2;
 		this.point3 = p3;
-		this.color = color;
+		this.shading = shading;
 		this.normal = point2.subtract(point1).cross(point3.subtract(point1));
 	}
 
@@ -55,7 +51,7 @@ public class Triangle implements Shape {
 		}
 		Point hitPoint = ray.origin.add(ray.direction.scale(t));
 		Vector newNormal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, color, newNormal, intersection);
+		return new Intersection(hitPoint, ray, shading, newNormal, intersection);
 	}
 
 	/**

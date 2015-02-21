@@ -1,7 +1,6 @@
 package shape;
 
 import java.awt.Color;
-import java.util.List;
 
 import light.PointLight;
 import math.Point;
@@ -15,7 +14,6 @@ public class Intersection {
 	private Material material;
 	private Vector normal;
 	private Double t;
-	private Color color = Color.BLACK;
 	
 	public Intersection(Point point, Ray ray, Material material, Vector normal, Double t) {
 		this.point = point;

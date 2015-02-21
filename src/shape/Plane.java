@@ -4,7 +4,7 @@ import math.Point;
 import math.Ray;
 import math.Transformation;
 import math.Vector;
-import shading.Diffuse;
+import shading.Material;
 
 public class Plane implements Shape {
 	
@@ -12,13 +12,13 @@ public class Plane implements Shape {
 	private Vector normal;
 	private Point point;
 	private Transformation transformation;
-	private Diffuse shading;
+	private Material shading;
 	
-	public Plane(Vector normal, Diffuse diff, Point point, Transformation transformation) {
+	public Plane(Vector normal, Material shading, Point point, Transformation transformation) {
 		this.normal = normal;
 		this.point = point;
 		this.transformation = transformation;
-		this.shading = diff;
+		this.shading = shading;
 	}
 	
 	@Override
