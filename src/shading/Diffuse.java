@@ -40,6 +40,7 @@ public class Diffuse extends Material {
 		double cos = normal.dot(toTheLight) / (normal.length() * toTheLight.length());
 		double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
 		if (cos < 0 & viewingCos > 0) {
+			System.err.println("COSINUS ERROR");
 			cos = 0;
 		}
 		int r = (int) (color.getRed() * kd * cos / Math.PI * lightColor.getRed()/255);

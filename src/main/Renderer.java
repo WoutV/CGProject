@@ -6,6 +6,7 @@ import gui.RenderFrame;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,6 +27,8 @@ import shape.Intersection;
 import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
+import shape.Triangle;
+import shape.TriangleMesh;
 import camera.PerspectiveCamera;
 
 /**
@@ -42,8 +45,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1000;
-		int height = 1000;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -103,26 +106,41 @@ public class Renderer {
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
 				Transformation.createRotationX(-45));
-		Transformation ts = Transformation.createTranslation(0.0, 0.0, 10);
+		Transformation ts = Transformation.createTranslation(0.0, -3.0, 10);
 		Transformation tt = Transformation.createTranslation(0.0, -3.0, 9);
 		Transformation t2 = Transformation.createTranslation(0, -4, 10);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
-		Transformation t6 = Transformation.createTranslation(5.5, -5, 12).append(Transformation.createRotationX(-90));
+		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
 		PointLight light = new PointLight(new Point(0.0, 1.0, 35.0), Color.WHITE);
 		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.white);
-//		scene.add(new Sphere(tt, 2, p1));
+		scene.add(new Sphere(tt, 2, p1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-//		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
-//		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
-//		scene.add(new Cylinder(t6, p1, 3, 1));
-		scene.add(new Cone(3, 1, t6, p1));
-//		scene.add(light);
+		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+//		scene.add(new Triangle(ts, new Point(1.0,0.0,1.0), new Point(-1.0, 0.0, -1.0), new Point(1.0, 0.0, -1.0), d1));
+		scene.add(new Cylinder(t6, p1, 3, 1));
+		scene.add(new Cone(3, 1, t3, p1));
+		scene.add(light);
 		scene.add(light2);
+		
+		ObjParser parser = new ObjParser("plane.obj");
+		TriangleMesh mesh = null;
+		try {
+			mesh = parser.parseObjFile();
+			mesh.setTransformation(ts);
+			mesh.setShading(p1);
+//			scene.add(mesh);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// render the scene
 		List<Shape> shapes = scene.getShapes();
