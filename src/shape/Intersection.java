@@ -61,8 +61,4 @@ public class Intersection {
 	public Color getConstantColor() {
 		return material.getAmbientColor();
 	}
-
-//	public Color addColor(PointLight pl) {
-//		
-//	}
 }

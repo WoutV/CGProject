@@ -35,14 +35,14 @@ public class Phong extends Material {
 		double cos = ray.direction.dot(reflect) / (ray.direction.length() * reflect.length());
 //		double cos = 30;
 		double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
-//		if (cos < 0 & viewingCos > 0) {
-//			cos = 0;
-//		}
+		if (cos < 0 ) {
+			cos = 0;
+		}
 		int r = (int) (color.getRed() * ks * Math.pow(cos,exponent) * lightColor.getRed()/255);
 		int g = (int) (color.getGreen() * ks * Math.pow(cos,exponent)* lightColor.getGreen()/255);
 		int b = (int) (color.getBlue() * ks * Math.pow(cos,exponent) * lightColor.getBlue()/255);
 		r = trim(r);
-		g = trim(g);
+		g =trim(g);
 		b = trim(b);
 //		 = addColor(color, new Color(r, g, b));
 		return new Color(r,g,b);

@@ -7,7 +7,6 @@ import gui.RenderFrame;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -21,6 +20,7 @@ import sampling.Sample;
 import shading.Diffuse;
 import shading.Material;
 import shading.Phong;
+import shape.Cone;
 import shape.Cylinder;
 import shape.Intersection;
 import shape.Plane;
@@ -93,10 +93,12 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		// initialize the scene
+		SceneCreator scene = new SceneCreator();
 		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
 		Material d2 = new Diffuse(0.9, 0.2, Color.BLUE);
-		Material d3 = new Diffuse(1, 0.0, Color.white);x
-		Material p1 = new Phong(Color.YELLOW, 0.0, 25.0, 0.5, d1);
+		Material d3 = new Diffuse(1, 0.0, Color.white);
+		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, d1);
+		
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
@@ -107,25 +109,27 @@ public class Renderer {
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
-		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
-		List<Shape> shapes = new ArrayList<Shape>();
-		List<PointLight> lights = new ArrayList<PointLight>();
-		PointLight light = new PointLight(new Point(0.0, 5.0, 35.0), Color.WHITE);
-		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.CYAN);
-		shapes.add(new Sphere(tt, 2, p1));
+		Transformation t6 = Transformation.createTranslation(5.5, -5, 12).append(Transformation.createRotationX(-90));
+		PointLight light = new PointLight(new Point(0.0, 1.0, 35.0), Color.WHITE);
+		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.white);
+//		scene.add(new Sphere(tt, 2, p1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-		shapes.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+//		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		shapes.add(new Triangle(ts, new Point(0.0,0.0,0.0), new Point(0.0, 1.0, 0.0), new Point(1.0, 0.0, 0.0), d1));
-//		shapes.add(new Cylinder(t6, d2, 3, 1));
-		lights.add(light);
-		lights.add(light2);
+//		scene.add(new Cylinder(t6, p1, 3, 1));
+		scene.add(new Cone(3, 1, t6, p1));
+//		scene.add(light);
+		scene.add(light2);
 
 		// render the scene
+		List<Shape> shapes = scene.getShapes();
+		List<PointLight> lights = scene.getLights();
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
+				Shape hitShape = null;
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
 				Color color = new Color(0, 0, 0);
@@ -140,6 +144,7 @@ public class Renderer {
 						if (t < min) {
 							min = t;
 							hitIntersection = intersection;
+							hitShape = shape;
 						}
 					}
 				}
@@ -153,23 +158,29 @@ public class Renderer {
 						for (Shape shape : shapes) {
 							Intersection intersection = shape.intersect(shadowRay);
 							Double t = intersection.getT();
-							if (Math.abs(t+1)>0.00001 & t > 0.00001 & t < distanceToLight ) {
+							if (Math.abs(t+1)>0.01 & t > 0.00001 & t < distanceToLight ) {
 								inShadow = true;
-								System.err.println("SHADOWED");
+//								System.err.println("SHADOWED");
+								if(hitShape instanceof Cylinder)
+									System.err.println(t);
 								break;
 							}
 						}
 						if(!inShadow) {
-							System.err.println("KLEUR");
+//							System.err.println("KLEUR");
 							color = addColor(color, hitIntersection.getColor(pl));
 						}
+//						if(inShadow) {
+//							color = Color.red;
+//						}
 					}
-					color = addColor(color,hitIntersection.getConstantColor());
+//					color = addColor(color,hitIntersection.getConstantColor());
 				} 
 //				else {
 //					panel.set(x, y, 255, 0, 0, 0);
 //				}
 				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
+//				panel.set(x,y, 255, inShadow ? 255 : 0, 0, 0 );
 			}
 			reporter.update(height);
 		}
