@@ -55,10 +55,8 @@ public class Cone implements Shape {
 					&  Math.abs(hitBottomPlane) >= EPSILON;
 					
 			if(hitShell) {
-				System.err.println("HITSHELL");
 				intersection = t0;
 			} else if(hitBottom) {
-				System.err.println("HITBOTTOM");
 				intersection = hitBottomPlane;
 			} else {
 				intersection = -1.0;

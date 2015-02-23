@@ -44,7 +44,6 @@ public class TriangleMesh implements Shape {
 		}
 		if(hitIntersection!=null) {
 			hitIntersection.setMaterial(shading);
-			System.err.println(hitIntersection.getNormal().y);
 			return hitIntersection;
 		}
 		return new Intersection(null, null, null, null, -1.0);
@@ -52,6 +51,10 @@ public class TriangleMesh implements Shape {
 	
 	public void addTriangle(Triangle triangle) {
 		triangles.add(triangle);
+	}
+	
+	public List<Triangle> getTriangles() {
+		return new ArrayList<Triangle>(this.triangles);
 	}
 
 }

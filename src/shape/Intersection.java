@@ -19,6 +19,7 @@ public class Intersection {
 		this.point = point;
 		this.ray = ray;
 		this.material = material;
+//		System.out.println(normal+"THIS IS USED");
 		this.normal = normal;
 		this.t = t;
 	}

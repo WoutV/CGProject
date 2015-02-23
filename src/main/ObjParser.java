@@ -56,7 +56,7 @@ public class ObjParser {
             if (line.startsWith("#"))
             {
                 continue;
-            }	else if (line.startsWith(TEXTURE_COORD)) {
+            } else if (line.startsWith(TEXTURE_COORD)) {
                     processTexture(line);
             } else if (line.startsWith(VERTEX_NORMAL)) {
                     processNormal(line);
@@ -65,7 +65,7 @@ public class ObjParser {
             }  else if (line.startsWith(TRIANGLE)) {
             	processTriangle(line);
             } else {
-                System.err.println("Parse.parseObjFile: line " + lineCount + " unknown line |" + line + "|");
+                System.err.println("This line could not be parsed");
             }
             lineCount++;
         }
@@ -74,20 +74,16 @@ public class ObjParser {
     }
 
 	private void processTriangle(String line) {
-		System.out.println("TRIANGLE");
 		String[] splitted = line.split(" ");
 		String[] point1 = splitted[1].split("/");
 		String[] point2 = splitted[2].split("/");
 		String[] point3 = splitted[3].split("/");
 		Point p1 = vertices.get(Integer.parseInt(point1[0])-1);
-//		System.out.println(p1);
-		Vector n1 = normals.get(Integer.parseInt(point1[1])-1);
-		Point p2 = vertices.get(Integer.parseInt(point2[0])-1);
-//		System.out.println(p2);
-		Vector n2 = normals.get(Integer.parseInt(point2[1])-1);
+		Vector n1 = normals.get(Integer.parseInt(point1[2])-1);
+		Point p2 = vertices.get(Integer.parseInt(point2[0].trim())-1);
+		Vector n2 = normals.get(Integer.parseInt(point2[2])-1);
 		Point p3 = vertices.get(Integer.parseInt(point3[0])-1);
-//		System.out.println(p3);
-		Vector n3 = normals.get(Integer.parseInt(point3[1])-1);
+		Vector n3 = normals.get(Integer.parseInt(point3[2])-1);
 		mesh.addTriangle(new Triangle(p1, p2, p3, n1, n2, n3));
 	}
 

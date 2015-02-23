@@ -40,7 +40,6 @@ public class Diffuse extends Material {
 		double cos = normal.dot(toTheLight) / (normal.length() * toTheLight.length());
 		double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
 		if (cos < 0 & viewingCos > 0) {
-			System.err.println("COSINUS ERROR");
 			cos = 0;
 		}
 		int r = (int) (color.getRed() * kd * cos / Math.PI * lightColor.getRed()/255);
@@ -49,18 +48,7 @@ public class Diffuse extends Material {
 		r = trim(r);
 		g = trim(g);
 		b = trim(b);
-//		 = addColor(color, new Color(r, g, b));
 		return new Color(r,g,b);
 	}
-
-	
-//
-	
-
-//	@Override
-//	public Color getColor(List<PointLight> lights) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 }

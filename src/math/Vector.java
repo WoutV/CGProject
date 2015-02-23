@@ -31,6 +31,7 @@ public class Vector implements Cloneable, Comparable<Vector> {
 	public Vector() {
 		this(0, 0, 0);
 	}
+	
 
 	/**
 	 * Creates a new {@link Vector} at the given position.
@@ -101,6 +102,10 @@ public class Vector implements Cloneable, Comparable<Vector> {
 			throw new IllegalArgumentException(
 					"the given axis is out of bounds!");
 		}
+	}
+	
+	public Vector normalize(Vector vector) {
+		return vector.scale(1/vector.length());
 	}
 
 	/**

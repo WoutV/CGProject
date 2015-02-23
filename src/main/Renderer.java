@@ -97,49 +97,54 @@ public class Renderer {
 
 		// initialize the scene
 		SceneCreator scene = new SceneCreator();
-		Diffuse d1 = new Diffuse(0.9, 0.0, new Color(255, 0, 0));
+		Diffuse redDiffuse = new Diffuse(1.0, 0.0, Color.RED);
 		Material d2 = new Diffuse(0.9, 0.2, Color.BLUE);
 		Material d3 = new Diffuse(1, 0.0, Color.white);
-		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, d1);
+		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse);
 		
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
 		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
 				Transformation.createRotationX(-45));
-		Transformation ts = Transformation.createTranslation(0.0, -3.0, 10);
+		Transformation ts = Transformation.createTranslation(0.0, -1.0, 5);
 		Transformation tt = Transformation.createTranslation(0.0, -3.0, 9);
-		Transformation t2 = Transformation.createTranslation(0, -4, 10);
+		Transformation t2 = Transformation.createTranslation(0, -1, 15);
 		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
 		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
 		PointLight light = new PointLight(new Point(0.0, 1.0, 35.0), Color.WHITE);
 		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.white);
-		scene.add(new Sphere(tt, 2, p1));
+		PointLight light3 = new PointLight(new Point(5.0, 1.0, 4.0), Color.white);
+
+//		scene.add(new Sphere(tt, 2, p1));
 //		 shapes.add(new Sphere(tt, 3,d2));
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+//		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		scene.add(new Triangle(ts, new Point(1.0,0.0,1.0), new Point(-1.0, 0.0, -1.0), new Point(1.0, 0.0, -1.0), d1));
-		scene.add(new Cylinder(t6, p1, 3, 1));
-		scene.add(new Cone(3, 1, t3, p1));
-		scene.add(light);
+//		scene.add(new Cylinder(t6, p1, 3, 1));
+//		scene.add(new Cone(3, 1, t3, p1));
+		Triangle tr = new Triangle(new Point(), new Point(2.0,0.0,0.0), new Point(0.0,2.0,0.0), new Vector(1,0,0), new Vector(0,1,0), new Vector(0,0,1));
+		tr.setShading(p1);
+		tr.setTransformation(ts);
+//		scene.add(tr);
+//		scene.add(light);
 		scene.add(light2);
+		scene.add(light3);
 		
-		ObjParser parser = new ObjParser("plane.obj");
+		ObjParser parser = new ObjParser("bunny.obj");
 		TriangleMesh mesh = null;
 		try {
 			mesh = parser.parseObjFile();
-			mesh.setTransformation(ts);
-			mesh.setShading(p1);
-//			scene.add(mesh);
+			mesh.setTransformation(t2.append(Transformation.createRotationY(45)));
+			mesh.setShading(redDiffuse);
+			scene.add(mesh);
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			System.err.println("File not found!");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			System.err.println("Error in processing .obj file!");
 		}
 
 		// render the scene
@@ -147,58 +152,14 @@ public class Renderer {
 		List<PointLight> lights = scene.getLights();
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
-				Shape hitShape = null;
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
 				Color color = new Color(0, 0, 0);
-				boolean hit = false;
-				Intersection hitIntersection = null;
-				Double min = Double.MAX_VALUE;
-				for (Shape shape : shapes) {
-					Intersection intersection = shape.intersect(ray);
-					Double t = intersection.getT();
-					if (t+1 > 0.000001 & t > 0.00001) {
-						hit = true;
-						if (t < min) {
-							min = t;
-							hitIntersection = intersection;
-							hitShape = shape;
-						}
-					}
+				Intersection hitIntersection = getClosestIntersection(ray, shapes);
+				if (hitIntersection!=null) {
+					color = getShading(shapes, lights, hitIntersection);
 				}
-				if (hit) {
-					Point hitPoint = ray.origin.add(ray.direction.scale(min));
-					for(PointLight pl : lights) {
-						boolean inShadow = false;
-						Vector toTheLight = pl.getLocation().toVector3D().subtract(hitPoint.toVector3D());
-						Double distanceToLight = toTheLight.length();
-						Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.00001)),toTheLight);
-						for (Shape shape : shapes) {
-							Intersection intersection = shape.intersect(shadowRay);
-							Double t = intersection.getT();
-							if (Math.abs(t+1)>0.01 & t > 0.00001 & t < distanceToLight ) {
-								inShadow = true;
-//								System.err.println("SHADOWED");
-								if(hitShape instanceof Cylinder)
-									System.err.println(t);
-								break;
-							}
-						}
-						if(!inShadow) {
-//							System.err.println("KLEUR");
-							color = addColor(color, hitIntersection.getColor(pl));
-						}
-//						if(inShadow) {
-//							color = Color.red;
-//						}
-					}
-//					color = addColor(color,hitIntersection.getConstantColor());
-				} 
-//				else {
-//					panel.set(x, y, 255, 0, 0, 0);
-//				}
 				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
-//				panel.set(x,y, 255, inShadow ? 255 : 0, 0, 0 );
 			}
 			reporter.update(height);
 		}
@@ -209,6 +170,60 @@ public class Renderer {
 			ImageIO.write(panel.getImage(), "png", new File("output.png"));
 		} catch (IOException e) {
 		}
+	}
+	
+	/**
+	 * Calculates the intersection that is closest to the ray origin, and in positive direction.
+	 * @param ray
+	 * @param shapes
+	 * @return
+	 */
+	private static Intersection getClosestIntersection(Ray ray, List<Shape> shapes) {
+		Double min = Double.MAX_VALUE;
+		Intersection hitIntersection = null;
+		for (Shape shape : shapes) {
+			Intersection intersection = shape.intersect(ray);
+			Double t = intersection.getT();
+			if (t+1 > 0.000001 & t > 0.00001) {
+				if (t < min) {
+					min = t;
+					hitIntersection = intersection;
+				}
+			}
+		}
+		return hitIntersection;
+	}
+
+	/**
+	 * Calculates the shading in an Intersection, based on certain parameters.
+	 * @param shapes
+	 * @param lights
+	 * @param color
+	 * @param hitIntersection
+	 * @return
+	 */
+	private static Color getShading(List<Shape> shapes,List<PointLight> lights,Intersection hitIntersection) {
+		Point hitPoint = hitIntersection.getPoint();
+		Color color = Color.BLACK;
+		for(PointLight pl : lights) {
+			boolean inShadow = false;
+			Vector toTheLight = pl.getLocation().toVector3D().subtract(hitPoint.toVector3D());
+			Double distanceToLight = toTheLight.length();
+			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.00001)),toTheLight);
+			for (Shape shape : shapes) {
+				Intersection intersection = shape.intersect(shadowRay);
+				Double t = intersection.getT();
+				if (Math.abs(t+1)>0.01 & t > 0.00001 & t < distanceToLight ) {
+					inShadow = true;
+					break;
+				}
+			}
+			if(!inShadow) {
+				color = addColor(color, hitIntersection.getColor(pl));
+			}
+		}
+		color = addColor(color,hitIntersection.getConstantColor());
+		return color;
 	}
 
 	private static  int trim(int number) {

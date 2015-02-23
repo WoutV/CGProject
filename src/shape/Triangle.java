@@ -89,25 +89,22 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 			intersection =  -1.0;
 		}
 		Point hitPoint = ray.origin.add(ray.direction.scale(t));
-		Vector normal = getNormal(hitPoint);
-		Vector newNormal = transformation.inverseTransposeTransform(normal);
+		Vector normal = getNormal(p);
+		Vector newNormal = null;
+		if(normal!=null){
+			newNormal = transformation.inverseTransposeTransform(normal);
+			newNormal = newNormal.normalize();
+		}
 		return new Intersection(hitPoint, ray, shading, newNormal, intersection);
 	}
 
-	private Vector getNormal(Point p) {
-		double l21 = point2.subtract(point1).lengthSquared();
-		double lca = point2.subtract(point1).dot(point3.subtract(point1));
-		double l32 = point3.subtract(point2).lengthSquared();
-		double d2p = p.subtract(point1).dot(point2.subtract(point1));
-		double d21 = p.subtract(point1).dot(point3.subtract(point1));
-		
-		double denom = l21 * l32 - lca* lca;
-		
-		double alpha = ((l32 * d2p) - (lca * d21)) / denom;
-		double beta = ((l21 * d21) - (lca * d2p)) / denom;
-		double gamma = 1 - alpha - beta;
-		Vector normal = normal1.scale(alpha).add(normal2.scale(beta)).add(normal3.scale(gamma));
-		return normal;
+	public Vector getNormal(Point p) {
+		double[] bary = getBarycentric(p);
+		if(bary!=null) {
+			Vector normal = normal1.scale(bary[0]).add(normal2.scale(bary[1])).add(normal3.scale(bary[2]));
+			return normal.normalize();
+		}
+		return null;
 	}
 
 	/**
@@ -116,23 +113,54 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	 * @return true if and only if the point is inside the triangle
 	 */
 	public boolean isInTriangle(Point p) {
-		double l21 = point2.subtract(point1).lengthSquared();
-		double lca = point2.subtract(point1).dot(point3.subtract(point1));
-		double l32 = point3.subtract(point2).lengthSquared();
-		double d2p = p.subtract(point1).dot(point2.subtract(point1));
-		double d21 = p.subtract(point1).dot(point3.subtract(point1));
-		
-		double denom = l21 * l32 - lca* lca;
-		
-		double alpha = ((l32 * d2p) - (lca * d21)) / denom;
-		double beta = ((l21 * d21) - (lca * d2p)) / denom;
-		double gamma = 1 - alpha - beta;
-		
-		return alpha <= 1 && alpha >= EPSILON && (beta <= 1) && beta >= EPSILON && (gamma <= 1) && gamma >= EPSILON;
+		double[] bary = getBarycentric(p);
+		if(bary!=null) {
+			double beta = bary[0];
+	    	double gamma = bary[1];
+	    	double alpha  = bary[2];
+	    
+	    	return alpha <= 1 && alpha >= EPSILON && (beta <= 1) && beta >= EPSILON && (gamma <= 1) && gamma >= EPSILON;
+		} return false;
+	}
+	
+	/**
+	 * @param p
+	 * @return the barycentric coordinats of point p in the base of this triangle
+	 */
+	public double[] getBarycentric(Point p) {
+		Vector u = point2.subtract(point1);
+	    Vector v = point3.subtract(point1);
+	    Vector w = p.subtract(point1);
+	 
+	    Vector vCrossW = v.cross(w);
+	    Vector vCrossU = v.cross(u);
+	    
+	    if(vCrossW.dot(vCrossU)<0) {
+	    	return null;
+	    }
+	    
+	    Vector uCrossW = u.cross(w);
+	    Vector uCrossV = u.cross(v);
+	    
+	    if(uCrossW.dot(uCrossV) < 0) {
+	    	return null;
+	    }
+	    
+	    double area = uCrossV.length();
+	    
+	    double beta = vCrossW.length()/area;
+	    double gamma = uCrossW.length()/area;
+	    double alpha  = 1-gamma-beta;
+	    
+	    return new double[]{alpha,beta,gamma};
 	}
 	
 	public void setTransformation(Transformation transformation) {
 		this.transformation = transformation;
+	}
+	
+	public void setShading(Material shading) {
+		this.shading = shading;
 	}
 	
 }
