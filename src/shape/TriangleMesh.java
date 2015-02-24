@@ -7,10 +7,8 @@ import math.Ray;
 import math.Transformation;
 import shading.Material;
 
-public class TriangleMesh implements Shape {
+public class TriangleMesh extends Shape {
 	
-	private Material shading;
-	private Transformation transformation;
 	private List<Triangle> triangles= new ArrayList<Triangle>();
 	
 	public TriangleMesh() {

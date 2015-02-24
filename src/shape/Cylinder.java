@@ -6,14 +6,11 @@ import math.Transformation;
 import math.Vector;
 import shading.Material;
 
-public class Cylinder implements Shape {
+public class Cylinder extends Shape {
 	
 	private static final double EPSILON = 0.00001;
 	private final double height;
 	private final double radius;
-	private Transformation transformation;
-	private Material shading;
-	
 	public Cylinder (Transformation transformation, Material shading, double height, double radius) {
 		this.height = height;
 		this.radius = radius;
@@ -41,10 +38,10 @@ public class Cylinder implements Shape {
 			
 			double t1 = (-b+dr)/(2*a);
 			double t2 = (-b-dr)/(2*a);
-	
+			 
 			double t0 = Math.min(t1, t2);
 	
-			boolean hitShell = (t1 >= 0 | t2 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
+			boolean hitShell = (t0 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
 			
 			Point onTop = new Point(0.0,height,0.0);
 			Vector normal = new Vector(0.0,1.0,0.0);

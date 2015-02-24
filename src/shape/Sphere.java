@@ -12,11 +12,8 @@ import math.Vector;
  * @author Niels Billen
  * @version 1.0
  */
-public class Sphere implements Shape {
-	public Transformation transformation;
+public class Sphere extends Shape {
 	public final double radius;
-	private Material shading;
-
 	/**
 	 * Creates a new {@link Sphere} with the given radius and which is
 	 * transformed by the given {@link Transformation}.

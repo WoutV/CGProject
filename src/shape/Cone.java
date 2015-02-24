@@ -6,15 +6,11 @@ import math.Ray;
 import math.Transformation;
 import math.Vector;
 
-public class Cone implements Shape {
+public class Cone extends Shape {
 	
 	private static final double EPSILON = 0.00001;
 	private final double height;
 	private final double radius;
-	private Transformation transformation;
-	private Material shading;
-
-	
 	public Cone(double height, double radius, Transformation transformation, Material shading) {
 		this.height = height;
 		this.radius = radius;

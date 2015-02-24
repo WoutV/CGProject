@@ -6,17 +6,13 @@ import math.Transformation;
 import math.Vector;
 import shading.Material;
 
-public class Triangle implements Shape {
+public class Triangle extends Shape {
 	
 	private static final double EPSILON = 0.0000001;
 
-	private Transformation transformation;
-	
 	private Point point1;
 	private Point point2;
 	private Point point3;
-	
-	private Material shading;
 	
 	private Vector surfaceNormal;
 
@@ -27,36 +23,44 @@ public class Triangle implements Shape {
 	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Material shading) {
 		
 		if (transformation == null)
-			throw new NullPointerException("the given origin is null!");
+			throw new NullPointerException("the given transformation is null!");
 		if ( p1 == null | p2 == null | p3 == null)
 			throw new NullPointerException("one of the points is null!");
+		if ( shading == null)
+			throw new NullPointerException("the material is null!");
 		
 		this.transformation = transformation;
 		this.point1 = p1;
 		this.point2 = p2;
 		this.point3 = p3;
 		this.shading = shading;
+		
 		Vector normal = point2.subtract(point1).cross(point1.subtract(point1));
-		surfaceNormal = normal;
-		normal1 = normal;
-		normal2 = normal;
-		normal3 = normal;
+		this.surfaceNormal = normal;
+		this.normal1 = normal;
+		this.normal2 = normal;
+		this.normal3 = normal;
 	}
 	
 public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3,  Material shading) {
 		
 		if (transformation == null)
-			throw new NullPointerException("the given origin is null!");
+			throw new NullPointerException("the given transformation is null!");
 		if ( p1 == null | p2 == null | p3 == null)
 			throw new NullPointerException("one of the points is null!");
+		if ( n1 == null | n2 == null | n3 == null)
+			throw new NullPointerException("one of the normals is null!");
+		if (shading == null)
+			throw new NullPointerException("The material3 is null!");	
 		
 		this.transformation = transformation;
 		this.point1 = p1;
 		this.point2 = p2;
 		this.point3 = p3;
 		this.shading = shading;
-//		Vector normal = point2.subtract(point1).cross(point3.subtract(point1));
-		this.surfaceNormal = n1;
+		
+		Vector normal = point2.subtract(point1).cross(point3.subtract(point1));
+		this.surfaceNormal = normal;
 		this.normal1 = n1;
 		this.normal2 = n2;
 		this.normal3 = n3;
@@ -73,6 +77,9 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal3 = n3;
 	}
 
+	/* (non-Javadoc)
+	 * @see shape.Shape#intersect(math.Ray)
+	 */
 	@Override
 	public Intersection intersect(Ray ray) {
 		Ray transformed = transformation.transformInverse(ray);
@@ -98,6 +105,11 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		return new Intersection(hitPoint, ray, shading, newNormal, intersection);
 	}
 
+	/**
+	 * @param p
+	 * @return The normal in the given point, based on the barycentric coordinates. Not necessarily perpendicular to triangle, but perpendicular
+	 * to the mesh the triangle is part of.
+	 */
 	public Vector getNormal(Point p) {
 		double[] bary = getBarycentric(p);
 		if(bary!=null) {
@@ -146,10 +158,10 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	    	return null;
 	    }
 	    
-	    double area = uCrossV.length();
+	    double invArea = 1/uCrossV.length();
 	    
-	    double beta = vCrossW.length()/area;
-	    double gamma = uCrossW.length()/area;
+	    double beta = vCrossW.length()*invArea;
+	    double gamma = uCrossW.length()*invArea;
 	    double alpha  = 1-gamma-beta;
 	    
 	    return new double[]{alpha,beta,gamma};

@@ -31,18 +31,17 @@ public class ObjParser {
     
     File objFile = null;
 	public TriangleMesh parseObjFile() throws FileNotFoundException, IOException {
-        int lineCount = 0;
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
+        FileReader fr = null;
+        BufferedReader br = null;
         
         objFile = new File(fileName);
-        fileReader = new FileReader(objFile);
-        bufferedReader = new BufferedReader(fileReader);
+        fr = new FileReader(objFile);
+        br = new BufferedReader(fr);
 
         String line = null;
 
         while (true) {
-            line = bufferedReader.readLine();
+            line = br.readLine();
             if (null == line) {
                 break;
             }
@@ -67,9 +66,8 @@ public class ObjParser {
             } else {
                 System.err.println("This line could not be parsed");
             }
-            lineCount++;
         }
-        bufferedReader.close();
+        br.close();
         return this.mesh;
     }
 

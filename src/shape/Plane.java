@@ -6,14 +6,11 @@ import math.Transformation;
 import math.Vector;
 import shading.Material;
 
-public class Plane implements Shape {
+public class Plane extends Shape {
 	
 	private static final double EPSILON = 0.00001;
 	private Vector normal;
 	private Point point;
-	private Transformation transformation;
-	private Material shading;
-	
 	public Plane(Vector normal, Material shading, Point point, Transformation transformation) {
 		this.normal = normal;
 		this.point = point;

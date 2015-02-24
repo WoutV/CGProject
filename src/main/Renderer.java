@@ -45,8 +45,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 200;
+		int height = 200;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -97,10 +97,11 @@ public class Renderer {
 
 		// initialize the scene
 		SceneCreator scene = new SceneCreator();
-		Diffuse redDiffuse = new Diffuse(1.0, 0.0, Color.RED);
-		Material d2 = new Diffuse(0.9, 0.2, Color.BLUE);
+		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED);
+		Diffuse magentaDiffuse = new Diffuse(0.9, 0.2, Color.MAGENTA);
 		Material d3 = new Diffuse(1, 0.0, Color.white);
-		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse);
+		Material p1 = new Phong(Color.WHITE, 0.1, 25.0,0.8, redDiffuse);
+		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, magentaDiffuse);
 		
 		Transformation id = Transformation.IDENTITY;
 		Transformation t1 = Transformation.createTranslation(0, -1, 1);
@@ -109,12 +110,12 @@ public class Renderer {
 		Transformation ts = Transformation.createTranslation(0.0, -1.0, 5);
 		Transformation tt = Transformation.createTranslation(0.0, -3.0, 9);
 		Transformation t2 = Transformation.createTranslation(0, -1, 15);
-		Transformation t3 = Transformation.createTranslation(-4, -4, 3);
+		Transformation t3 = Transformation.createTranslation(-4, -5, 12);
 		Transformation t4 = Transformation.createTranslation(4, 4, 12);
 		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
 		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
-		PointLight light = new PointLight(new Point(0.0, 1.0, 35.0), Color.WHITE);
-		PointLight light2 = new PointLight(new Point(-5.0, 1.0, 4.0), Color.white);
+		PointLight light = new PointLight(new Point(0.0, 25.0, 35.0), Color.WHITE);
+		PointLight light2 = new PointLight(new Point(1,-3.5,8), Color.white);
 		PointLight light3 = new PointLight(new Point(5.0, 1.0, 4.0), Color.white);
 
 //		scene.add(new Sphere(tt, 2, p1));
@@ -122,25 +123,38 @@ public class Renderer {
 //		 shapes.add(new Sphere(t2, 3, d2));
 //		 shapes.add(new Sphere(t4, 4, d2));
 		// shapes.add(new Sphere(t5, 4));
-//		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
+		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
 //		scene.add(new Triangle(ts, new Point(1.0,0.0,1.0), new Point(-1.0, 0.0, -1.0), new Point(1.0, 0.0, -1.0), d1));
-//		scene.add(new Cylinder(t6, p1, 3, 1));
+		scene.add(new Cylinder(t6, p1, 3, 1));
 //		scene.add(new Cone(3, 1, t3, p1));
 		Triangle tr = new Triangle(new Point(), new Point(2.0,0.0,0.0), new Point(0.0,2.0,0.0), new Vector(1,0,0), new Vector(0,1,0), new Vector(0,0,1));
 		tr.setShading(p1);
 		tr.setTransformation(ts);
 //		scene.add(tr);
-//		scene.add(light);
+		scene.add(light);
 		scene.add(light2);
 		scene.add(light3);
 		
-		ObjParser parser = new ObjParser("bunny.obj");
-		TriangleMesh mesh = null;
+		ObjParser parser = new ObjParser("cube.obj");
+		TriangleMesh cube = null;
 		try {
-			mesh = parser.parseObjFile();
-			mesh.setTransformation(t2.append(Transformation.createRotationY(45)));
-			mesh.setShading(redDiffuse);
-			scene.add(mesh);
+			cube = parser.parseObjFile();
+			cube.setTransformation(t2.append(Transformation.createRotationY(45)).append(Transformation.createTranslation(0, -3, 0)));
+			cube.setShading(redDiffuse);
+			scene.add(cube);
+		} catch (FileNotFoundException e1) {
+			System.err.println("File not found!");
+		} catch (IOException e1) {
+			System.err.println("Error in processing .obj file!");
+		}
+		
+		ObjParser parser2 = new ObjParser("bunny.obj");
+		TriangleMesh bunny = null;
+		try {
+			bunny = parser2.parseObjFile();
+			bunny.setTransformation(t3.append(Transformation.createRotationY(45)));
+			bunny.setShading(p2);
+			scene.add(bunny);
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found!");
 		} catch (IOException e1) {
@@ -206,24 +220,43 @@ public class Renderer {
 		Point hitPoint = hitIntersection.getPoint();
 		Color color = Color.BLACK;
 		for(PointLight pl : lights) {
-			boolean inShadow = false;
-			Vector toTheLight = pl.getLocation().toVector3D().subtract(hitPoint.toVector3D());
+			Vector toTheLight = pl.getLocation().subtract(hitPoint);
 			Double distanceToLight = toTheLight.length();
-			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.00001)),toTheLight);
-			for (Shape shape : shapes) {
-				Intersection intersection = shape.intersect(shadowRay);
-				Double t = intersection.getT();
-				if (Math.abs(t+1)>0.01 & t > 0.00001 & t < distanceToLight ) {
-					inShadow = true;
-					break;
-				}
-			}
+			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)),toTheLight.normalize());
+			boolean inShadow = inShadow(shapes, pl, distanceToLight, shadowRay, hitPoint);
 			if(!inShadow) {
 				color = addColor(color, hitIntersection.getColor(pl));
 			}
 		}
 		color = addColor(color,hitIntersection.getConstantColor());
 		return color;
+	}
+
+	/**
+	 * @param shapes
+	 * @param pl
+	 * @param distanceToLight
+	 * @param shadowRay
+	 * @param hitPoint 
+	 * @return true if and only if there is a shape closer to the light than the given distance, on the shadow ray
+	 */
+	private static boolean inShadow(List<Shape> shapes, PointLight pl, Double distanceToLight, Ray shadowRay, Point hitPoint) {
+		for (Shape shape : shapes) {
+			Intersection intersection = shape.intersect(shadowRay);
+			Double t = intersection.getT();
+			Point hit = intersection.getPoint();
+			if(hit!=null) {
+			Double distanceToPoint = hit.subtract(hitPoint).length();
+			Vector toLight = pl.getLocation().subtract(hit);
+			Double distanceToLight2 = toLight.length();
+			if (Math.abs(t+1)>0.00001 & Math.abs(t) > 0.000001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
+//				System.out.println(shape.getClass());
+//				System.out.println(distanceToLight);
+				return true;
+			}
+			}
+		}
+		return false;
 	}
 
 	private static  int trim(int number) {
