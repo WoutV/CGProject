@@ -138,6 +138,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	/**
 	 * @param p
 	 * @return the barycentric coordinats of point p in the base of this triangle
+	 * based on: http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
 	 */
 	public double[] getBarycentric(Point p) {
 		Vector u = point2.subtract(point1);

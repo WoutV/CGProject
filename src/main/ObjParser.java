@@ -76,12 +76,12 @@ public class ObjParser {
 		String[] point1 = splitted[1].split("/");
 		String[] point2 = splitted[2].split("/");
 		String[] point3 = splitted[3].split("/");
-		Point p1 = vertices.get(Integer.parseInt(point1[0])-1);
-		Vector n1 = normals.get(Integer.parseInt(point1[2])-1);
+		Point p1 = vertices.get(Integer.parseInt(point1[0].trim())-1);
+		Vector n1 = normals.get(Integer.parseInt(point1[2].trim())-1);
 		Point p2 = vertices.get(Integer.parseInt(point2[0].trim())-1);
-		Vector n2 = normals.get(Integer.parseInt(point2[2])-1);
-		Point p3 = vertices.get(Integer.parseInt(point3[0])-1);
-		Vector n3 = normals.get(Integer.parseInt(point3[2])-1);
+		Vector n2 = normals.get(Integer.parseInt(point2[2].trim())-1);
+		Point p3 = vertices.get(Integer.parseInt(point3[0].trim())-1);
+		Vector n3 = normals.get(Integer.parseInt(point3[2].trim())-1);
 		mesh.addTriangle(new Triangle(p1, p2, p3, n1, n2, n3));
 	}
 
@@ -96,6 +96,6 @@ public class ObjParser {
 
 	private void processVertex(String line) {
 		String[] splitted = line.split(" ");
-		vertices.add(new Point(Double.parseDouble(splitted[1]),Double.parseDouble(splitted[2]),Double.parseDouble(splitted[3])));
+		vertices.add(new Point(Double.parseDouble(splitted[1].trim()),Double.parseDouble(splitted[2].trim()),Double.parseDouble(splitted[3].trim())));
 	}
 }

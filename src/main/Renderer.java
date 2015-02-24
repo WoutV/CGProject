@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.Transform;
+
 import light.PointLight;
 import math.Point;
 import math.Ray;
@@ -45,8 +47,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 200;
-		int height = 200;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -84,7 +86,7 @@ public class Renderer {
 
 		// initialize the camera
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(), new Vector(0, 0, 1), new Vector(0, 1, 0), 90);
+				new Point(0,4,-5), new Vector(0, 0, 1), new Vector(0, 1, 0), 90);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -97,64 +99,34 @@ public class Renderer {
 
 		// initialize the scene
 		SceneCreator scene = new SceneCreator();
-		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED);
-		Diffuse magentaDiffuse = new Diffuse(0.9, 0.2, Color.MAGENTA);
-		Material d3 = new Diffuse(1, 0.0, Color.white);
-		Material p1 = new Phong(Color.WHITE, 0.1, 25.0,0.8, redDiffuse);
-		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, magentaDiffuse);
-		
-		Transformation id = Transformation.IDENTITY;
-		Transformation t1 = Transformation.createTranslation(0, -1, 1);
-		Transformation tc = Transformation.createTranslation(0, 0, 10).append(
-				Transformation.createRotationX(-45));
-		Transformation ts = Transformation.createTranslation(0.0, -1.0, 5);
-		Transformation tt = Transformation.createTranslation(0.0, -3.0, 9);
-		Transformation t2 = Transformation.createTranslation(0, -1, 15);
-		Transformation t3 = Transformation.createTranslation(-4, -5, 12);
-		Transformation t4 = Transformation.createTranslation(4, 4, 12);
-		Transformation t5 = Transformation.createTranslation(-4, 4, 8);
-		Transformation t6 = Transformation.createTranslation(5.5, -5, 12);
-		PointLight light = new PointLight(new Point(0.0, 25.0, 35.0), Color.WHITE);
-		PointLight light2 = new PointLight(new Point(1,-3.5,8), Color.white);
-		PointLight light3 = new PointLight(new Point(5.0, 1.0, 4.0), Color.white);
+		Diffuse redDiffuse = new Diffuse(0.9, 0.1, Color.RED);
+		Diffuse blueDiffuse = new Diffuse(0.9, 0.1, Color.MAGENTA);
+		Diffuse  yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow);
+		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200));
+		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse);
+		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, blueDiffuse);
 
-//		scene.add(new Sphere(tt, 2, p1));
-//		 shapes.add(new Sphere(tt, 3,d2));
-//		 shapes.add(new Sphere(t2, 3, d2));
-//		 shapes.add(new Sphere(t4, 4, d2));
-		// shapes.add(new Sphere(t5, 4));
-		scene.add(new Plane(new Vector(0.0, 1.0, 0.0), d3, new Point(0.0,-5.0,0.0),id));
-//		scene.add(new Triangle(ts, new Point(1.0,0.0,1.0), new Point(-1.0, 0.0, -1.0), new Point(1.0, 0.0, -1.0), d1));
-		scene.add(new Cylinder(t6, p1, 3, 1));
-//		scene.add(new Cone(3, 1, t3, p1));
-		Triangle tr = new Triangle(new Point(), new Point(2.0,0.0,0.0), new Point(0.0,2.0,0.0), new Vector(1,0,0), new Vector(0,1,0), new Vector(0,0,1));
-		tr.setShading(p1);
-		tr.setTransformation(ts);
-//		scene.add(tr);
-		scene.add(light);
-		scene.add(light2);
-		scene.add(light3);
+		Transformation id = Transformation.createTranslation(0, 0, 10);;
+		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
+		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
-		ObjParser parser = new ObjParser("cube.obj");
+		scene.add(new Sphere(id, 4, p1));
+		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
+		scene.add(new Cone(4,1,Transformation.createTranslation(-8, -4, 7),p2));
+//		scene.add(new Sphere(toTheLeft, 4, p2));
+//		scene.add(new Sphere(toTheRight, 4, p2));
+		
+		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
+		
+		scene.add(new PointLight(new Point(0,150,-50), Color.WHITE));
+		scene.add(new PointLight(new Point(-10,3, 5), Color.WHITE));
+		ObjParser parser = new ObjParser("bunny.obj");
 		TriangleMesh cube = null;
 		try {
 			cube = parser.parseObjFile();
-			cube.setTransformation(t2.append(Transformation.createRotationY(45)).append(Transformation.createTranslation(0, -3, 0)));
-			cube.setShading(redDiffuse);
+			cube.setTransformation((Transformation.createTranslation(5, -4, 4)));
+			cube.setShading(p2);
 			scene.add(cube);
-		} catch (FileNotFoundException e1) {
-			System.err.println("File not found!");
-		} catch (IOException e1) {
-			System.err.println("Error in processing .obj file!");
-		}
-		
-		ObjParser parser2 = new ObjParser("bunny.obj");
-		TriangleMesh bunny = null;
-		try {
-			bunny = parser2.parseObjFile();
-			bunny.setTransformation(t3.append(Transformation.createRotationY(45)));
-			bunny.setShading(p2);
-			scene.add(bunny);
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found!");
 		} catch (IOException e1) {
@@ -245,15 +217,13 @@ public class Renderer {
 			Intersection intersection = shape.intersect(shadowRay);
 			Double t = intersection.getT();
 			Point hit = intersection.getPoint();
-			if(hit!=null) {
-			Double distanceToPoint = hit.subtract(hitPoint).length();
-			Vector toLight = pl.getLocation().subtract(hit);
-			Double distanceToLight2 = toLight.length();
-			if (Math.abs(t+1)>0.00001 & Math.abs(t) > 0.000001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
-//				System.out.println(shape.getClass());
-//				System.out.println(distanceToLight);
-				return true;
-			}
+			if (hit != null) {
+				Double distanceToPoint = hit.subtract(hitPoint).length();
+				Vector toLight = pl.getLocation().subtract(hit);
+				Double distanceToLight2 = toLight.length();
+				if (Math.abs(t + 1) > 0.00001 & Math.abs(t) > 0.000001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
+					return true;
+				}
 			}
 		}
 		return false;
