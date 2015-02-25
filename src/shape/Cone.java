@@ -68,7 +68,7 @@ public class Cone extends Shape {
 			normal = new Vector(trans.x,y,trans.z);
 		}
 		normal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, shading, normal, intersection);
+		return new Intersection(hitPoint, ray, shading, normal, intersection, null);
 	}
 
 }

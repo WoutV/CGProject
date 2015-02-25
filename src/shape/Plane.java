@@ -30,7 +30,7 @@ public class Plane extends Shape {
 		}
 		Point hitPoint = ray.origin.add(ray.direction.scale(intersection));
 		Vector newNormal = transformation.inverseTransposeTransform(this.normal);
-		return new Intersection(hitPoint, ray, shading, newNormal, t);
+		return new Intersection(hitPoint, ray, shading, newNormal, t, null);
 //		
 	}
 

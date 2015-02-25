@@ -80,7 +80,7 @@ public class Sphere extends Shape {
 		Point trans = transformation.transformInverse(hitPoint);
 		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
 		normal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, shading, normal, t);
+		return new Intersection(hitPoint, ray, shading, normal, t, null);
 	}
 
 //	@Override

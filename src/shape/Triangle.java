@@ -1,6 +1,6 @@
 package shape;
 
-import main.Coordinate2D;
+import math.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Transformation;
@@ -80,6 +80,10 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal1 = n1;
 		this.normal2 = n2;
 		this.normal3 = n3;
+		
+		this.textureCoord1 = c1;
+		this.textureCoord2 = c2;
+		this.textureCoord3 = c3;
 	}
 
 	/* (non-Javadoc)
@@ -107,7 +111,18 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 			newNormal = transformation.inverseTransposeTransform(normal);
 			newNormal = newNormal.normalize();
 		}
-		return new Intersection(hitPoint, ray, shading, newNormal, intersection);
+		
+		Coordinate2D uv = getUVcoordinates(p);
+		return new Intersection(hitPoint, ray, shading, newNormal, intersection, uv);
+	}
+
+	private Coordinate2D getUVcoordinates(Point p) {
+		double[] bary = getBarycentric(p);
+		if(bary!=null) {
+			Coordinate2D uv = textureCoord1.scale(bary[0]).add(textureCoord2.scale(bary[1])).add(textureCoord3.scale(bary[2]));
+			return uv;
+		}
+		return null;
 	}
 
 	/**
@@ -142,7 +157,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	
 	/**
 	 * @param p
-	 * @return the barycentric coordinats of point p in the base of this triangle
+	 * @return the barycentric coordinates of point p in the base of this triangle
 	 * based on: http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
 	 */
 	public double[] getBarycentric(Point p) {

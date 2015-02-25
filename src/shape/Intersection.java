@@ -3,6 +3,7 @@ package shape;
 import java.awt.Color;
 
 import light.PointLight;
+import math.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Vector;
@@ -14,13 +15,15 @@ public class Intersection {
 	private Material material;
 	private Vector normal;
 	private Double t;
+	private Coordinate2D uv;
 	
-	public Intersection(Point point, Ray ray, Material material, Vector normal, Double t) {
+	public Intersection(Point point, Ray ray, Material material, Vector normal, Double t, Coordinate2D uv) {
 		this.point = point;
 		this.ray = ray;
 		this.material = material;
 		this.normal = normal;
 		this.t = t;
+		this.uv = uv;
 	}
 	
 	public Point getPoint() {
@@ -55,7 +58,7 @@ public class Intersection {
 	}
 	
 	public Color getColor(PointLight pl) {
-		return material.getColor(ray, pl, point	, normal);
+		return material.getColor(ray, pl, point	, normal, uv);
 	}
 
 	public Color getConstantColor() {

@@ -5,6 +5,7 @@ import gui.ProgressReporter;
 import gui.RenderFrame;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,24 +13,11 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-
 import light.PointLight;
-import math.Point;
-import math.Ray;
-import math.Transformation;
-import math.Vector;
+import math.*;
 import sampling.Sample;
-import shading.Diffuse;
-import shading.Material;
-import shading.Phong;
-import shape.Cone;
-import shape.Cylinder;
-import shape.Intersection;
-import shape.Plane;
-import shape.Shape;
-import shape.Sphere;
-import shape.Triangle;
-import shape.TriangleMesh;
+import shading.*;
+import shape.*;
 import camera.PerspectiveCamera;
 
 /**
@@ -46,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 200;
-		int height = 200;
+		int width = 1000;
+		int height = 1000;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -85,10 +73,10 @@ public class Renderer {
 
 		// initialize the camera
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0,5,-30), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
+				new Point(0,5,-15), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
 
 		// initialize the graphical user interface
-		ImagePanel panel = new ImagePanel(width*4, height*4);
+		ImagePanel panel = new ImagePanel(width, height);
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
@@ -111,11 +99,12 @@ public class Renderer {
 				if (hitIntersection!=null) {
 					color = getShading(shapes, lights, hitIntersection);
 				}
-				for(int i = 0; i < 4; i++) {
-					for(int j = 0; j<4; j++) {
-						panel.set(4*x+i, 4*y+j, 255, color.getRed(), color.getGreen(), color.getBlue());
-					}
-				}
+//				for(int i = 0; i < 4; i++) {
+//					for(int j = 0; j<4; j++) {
+//						panel.set(4*x+i, 4*y+j, 255, color.getRed(), color.getGreen(), color.getBlue());
+//					}
+//				}
+				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 			}
 			reporter.update(height);
 		}
@@ -139,8 +128,20 @@ public class Renderer {
 		Diffuse  yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow, Color.WHITE);
 		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200), Color.WHITE);
 		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse, Color.WHITE);
-		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, magentaDiffuse, Color.WHITE);
+		Material p2 = new Phong(Color.white, 0.2, 25.0, 0.8, magentaDiffuse, Color.MAGENTA);
+		
+		
+		 File file= new File("textures/texture.jpg");
+		  BufferedImage bi = null;
+		try {
+			bi = ImageIO.read(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Material textureWeird = new TextureShading(Color.WHITE, 0.0, Color.WHITE, bi);
 
+		
 		Transformation id = Transformation.createTranslation(0, 0, 10);;
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
@@ -156,20 +157,21 @@ public class Renderer {
 		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
 		
-		scene.add(new PointLight(new Point(1,1,0), Color.WHITE));
+		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
 		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
-//		ObjParser parser = new ObjParser("monkey.obj");
-//		TriangleMesh cube = null;
-//		try {
-//			cube = parser.parseObjFile();
-//			cube.setTransformation((Transformation.IDENTITY));
-//			cube.setShading(p2);
-//			scene.add(cube);
-//		} catch (FileNotFoundException e1) {
-//			System.err.println("File not found!");
-//		} catch (IOException e1) {
-//			System.err.println("Error in processing .obj file!");
-//		}
+		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
+		ObjParser parser = new ObjParser("bunny.obj");
+		TriangleMesh cube = null;
+		try {
+			cube = parser.parseObjFile();
+			cube.setTransformation((Transformation.createTranslation(6, -4, 5)));
+			cube.setShading(p2);
+			scene.add(cube);
+		} catch (FileNotFoundException e1) {
+			System.err.println("File not found!");
+		} catch (IOException e1) {
+			System.err.println("Error in processing .obj file!");
+		}
 		return scene;
 	}
 	

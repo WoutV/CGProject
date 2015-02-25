@@ -3,20 +3,19 @@ package shading;
 import java.awt.Color;
 
 import light.PointLight;
+import math.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Vector;
 
 public class Diffuse extends Material {
 	private double kd;
-	private static final double EPSILON = 0.00000001;
 
 	public Diffuse(double kd, double ka, Color color, Color ambientColor) {
 		super(color,ka, ambientColor);
 		this.kd = kd;
 	}
 
-	
 	/**
 	 * @param ray
 	 * @param lights
@@ -27,10 +26,9 @@ public class Diffuse extends Material {
 	 * @return the color of the given point, depending on the lights and shapes in the scene, and the surface normal of the shape to be shaded
 	 */
 	@Override
-	public Color getColor(Ray ray, PointLight light, Point p, Vector normal) {
-		Color color = Color.BLACK;
+	public Color getColor(Ray ray, PointLight light, Point p, Vector normal, Coordinate2D texturecoord) {
 		Vector direction = light.getLocation().toVector3D().subtract(p.toVector3D());
-		color = getShading(ray, normal, direction, light.getColor());
+		Color color = getShading(ray, normal, direction, light.getColor());
 		return color;
 	}
 	

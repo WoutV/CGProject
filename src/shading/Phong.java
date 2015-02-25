@@ -3,6 +3,7 @@ package shading;
 import java.awt.Color;
 
 import light.PointLight;
+import math.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Vector;
@@ -20,12 +21,11 @@ public class Phong extends Material {
 	}
 
 	@Override
-	public Color getColor(Ray ray, PointLight pl, Point p, Vector normal) {
+	public Color getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D texture) {
 		Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
 		Color diff = diffuse.getShading(ray, normal, direction, pl.getColor());
 		Color phong = getShading(ray, normal, direction, pl.getColor());
 		return addColor(diff,phong);
-//		return phong;
 	}
 
 	@Override
@@ -33,7 +33,6 @@ public class Phong extends Material {
 		Vector unitNormal = normal.scale(1/normal.length());
 		Vector reflect = toTheLight.subtract(unitNormal.scale(2*(toTheLight.dot(normal))));
 		double cos = ray.direction.dot(reflect) / (ray.direction.length() * reflect.length());
-//		double cos = 30;
 		if (cos < 0 ) {
 			cos = 0;
 		}
@@ -43,7 +42,6 @@ public class Phong extends Material {
 		r = trim(r);
 		g =trim(g);
 		b = trim(b);
-//		 = addColor(color, new Color(r, g, b));
 		return new Color(r,g,b);
 	}
 

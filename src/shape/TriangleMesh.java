@@ -44,7 +44,7 @@ public class TriangleMesh extends Shape {
 			hitIntersection.setMaterial(shading);
 			return hitIntersection;
 		}
-		return new Intersection(null, null, null, null, -1.0);
+		return new Intersection(null, null, null, null, -1.0, null);
 	}
 	
 	public void addTriangle(Triangle triangle) {

@@ -35,10 +35,8 @@ public class Cylinder extends Shape {
 			intersection = -1.0;
 		} else {
 			double dr = Math.sqrt(d);
-			
 			double t1 = (-b+dr)/(2*a);
 			double t2 = (-b-dr)/(2*a);
-			 
 			double t0 = Math.min(t1, t2);
 	
 			boolean hitShell = (t0 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
@@ -70,6 +68,12 @@ public class Cylinder extends Shape {
 			}
 		}
 		Point hitPoint = ray.origin.add(ray.direction.scale(intersection));
+		Vector normal = getNormal(hitPoint);
+		normal = transformation.inverseTransposeTransform(normal);
+		return new Intersection(hitPoint, ray, shading, normal, intersection, null);
+	}
+
+	private Vector getNormal(Point hitPoint) {
 		Point trans = transformation.transformInverse(hitPoint);
 		Vector normal = null;
 		if(Math.abs(trans.y-height) < EPSILON) {
@@ -79,8 +83,7 @@ public class Cylinder extends Shape {
 		} else {
 			normal = new Vector(trans.x,0.0, trans.z);
 		}
-		normal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, shading, normal, intersection);
+		return normal;
 	}
 
 }
