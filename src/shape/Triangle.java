@@ -1,5 +1,6 @@
 package shape;
 
+import main.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Transformation;
@@ -19,6 +20,10 @@ public class Triangle extends Shape {
 	private Vector normal1;
 	private Vector normal2;
 	private Vector normal3;
+	
+	private Coordinate2D textureCoord1;
+	private Coordinate2D textureCoord2;
+	private Coordinate2D textureCoord3;
 	
 	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Material shading) {
 		
@@ -66,7 +71,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal3 = n3;
 	}
 
-	public Triangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3) {
+	public Triangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3, Coordinate2D c1, Coordinate2D c2, Coordinate2D c3) {
 		this.point1 = p1;
 		this.point2 = p2;
 		this.point3 = p3;

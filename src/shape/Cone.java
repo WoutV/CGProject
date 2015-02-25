@@ -40,7 +40,7 @@ public class Cone extends Shape {
 	
 			double t0 = Math.min(t1, t2);
 			
-			boolean hitShell = (t1 >= 0 | t2 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
+			boolean hitShell = (t0 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
 			
 			Point onBottom = new Point();
 			Vector bottomNormal = new Vector(0.0,-1.0,0.0);
@@ -64,7 +64,6 @@ public class Cone extends Shape {
 		if(Math.abs(trans.y)<EPSILON) {
 			normal = new Vector(0.0,-1.0,0.0);
 		} else {
-			double alpha = Math.atan(height/radius);
 			double y = Math.sqrt(trans.x*trans.x+trans.z*trans.z)*(height/radius);
 			normal = new Vector(trans.x,y,trans.z);
 		}

@@ -12,8 +12,8 @@ public class Phong extends Material {
 	private Double exponent;
 	private Double ks;
 
-	public Phong(Color color, Double ka, Double e,Double ks, Diffuse diffuse) {
-		super(color, ka);
+	public Phong(Color color, Double ka, Double e,Double ks, Diffuse diffuse, Color ambientColor) {
+		super(color, ka, ambientColor);
 		this.diffuse = diffuse;
 		this.exponent = e;
 		this.ks = ks;
@@ -34,7 +34,6 @@ public class Phong extends Material {
 		Vector reflect = toTheLight.subtract(unitNormal.scale(2*(toTheLight.dot(normal))));
 		double cos = ray.direction.dot(reflect) / (ray.direction.length() * reflect.length());
 //		double cos = 30;
-		double viewingCos = normal.dot(ray.direction) / (normal.length() * ray.direction.length());
 		if (cos < 0 ) {
 			cos = 0;
 		}

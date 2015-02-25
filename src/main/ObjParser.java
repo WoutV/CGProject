@@ -22,6 +22,7 @@ public class ObjParser {
     
     private List<Point> vertices = new ArrayList<Point>();
 	private List<Vector> normals = new ArrayList<Vector>();
+	private List<Coordinate2D> textureCoordinates = new ArrayList<Coordinate2D>();
 	private TriangleMesh mesh = new TriangleMesh();
 	private String fileName;
 	
@@ -77,12 +78,15 @@ public class ObjParser {
 		String[] point2 = splitted[2].split("/");
 		String[] point3 = splitted[3].split("/");
 		Point p1 = vertices.get(Integer.parseInt(point1[0].trim())-1);
+		Coordinate2D c1 = textureCoordinates.get(Integer.parseInt(point1[0].trim())-1);
 		Vector n1 = normals.get(Integer.parseInt(point1[2].trim())-1);
 		Point p2 = vertices.get(Integer.parseInt(point2[0].trim())-1);
+		Coordinate2D c2 = textureCoordinates.get(Integer.parseInt(point2[0].trim())-1);
 		Vector n2 = normals.get(Integer.parseInt(point2[2].trim())-1);
 		Point p3 = vertices.get(Integer.parseInt(point3[0].trim())-1);
+		Coordinate2D c3 = textureCoordinates.get(Integer.parseInt(point3[0].trim())-1);
 		Vector n3 = normals.get(Integer.parseInt(point3[2].trim())-1);
-		mesh.addTriangle(new Triangle(p1, p2, p3, n1, n2, n3));
+		mesh.addTriangle(new Triangle(p1, p2, p3, n1, n2, n3, c1, c2, c3));
 	}
 
 	private void processNormal(String line) {
@@ -91,7 +95,8 @@ public class ObjParser {
 	}
 
 	private void processTexture(String line) {
-		// TODO
+		String[] splitted = line.split(" ");
+		textureCoordinates.add(new Coordinate2D(Double.parseDouble(splitted[1].trim()),Double.parseDouble(splitted[2].trim())));
 	}
 
 	private void processVertex(String line) {

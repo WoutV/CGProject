@@ -10,10 +10,12 @@ import math.Vector;
 public abstract class Material {
 	protected Color color;
 	protected Double ka;
+	protected Color ambientColor;
 	
-	public Material(Color color, Double ka) {
+	public Material(Color color, Double ka, Color ambientColor) {
 		this.color = color;
 		this.ka = ka;
+		this.ambientColor = ambientColor;
 	}
 
 	public abstract Color getColor(Ray ray, PointLight pl, Point p, Vector normal);
@@ -21,7 +23,7 @@ public abstract class Material {
 	public abstract Color getShading(Ray ray, Vector normal, Vector direction, Color lightColor);
 
 	public Color getAmbientColor() {
-		return new Color((int)(color.getRed()*ka),(int)(color.getGreen()*ka),(int)(color.getBlue()*ka));
+		return new Color((int)(ambientColor.getRed()*ka),(int)(ambientColor.getGreen()*ka),(int)(ambientColor.getBlue()*ka));
 	}
 	
 	protected Color addColor(Color color, Color color2) {
