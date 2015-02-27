@@ -34,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1000;
-		int height = 1000;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -146,26 +146,23 @@ public class Renderer {
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
-		scene.add(new Sphere(id, 4, p1));
-		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
-//		scene.add(new Cone(4,1,Transformation.createTranslation(-3, -4, 6).append(Transformation.createRotationX(90)),p2));
-//		scene.add(new Sphere(toTheLeft, 4, p2));
-//		scene.add(new Sphere(toTheRight, 4, p2));
+//		scene.add(new Sphere(id, 4, p1));
+//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
 		
-		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
-		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
-		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
+//		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
+//		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
+//		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
 		
-		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
-		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
+//		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
+//		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
-		ObjParser parser = new ObjParser("bunny.obj");
+		ObjParser parser = new ObjParser("teapot.obj");
 		TriangleMesh cube = null;
 		try {
 			cube = parser.parseObjFile();
 			cube.setTransformation((Transformation.createTranslation(6, -4, 5)));
-			cube.setShading(p2);
+			cube.setShading(textureWeird);
 			scene.add(cube);
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found!");
