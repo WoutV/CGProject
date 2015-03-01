@@ -34,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 400;
-		int height = 400;
+		int width = 100;
+		int height = 100;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -70,13 +70,19 @@ public class Renderer {
 		if (height <= 0)
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
+		
+		
+		SceneCreator scene = createScene();
+		createImage(scene, width, height);
+	}
 
+	private static void createImage(SceneCreator scene, int width, int height) {
 		// initialize the camera
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0,0,-10), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0,-10), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
+//		ImagePanel panel = new ImagePanel(width*4, height*4);
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
@@ -84,24 +90,24 @@ public class Renderer {
 				* height, false);
 		reporter.addProgressListener(frame);
 
-		// initialize the scene
-		SceneCreator scene = createScene();
-
 		// render the scene
 		List<Intersectable> shapes = scene.getShapes();
 		List<PointLight> lights = scene.getLights();
+		int max = Integer.MIN_VALUE;
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
 				Color color = new Color(0, 0, 0);
 				Intersection hitIntersection = getClosestIntersection(ray, shapes);
+				// for shading
 				if (hitIntersection!=null) {
 					color = getShading(shapes, lights, hitIntersection);
 				}
 				// for false color
-//				color = new Color(0,0,trim(ray.intersectionCount));
-				
+//				if(ray.intersectionCount != 1) {
+//					color = new Color(126,0,trim(255*ray.intersectionCount/11964));
+//				}
 				//for bigger pixels
 //				for(int i = 0; i < 4; i++) {
 //					for(int j = 0; j<4; j++) {
@@ -114,6 +120,7 @@ public class Renderer {
 			reporter.update(height);
 		}
 		reporter.done();
+		System.out.println(max);
 
 		// save the output
 		try {
@@ -127,6 +134,8 @@ public class Renderer {
 	 * @return
 	 */
 	private static SceneCreator createScene() {
+		// materials
+		
 		SceneCreator scene = new SceneCreator();
 		Diffuse redDiffuse = new Diffuse(0.6, 0.1, Color.RED, Color.WHITE);
 		Diffuse magentaDiffuse = new Diffuse(0.9, 0.1, Color.MAGENTA, Color.WHITE);
@@ -135,45 +144,49 @@ public class Renderer {
 		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse, Color.WHITE);
 		Material p2 = new Phong(Color.white, 0.2, 25.0, 0.8, magentaDiffuse, Color.MAGENTA);
 		
-		
-		 File file= new File("textures/hond.jpg");
-		  BufferedImage bi = null;
+		File file= new File("textures/texture.jpg");
+		BufferedImage bi = null;
 		try {
 			bi = ImageIO.read(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Material textureWeird = new TextureShading(Color.WHITE, 0.0, Color.WHITE, bi);
+		Material texture = new TextureShading(Color.WHITE, 0.0, Color.WHITE, bi);
 
 		
 		Transformation id = Transformation.createTranslation(0, 0, 10);;
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
-//		scene.add(new Sphere(id, 4, p1));
-//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
-//		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
-//		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
-//		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
+		scene.add(new Sphere(id, 4, p1));
+		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
+		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
+		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
+		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
-		
+//		
 		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
 		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
-		ObjParser parser = new ObjParser("dragon.obj");
-		TriangleMesh cube = null;
+		
+		
+		addComplexObject(scene, p2, Transformation.createTranslation(0,-4,0).append(Transformation.createScale(3,3,3)),  "dragon.obj");
+		return scene;
+	}
+
+	private static void addComplexObject(SceneCreator scene, Material shading, Transformation transformation,  String fileName) {
+		ObjParser parser = new ObjParser(fileName);
+		TriangleMesh object = null;
 		try {
-			cube = parser.parseObjFile();
-			cube.setTransformation(Transformation.createRotationY(0));
-			cube.setShading(p2);
-			scene.add(cube);
+			object = parser.parseObjFile();
+			object.setTransformation(transformation);
+			object.setShading(shading);
+			scene.add(object);
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found!");
 		} catch (IOException e1) {
 			System.err.println("Error in processing .obj file!");
 		}
-		return scene;
 	}
 	
 	/**

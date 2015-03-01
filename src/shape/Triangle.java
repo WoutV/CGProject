@@ -97,7 +97,8 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	public Intersection intersect(Ray ray) {
 		ray.intersectionCount++;
 		Ray transformed = transformation.transformInverse(ray);
-		
+
+		ray.intersectionCount++;
 		Vector o = transformed.origin.toVector3D();
 		
 		Double t = -(o.subtract(point1.toVector3D()).dot(surfaceNormal)/(transformed.direction.dot(surfaceNormal)));

@@ -49,6 +49,7 @@ public class Sphere extends Shape {
 	 */
 	@Override
 	public Intersection intersect(Ray ray) {
+		ray.intersectionCount++;
 		Ray transformed = transformation.transformInverse(ray);
 
 		Vector o = transformed.origin.toVector3D();

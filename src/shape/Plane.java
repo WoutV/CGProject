@@ -24,6 +24,7 @@ public class Plane extends Shape {
 	
 	@Override
 	public Intersection intersect(Ray ray) {
+		ray.intersectionCount++;
 		Ray transformed = transformation.transformInverse(ray);
 		Double t = (point.toVector3D().subtract(transformed.origin.toVector3D()).dot(normal))/(transformed.direction.dot(normal));
 		Double intersection;

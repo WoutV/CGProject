@@ -23,6 +23,7 @@ public class Cone extends Shape {
 	}
 	@Override
 	public Intersection intersect(Ray ray) {
+		ray.intersectionCount++;
 		Ray transformed = transformation.transformInverse(ray);
 		Double intersection;
 		Vector dir = transformed.direction;
