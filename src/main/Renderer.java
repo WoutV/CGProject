@@ -34,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 400;
+		int height = 400;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -73,7 +73,7 @@ public class Renderer {
 
 		// initialize the camera
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0,5,-15), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
+				new Point(0,0,-10), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -88,7 +88,7 @@ public class Renderer {
 		SceneCreator scene = createScene();
 
 		// render the scene
-		List<Shape> shapes = scene.getShapes();
+		List<Intersectable> shapes = scene.getShapes();
 		List<PointLight> lights = scene.getLights();
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
@@ -99,11 +99,16 @@ public class Renderer {
 				if (hitIntersection!=null) {
 					color = getShading(shapes, lights, hitIntersection);
 				}
+				// for false color
+//				color = new Color(0,0,trim(ray.intersectionCount));
+				
+				//for bigger pixels
 //				for(int i = 0; i < 4; i++) {
 //					for(int j = 0; j<4; j++) {
 //						panel.set(4*x+i, 4*y+j, 255, color.getRed(), color.getGreen(), color.getBlue());
 //					}
 //				}
+				//for pixel sized pixels
 				panel.set(x, y, 255, color.getRed(), color.getGreen(), color.getBlue());
 			}
 			reporter.update(height);
@@ -131,7 +136,7 @@ public class Renderer {
 		Material p2 = new Phong(Color.white, 0.2, 25.0, 0.8, magentaDiffuse, Color.MAGENTA);
 		
 		
-		 File file= new File("textures/texture.jpg");
+		 File file= new File("textures/hond.jpg");
 		  BufferedImage bi = null;
 		try {
 			bi = ImageIO.read(file);
@@ -148,21 +153,20 @@ public class Renderer {
 		
 //		scene.add(new Sphere(id, 4, p1));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
-		
 //		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
 //		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
 //		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
 		
-//		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
-//		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
+		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
+		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
-		ObjParser parser = new ObjParser("teapot.obj");
+		ObjParser parser = new ObjParser("dragon.obj");
 		TriangleMesh cube = null;
 		try {
 			cube = parser.parseObjFile();
-			cube.setTransformation((Transformation.createTranslation(6, -4, 5)));
-			cube.setShading(textureWeird);
+			cube.setTransformation(Transformation.createRotationY(0));
+			cube.setShading(p2);
 			scene.add(cube);
 		} catch (FileNotFoundException e1) {
 			System.err.println("File not found!");
@@ -178,16 +182,18 @@ public class Renderer {
 	 * @param shapes
 	 * @return
 	 */
-	private static Intersection getClosestIntersection(Ray ray, List<Shape> shapes) {
+	private static Intersection getClosestIntersection(Ray ray, List<Intersectable> shapes) {
 		Double min = Double.MAX_VALUE;
 		Intersection hitIntersection = null;
-		for (Shape shape : shapes) {
+		for (Intersectable shape : shapes) {
 			Intersection intersection = shape.intersect(ray);
-			Double t = intersection.getT();
-			if (t+1 > 0.000001 & t > 0.00001) {
-				if (t < min) {
-					min = t;
-					hitIntersection = intersection;
+			if(intersection !=null) {
+				Double t = intersection.getT();
+				if (t+1 > 0.000001 & t > 0.00001) {
+					if (t < min) {
+						min = t;
+						hitIntersection = intersection;
+					}
 				}
 			}
 		}
@@ -202,7 +208,7 @@ public class Renderer {
 	 * @param hitIntersection
 	 * @return
 	 */
-	private static Color getShading(List<Shape> shapes,List<PointLight> lights,Intersection hitIntersection) {
+	private static Color getShading(List<Intersectable> shapes,List<PointLight> lights,Intersection hitIntersection) {
 		Point hitPoint = hitIntersection.getPoint();
 		Color color = Color.BLACK;
 		for(PointLight pl : lights) {
@@ -226,9 +232,10 @@ public class Renderer {
 	 * @param hitPoint 
 	 * @return true if and only if there is a shape closer to the light than the given distance, on the shadow ray
 	 */
-	private static boolean inShadow(List<Shape> shapes, PointLight pl, Double distanceToLight, Ray shadowRay, Point hitPoint) {
-		for (Shape shape : shapes) {
+	private static boolean inShadow(List<Intersectable> shapes, PointLight pl, Double distanceToLight, Ray shadowRay, Point hitPoint) {
+		for (Intersectable shape : shapes) {
 			Intersection intersection = shape.intersect(shadowRay);
+			if(intersection!=null){
 			Double t = intersection.getT();
 			Point hit = intersection.getPoint();
 			if (hit != null) {
@@ -238,6 +245,7 @@ public class Renderer {
 				if (Math.abs(t + 1) > 0.00001 & Math.abs(t) > 0.000001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
 					return true;
 				}
+			}
 			}
 		}
 		return false;

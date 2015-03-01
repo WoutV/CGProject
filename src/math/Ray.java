@@ -17,6 +17,8 @@ public class Ray implements Cloneable {
 	 * The direction the ray is pointing to.
 	 */
 	public final Vector direction;
+	
+	public int intersectionCount = 0;
 
 	/**
 	 * Creates a new {@link Ray} starting at the given origin and propagating

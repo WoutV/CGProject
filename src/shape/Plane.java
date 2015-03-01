@@ -1,5 +1,9 @@
 package shape;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import math.Point;
 import math.Ray;
 import math.Transformation;
@@ -33,10 +37,21 @@ public class Plane extends Shape {
 		return new Intersection(hitPoint, ray, shading, newNormal, t, null);
 //		
 	}
-
-//	@Override
-//	public Color getColor(Ray ray, List <PointLight> lights, List<Shape> shapes, Point p) {
-//		
-//		
-//	}
+	
+	@Override
+	public double[] getMinCoordinates() {
+		return new double[]{Double.MIN_VALUE,Double.MIN_VALUE,Double.MIN_VALUE};
+	}
+	
+	@Override
+	public double[] getMaxCoordinates() {
+		return new double[]{Double.MAX_VALUE,Double.MAX_VALUE,Double.MAX_VALUE};
+	}
+	
+	@Override
+	public Collection<Intersectable> getAll() {
+		List<Intersectable> toReturn = new ArrayList<Intersectable>();
+		toReturn.add(this);
+		return toReturn;
+	}
 }

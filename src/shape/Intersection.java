@@ -26,6 +26,10 @@ public class Intersection {
 		this.uv = uv;
 	}
 	
+	public Intersection() {
+		this.t = 1.0;
+	}
+
 	public Point getPoint() {
 		return point;
 	}

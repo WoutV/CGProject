@@ -1,5 +1,9 @@
 package shape;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import math.Point;
 import math.Ray;
 import math.Transformation;
@@ -84,6 +88,34 @@ public class Cylinder extends Shape {
 			normal = new Vector(trans.x,0.0, trans.z);
 		}
 		return normal;
+	}
+	
+	@Override
+	public double[] getMinCoordinates() {
+		Point trans = transformation.transform(new Point(-radius,0,-radius));
+		return new double[]{trans.x,trans.y,trans.z};
+	}
+	
+	@Override
+	public double[] getMaxCoordinates() {
+		Point trans = transformation.transform(new Point(radius,height,radius));
+		return new double[]{trans.x,trans.y,trans.z};
+	}
+	
+	@Override
+	public Collection<Intersectable> getAll() {
+		List<Intersectable> toReturn = new ArrayList<Intersectable>();
+		toReturn.add(this);
+		return toReturn;
+	}
+	
+	@Override
+	public Intersectable getBoundingBox() {
+		double [] min = getMinCoordinates();
+		double [] max = getMaxCoordinates();
+		BoundingBox bb = new BoundingBox(min[0],max[0],min[1],max[1],min[2],max[2]);
+		bb.add(this);
+		return bb;
 	}
 
 }

@@ -1,5 +1,9 @@
 package shape;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import math.Coordinate2D;
 import math.Point;
 import math.Ray;
@@ -91,6 +95,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	 */
 	@Override
 	public Intersection intersect(Ray ray) {
+		ray.intersectionCount++;
 		Ray transformed = transformation.transformInverse(ray);
 		
 		Vector o = transformed.origin.toVector3D();
@@ -194,6 +199,46 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	
 	public void setShading(Material shading) {
 		this.shading = shading;
+	}
+	
+	@Override
+	public double[] getMinCoordinates() {
+		Point trans1 = transformation.transform(point1);
+		Point trans2 = transformation.transform(point2);
+		Point trans3 = transformation.transform(point3);
+		double minx = Math.min(trans1.x, Math.min(trans2.x,trans3.x));
+		double miny = Math.min(trans1.y, Math.min(trans2.y,trans3.y));
+		double minz = Math.min(trans1.z, Math.min(trans2.z,trans3.z));
+
+		return new double[]{minx,miny,minz};
+	}
+	
+	@Override
+	public double[] getMaxCoordinates() {
+		Point trans1 = transformation.transform(point1);
+		Point trans2 = transformation.transform(point2);
+		Point trans3 = transformation.transform(point3);
+		double minx = Math.max(trans1.x, Math.max(trans2.x,trans3.x));
+		double miny = Math.max(trans1.y, Math.max(trans3.y,trans2.y));
+		double minz = Math.max(trans1.z, Math.max(trans2.z,trans3.z));
+
+		return new double[]{minx,miny,minz};
+	}
+	
+	@Override
+	public Collection<Intersectable> getAll() {
+		List<Intersectable> toReturn = new ArrayList<Intersectable>();
+		toReturn.add(this);
+		return toReturn;
+	}
+	
+	@Override
+	public Intersectable getBoundingBox() {
+		double [] min = getMinCoordinates();
+		double [] max = getMaxCoordinates();
+		BoundingBox bb = new BoundingBox(min[0],max[0],min[1],max[1],min[2],max[2]);
+		bb.add(this);
+		return bb;
 	}
 	
 }

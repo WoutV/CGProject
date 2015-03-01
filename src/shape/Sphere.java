@@ -1,5 +1,9 @@
 package shape;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import shading.Material;
 import math.Point;
 import math.Ray;
@@ -83,11 +87,32 @@ public class Sphere extends Shape {
 		return new Intersection(hitPoint, ray, shading, normal, t, null);
 	}
 
-//	@Override
-//	public Color getColor(Ray ray, List<PointLight> lights, List<Shape> shapes, Point p) {
-//		Point trans = transformation.transformInverse(p);
-//		Vector normal = trans.toVector3D().scale(1/trans.toVector3D().length());
-//		normal = transformation.inverseTransposeTransform(normal);
-//		return this.intersection.getColor(lights);
-//	}
+	@Override
+	public double[] getMinCoordinates() {
+		Point trans = transformation.transform(new Point());
+		return new double[]{trans.x-radius,trans.y-radius,trans.z-radius};
+	}
+	
+	@Override
+	public double[] getMaxCoordinates() {
+		Point trans = transformation.transform(new Point());
+		return new double[] { trans.x + radius, trans.y + radius,
+				trans.z + radius };
+	}
+	
+	@Override
+	public Collection<Intersectable> getAll() {
+		List<Intersectable> toReturn = new ArrayList<Intersectable>();
+		toReturn.add(this);
+		return toReturn;
+	}
+	
+	@Override
+	public Intersectable getBoundingBox() {
+		double [] min = getMinCoordinates();
+		double [] max = getMaxCoordinates();
+		BoundingBox bb = new BoundingBox(min[0],max[0],min[1],max[1],min[2],max[2]);
+		bb.add(this);
+		return bb;
+	}
 }
