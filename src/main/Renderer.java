@@ -170,6 +170,8 @@ public class Renderer {
 		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
 		
 		
+		
+		
 		addComplexObject(scene, p2, Transformation.createTranslation(0,-4,0).append(Transformation.createScale(3,3,3)),  "dragon.obj");
 		return scene;
 	}
