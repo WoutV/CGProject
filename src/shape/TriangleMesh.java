@@ -81,7 +81,6 @@ public class TriangleMesh extends Shape {
 		double minz =Double.NEGATIVE_INFINITY;
 		for(Triangle t : triangles) {
 			double [] max = t.getMaxCoordinates();
-			System.out.println(max[0]);
 			if(max[0] > minx) { minx = max[0];}
 			if(max[1] > miny) { miny = max[1];}
 			if(max[2] > minz) { minz = max[2];}

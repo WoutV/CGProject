@@ -77,6 +77,7 @@ public class Renderer {
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
+		System.err.println("STARTED RENDERING + BOXES CREATING");
 		// initialize the camera
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0,-10), new Vector(0, 0, 1), new Vector(0, 1, 0), 60);
 
@@ -120,7 +121,6 @@ public class Renderer {
 			reporter.update(height);
 		}
 		reporter.done();
-		System.out.println(max);
 
 		// save the output
 		try {
@@ -137,13 +137,14 @@ public class Renderer {
 		// materials
 		
 		SceneCreator scene = new SceneCreator();
-		Diffuse redDiffuse = new Diffuse(0.6, 0.1, Color.RED, Color.WHITE);
+		Diffuse redDiffuse = new Diffuse(0.9, 0.1, Color.RED, Color.WHITE);
 		Diffuse magentaDiffuse = new Diffuse(0.9, 0.1, Color.MAGENTA, Color.WHITE);
 		Diffuse  yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow, Color.WHITE);
 		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200), Color.WHITE);
 		Material mutableDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200), Color.WHITE);
 		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse, Color.WHITE);
-		Material p2 = new Phong(Color.white, 0.2, 25.0, 0.8, magentaDiffuse, Color.MAGENTA);
+		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, magentaDiffuse, Color.WHITE);
+		Material p3 = new Phong(Color.white, 0.0, 25.0, 0.8, yellowDiffuse, Color.WHITE);
 		
 		Material texture = createTexture("apple/apple_texture.jpg", p2);
 
@@ -152,11 +153,11 @@ public class Renderer {
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
-		scene.add(new Sphere(id, 4, p1));
-		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
-		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
-		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
-		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
+//		scene.add(new Sphere(id, 4, p1));
+//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
+//		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
+//		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
+//		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
 //		
 		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
@@ -166,9 +167,9 @@ public class Renderer {
 		
 		
 		
-		addComplexObject(scene, texture, Transformation.createScale(3,3,3),  "apple/apple.obj");
-//		addComplexObject(scene, p2, Transformation.createTranslation(-1,0,-7),  "dragon.obj");
-//		addComplexObject(scene, p2, Transformation.createTranslation(1,0,-7),  "dragon.obj");
+		addComplexObject(scene, p1, Transformation.createTranslation(0,0,-7),  "dragon.obj");
+		addComplexObject(scene, p2, Transformation.createTranslation(-1,0,-7),  "dragon.obj");
+		addComplexObject(scene, p3, Transformation.createTranslation(1,0,-7),  "dragon.obj");
 		return scene;
 	}
 
