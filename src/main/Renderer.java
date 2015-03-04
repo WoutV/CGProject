@@ -34,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 100;
-		int height = 100;
+		int width = 400;
+		int height = 400;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -86,8 +86,7 @@ public class Renderer {
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
-		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width
-				* height, false);
+		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 		reporter.addProgressListener(frame);
 
 		// render the scene
@@ -106,9 +105,12 @@ public class Renderer {
 				}
 				// for false color
 //				if(ray.intersectionCount != 1) {
-//					color = new Color(126,0,trim(255*ray.intersectionCount/11964));
+//					color = new Color(0,0,trim(ray.intersectionCount));
 //				}
 				//for bigger pixels
+				if (hitIntersection!=null) {
+					color = getShading(shapes, lights, hitIntersection);
+				}
 //				for(int i = 0; i < 4; i++) {
 //					for(int j = 0; j<4; j++) {
 //						panel.set(4*x+i, 4*y+j, 255, color.getRed(), color.getGreen(), color.getBlue());
@@ -158,11 +160,11 @@ public class Renderer {
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
-		scene.add(new Sphere(id, 4, p1));
-		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
-		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
-		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
-		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
+//		scene.add(new Sphere(id, 4, p1));
+//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5,  2));
+//		scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(), Transformation.createTranslation(0, -4, 0)));
+//		scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(), Transformation.createTranslation(-12, 0, 0)));
+//		scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(), Transformation.createTranslation(0, 0, 12)));
 
 //		
 		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
@@ -172,7 +174,7 @@ public class Renderer {
 		
 		
 		
-		addComplexObject(scene, p2, Transformation.createTranslation(0,-4,0).append(Transformation.createScale(3,3,3)),  "dragon.obj");
+		addComplexObject(scene, p2, Transformation.createTranslation(0,0,0),  "teapot.obj");
 		return scene;
 	}
 

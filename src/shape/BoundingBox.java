@@ -29,8 +29,6 @@ public class BoundingBox extends Intersectable {
 		this.ymax = ymax;
 		this.zmin = zmin;
 		this.zmax = zmax;
-		System.err.println(xmin+" "+ymin+" "+zmin);
-		System.err.println(xmax+" "+ymax+" "+zmax);
 	}
 
 	/*
@@ -175,6 +173,83 @@ public class BoundingBox extends Intersectable {
 		List<Intersectable> toReturn = new ArrayList<Intersectable>();
 		toReturn.addAll(content);
 		return toReturn;
+	}
+
+	public void splitX() {
+		List<Intersectable> all = new ArrayList<Intersectable>();
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		for(Intersectable in : content) {
+			all.addAll(in.getAll());
+		}
+		if(Math.abs(xmax-xmin)<0.0001 & all.size() > 1){
+			System.out.println(all.size());
+			double limit = this.xmin + (xmax-xmin)/2;
+			BoundingBox first = new BoundingBox(xmin,ymin,zmin,limit,ymax,zmax);
+			BoundingBox second = new BoundingBox(limit,ymin,zmin,xmax,ymax,zmax);
+			for(Intersectable i : all) {
+				if(i.getMinCoordinates()[0] < limit) {
+					first.add(i);
+				} else {
+					second.add(i);
+				}
+			}
+			first.splitX();
+			newContent.add(first);
+			second.splitX();
+			newContent.add(second);
+			content = newContent;
+		}
+	}
+
+	private void splitY() {
+		List<Intersectable> all = new ArrayList<Intersectable>();
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		for(Intersectable in : content) {
+			all.addAll(in.getAll());
+		}
+		if(!(all.size()<7)) {
+			double limit = this.ymin + (ymax-ymin)/2;
+			BoundingBox first = new BoundingBox(xmin,ymin,zmin,xmax,limit,zmax);
+			BoundingBox second = new BoundingBox(xmin,limit,zmin,xmax,ymax,zmax);
+			for(Intersectable i : all) {
+				if(i.getMinCoordinates()[1] < limit) {
+					first.add(i);
+				} else {
+					second.add(i);
+				}
+			}
+			first.splitZ();
+			newContent.add(first);
+			second.splitZ();
+			newContent.add(second);
+			content = newContent;
+		}
+	}
+
+	private void splitZ() {
+		List<Intersectable> all = new ArrayList<Intersectable>();
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		for(Intersectable in : content) {
+			all.addAll(in.getAll());
+		}
+		if(!(all.size()<2)) {
+			double limit = this.zmin + (zmax-zmin)/2;
+			BoundingBox first = new BoundingBox(xmin,ymin,zmin,xmax,ymax,limit);
+			BoundingBox second = new BoundingBox(xmin,ymin,limit,xmax,ymax,zmax);
+			for(Intersectable i : all) {
+				if(i.getMinCoordinates()[2] < limit) {
+					first.add(i);
+				} else {
+					second.add(i);
+				}
+			}
+			first.splitX();
+			newContent.add(first);
+			second.splitX();
+			
+			newContent.add(second);
+			content = newContent;
+		}
 	}
 
 }
