@@ -25,6 +25,7 @@ public class Phong extends Material {
 		Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
 		Color diff = diffuse.getShading(ray, normal, direction, pl.getColor());
 		Color phong = getShading(ray, normal, direction, pl.getColor());
+//		return phong;
 		return addColor(diff,phong);
 	}
 
@@ -44,5 +45,10 @@ public class Phong extends Material {
 		b = trim(b);
 		return new Color(r,g,b);
 	}
-
+	
+	@Override
+	public void setColor(Color color) {
+		this.color = color;
+		this.diffuse.setColor(color);
+	}
 }

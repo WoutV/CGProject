@@ -1,7 +1,7 @@
 Drie vlakken, konijn, bol en sfeer
-     - zonder : 648.20 s
-     - met : 17.68 s
+     - zonder : 381-56 s
+     - met : 3.37 s
 
 Theepot (400x400 p) 3 lichten
-     - zonder : 177.01 s
-     - met : 3.85 s
+     - zonder : 90.94 s
+     - met : 1.51 s

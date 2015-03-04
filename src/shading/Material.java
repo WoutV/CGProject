@@ -33,6 +33,10 @@ public abstract class Material {
 				trim(color.getBlue() + color2.getBlue()));
 	}
 	
+	protected void setColor(Color color) {
+		this.color = color;
+	}
+	
 	protected int trim(int number) {
 		if (number > 255)
 			return 255;

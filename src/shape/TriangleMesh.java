@@ -76,14 +76,15 @@ public class TriangleMesh extends Shape {
 
 	@Override
 	public double[] getMaxCoordinates() {
-		double minx = Double.MIN_VALUE;
-		double miny = Double.MIN_VALUE;
-		double minz = Double.MIN_VALUE;
+		double minx = Double.NEGATIVE_INFINITY;
+		double miny = Double.NEGATIVE_INFINITY;
+		double minz =Double.NEGATIVE_INFINITY;
 		for(Triangle t : triangles) {
-			double [] min = t.getMaxCoordinates();
-			if(min[0] > minx) { minx = min[0];}
-			if(min[1] > miny) { miny = min[1];}
-			if(min[2] > minz) { minz = min[2];}
+			double [] max = t.getMaxCoordinates();
+			System.out.println(max[0]);
+			if(max[0] > minx) { minx = max[0];}
+			if(max[1] > miny) { miny = max[1];}
+			if(max[2] > minz) { minz = max[2];}
 		}
 		
 		return new double[]{minx,miny,minz};
@@ -100,9 +101,9 @@ public class TriangleMesh extends Shape {
 	public Intersectable getBoundingBox() {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
-		BoundingBox bb = new BoundingBox(min[0],max[0],min[1],max[1],min[2],max[2]);
+		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
-		bb.split();
+		bb.split(0);
 		return bb;
 	}
 

@@ -114,7 +114,7 @@ public class Cylinder extends Shape {
 	public Intersectable getBoundingBox() {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
-		BoundingBox bb = new BoundingBox(min[0],max[0],min[1],max[1],min[2],max[2]);
+		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
 		return bb;
 	}
