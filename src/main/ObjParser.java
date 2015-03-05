@@ -73,6 +73,23 @@ public class ObjParser {
         return this.mesh;
     }
 
+	private void processfancyTriangle(String line) {
+		String[] splitted = line.split(" ");
+		String[] point1 = splitted[1].split("//");
+		String[] point2 = splitted[2].split("//");
+		String[] point3 = splitted[3].split("//");
+		Point p1 = vertices.get(Integer.parseInt(point1[0].trim())-1);
+		Coordinate2D c1 = null;
+		Vector n1 = normals.get(Integer.parseInt(point1[1].trim())-1);
+		Point p2 = vertices.get(Integer.parseInt(point2[0].trim())-1);
+		Coordinate2D c2 = null;
+		Vector n2 = normals.get(Integer.parseInt(point2[1].trim())-1);
+		Point p3 = vertices.get(Integer.parseInt(point3[0].trim())-1);
+		Coordinate2D c3 = null;
+		Vector n3 = normals.get(Integer.parseInt(point3[1].trim())-1);
+		mesh.addTriangle(new Triangle(p1, p2, p3, n1, n2, n3, c1, c2, c3));
+	}
+
 	private void processTriangle(String line) {
 		String[] splitted = line.split(" ");
 		String[] point1 = splitted[1].split("/");

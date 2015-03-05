@@ -34,8 +34,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 400;
-		int height = 400;
+		int width = 800;
+		int height = 800;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -105,9 +105,19 @@ public class Renderer {
 					color = getShading(shapes, lights, hitIntersection);
 				}
 //				 for false color
+//				int MAX = 324;
 //				if(ray.intersectionCount != 1) {
 //					if(ray.intersectionCount > max) { max = ray.intersectionCount;}
-//					color = new Color(0,0,trim(255*ray.intersectionCount/1055));
+//					if(ray.intersectionCount < MAX/3) {
+//						double factor = ray.intersectionCount/(MAX/3.0);
+//						color = new Color (0,(int)(255*factor),(int)(255-255*factor));
+//					} else if (ray.intersectionCount < 2*MAX/3.0) {
+//						double factor = (ray.intersectionCount-(MAX/3.0))/(MAX/3.0);
+//						color = new Color((int)(255*factor),255,0);
+//					} else { 
+//						double factor = (ray.intersectionCount-(MAX*2/3.0))/(MAX/3.0);
+//						color = new Color(255,(int)(255-255*factor),0);
+//						}
 //				}
 				//for bigger pixels
 //				for(int i = 0; i < 4; i++) {
@@ -121,6 +131,7 @@ public class Renderer {
 			reporter.update(height);
 		}
 		reporter.done();
+		System.out.println(max);
 
 		// save the output
 		try {
@@ -140,16 +151,28 @@ public class Renderer {
 		Diffuse redDiffuse = new Diffuse(0.9, 0.1, Color.RED, Color.WHITE);
 		Diffuse magentaDiffuse = new Diffuse(0.9, 0.1, Color.MAGENTA, Color.WHITE);
 		Diffuse  yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow, Color.WHITE);
+		Diffuse  orange = new Diffuse(0.9, 0.1, new Color(255,127,0), Color.WHITE);
+		Diffuse green = new Diffuse(0.9, 0.1, new Color(0,255,0), Color.WHITE);
+		Diffuse blue = new Diffuse(0.9, 0.1, new Color(0,0,255), Color.WHITE);
+		Diffuse indigo = new Diffuse(0.9, 0.1, new Color(75,0,130), Color.WHITE);
+		Diffuse violet = new Diffuse(0.9, 0.1, new Color(143,0,255), Color.WHITE);
 		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200), Color.WHITE);
 		Material mutableDiffuse = new Diffuse(0.9, 0.1, new Color(200,200,200), Color.WHITE);
-		Material p1 = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse, Color.WHITE);
+		Material red = new Phong(Color.WHITE, 0.0, 25.0,0.8, redDiffuse, Color.WHITE);
 		Material p2 = new Phong(Color.white, 0.0, 25.0, 0.8, magentaDiffuse, Color.WHITE);
-		Material p3 = new Phong(Color.white, 0.0, 25.0, 0.8, yellowDiffuse, Color.WHITE);
+		Material yellow = new Phong(Color.white, 0.0, 25.0, 0.8, yellowDiffuse, Color.WHITE);
+		Material orangePhong = new Phong(Color.white, 0.0, 25.0, 0.8, orange, Color.WHITE);
+		Material greenPhong = new Phong(Color.white, 0.0, 25.0, 0.8, green, Color.WHITE);
+		Material bluePhong = new Phong(Color.white, 0.0, 25.0, 0.8, blue, Color.WHITE);
+		Material indigoPhong = new Phong(Color.white, 0.0, 25.0, 0.8, indigo, Color.WHITE);
+		
+		Material violetPhong = new Phong(Color.white, 0.0, 25.0, 0.8, violet, Color.WHITE);
+		
 		
 		Material texture = createTexture("apple/apple_texture.jpg", p2);
 
 		
-		Transformation id = Transformation.createTranslation(0, 0, 10);;
+		Transformation id = Transformation.createTranslation(0, -2, -2);;
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
 		Transformation toTheRight = Transformation.createTranslation(4, 0, 20);
 		
@@ -163,13 +186,20 @@ public class Renderer {
 		scene.add(new PointLight(new Point(5,5,0), Color.WHITE));
 		scene.add(new PointLight(new Point(-10,2, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0,0,-10000),Color.WHITE));
+		scene.add(new PointLight(new Point(1,0,-10000),Color.WHITE));
+		scene.add(new PointLight(new Point(-1,0,-10000),Color.WHITE));
 		
 		
 		
 		
-		addComplexObject(scene, p1, Transformation.createTranslation(0,0,-7),  "dragon.obj");
-		addComplexObject(scene, p2, Transformation.createTranslation(-1,0,-7),  "dragon.obj");
-		addComplexObject(scene, p3, Transformation.createTranslation(1,0,-7),  "dragon.obj");
+//		addComplexObject(scene, p1, id, "teapot.obj");
+		addComplexObject(scene, greenPhong, Transformation.createTranslation(0,0,-7),  "dragon.obj");
+		addComplexObject(scene, yellow, Transformation.createTranslation(-1,0,-7),  "dragon.obj");
+		addComplexObject(scene, bluePhong, Transformation.createTranslation(1,0,-7),  "dragon.obj");
+		addComplexObject(scene, red, Transformation.createTranslation(-0.5,1,-7),  "dragon.obj");
+		addComplexObject(scene, orangePhong, Transformation.createTranslation(0.5,1,-7),  "dragon.obj");
+		addComplexObject(scene, indigoPhong, Transformation.createTranslation(-0.5,-1,-7),  "dragon.obj");
+		addComplexObject(scene, violetPhong, Transformation.createTranslation(0.5,-1,-7),  "dragon.obj");
 		return scene;
 	}
 

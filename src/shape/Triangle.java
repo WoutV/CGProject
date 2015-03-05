@@ -124,7 +124,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 
 	private Coordinate2D getUVcoordinates(Point p) {
 		double[] bary = getBarycentric(p);
-		if(bary!=null) {
+		if(bary!=null & textureCoord1 != null) {
 			Coordinate2D uv = textureCoord1.scale(bary[0]).add(textureCoord2.scale(bary[1])).add(textureCoord3.scale(bary[2]));
 			return uv;
 		}
