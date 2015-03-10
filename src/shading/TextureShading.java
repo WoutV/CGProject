@@ -26,7 +26,7 @@ public class TextureShading extends Material {
 	}
 	
 	public Color getAmbientColor() {
-		return Color.BLACK;
+		return shadingModel.getAmbientColor();
 	}
 
 	@Override

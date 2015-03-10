@@ -1,5 +1,7 @@
 package math;
 
+import java.util.Locale;
+
 
 public class Coordinate2D {
 	public final double x;
@@ -25,4 +27,10 @@ public class Coordinate2D {
 	public double[] toArray() {
 		return new double[] { x, y};
 	}
+	
+	@Override
+	public String toString() {
+		return String.format(Locale.ENGLISH, "[%s]:\n%g %g", getClass()
+				.getName(), x, y);
+	};
 }

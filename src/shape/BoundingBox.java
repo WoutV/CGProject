@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import math.Ray;
-import math.Transformation;
 
 /**
  * This class represents an axis aligned bounding box.

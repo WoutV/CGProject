@@ -84,7 +84,6 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal1 = n1;
 		this.normal2 = n2;
 		this.normal3 = n3;
-		
 		this.textureCoord1 = c1;
 		this.textureCoord2 = c2;
 		this.textureCoord3 = c3;
