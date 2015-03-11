@@ -4,22 +4,16 @@ import java.awt.Color;
 
 import math.Point;
 
-public class PointLight {
+public class PointLight extends Light {
 
 	private Point location;
-	private Color color;
-	
 	public PointLight(Point location, Color color) { 
+		super(color);
 		this.location = location;
-		this.color = color;
 	}
 
 	public Point getLocation() {
 		return location;
-	}
-
-	public Color getColor() {
-		return color;
 	}
 
 }
