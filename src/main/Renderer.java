@@ -286,7 +286,7 @@ public class Renderer {
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
 		// scene.add(new Sphere(id, 4, texture));
-		addComplexObject(scene, red, Transformation.createTranslation(0,-15,25).append(Transformation.createRotationY(60)), "db.obj");
+		addComplexObject(scene, red, Transformation.createTranslation(0,-0,30).append(Transformation.createRotationY(0)), "teddy.obj");
 
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
@@ -294,7 +294,6 @@ public class Renderer {
 
 	private static SceneCreator box() {
 		SceneCreator scene = new SceneCreator();
-
 		Transformation id = Transformation.createTranslation(0, 0, 10);
 		;
 		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);

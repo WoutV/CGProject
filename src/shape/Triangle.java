@@ -89,6 +89,17 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.textureCoord3 = c3;
 	}
 
+	public Triangle(Point p1, Point p2, Point p3) {
+		this.point1 = p1;
+		this.point2 = p2;
+		this.point3 = p3;
+		Vector normal = point2.subtract(point1).cross(point3.subtract(point1));
+		this.surfaceNormal = normal;
+		this.normal1 = normal;
+		this.normal2 = normal;
+		this.normal3 = normal;
+	}
+
 	/* (non-Javadoc)
 	 * @see shape.Shape#intersect(math.Ray)
 	 */
