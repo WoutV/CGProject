@@ -28,6 +28,7 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
+	private static final int AA_AMOUNT = 4;
 	public static int MAX;
 
 	/**
@@ -79,76 +80,73 @@ public class Renderer {
 		createImage(scene, width, height);
 	}
 
-	private static void createShowImage(int width, int height, String obj,
-			String texture) {
-		// initialize the camera
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0, 0, 0), new Vector(0, 0, 1), new Vector(0, 1, 0),
-				60);
-
-		// initialize the graphical user interface
-		ImagePanel panel = new ImagePanel(width, height);
-		// ImagePanel panel = new ImagePanel(width*4, height*4);
-		RenderFrame frame = new RenderFrame("Sphere", panel);
-
-		// initialize the progress reporter
-		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width
-				* height, false);
-		reporter.addProgressListener(frame);
-
-		SceneCreator scene = new SceneCreator();
-
-		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
-		Material p2 = new Phong(Color.white, 0.0, 20.0, 0.8, redDiffuse,
-				Color.WHITE);
-		Material textureMaterial = createTexture(texture, p2);
-		// addComplexObject(scene, textureMaterial,
-		// Transformation.createTranslation(0,0,10) , obj);
-		addComplexObject(
-				scene,
-				textureMaterial,
-				Transformation.createTranslation(0, 0, 10).append(
-						Transformation.createRotationY(180)), obj);
-
-		scene.add(new PointLight(new Point(-1, 1, 0), Color.WHITE));
-
-		// render the scene
-		List<Intersectable> shapes = scene.getShapes();
-		List<PointLight> lights = scene.getLights();
-		int max = Integer.MIN_VALUE;
-		for (int x = 0; x < width; ++x) {
-			for (int y = 0; y < height; ++y) {
-				// create a ray through the center of the pixel.
-				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
-				Color color = new Color(0, 0, 0);
-				Intersection hitIntersection = getClosestIntersection(ray,
-						shapes);
-				color = shade(shapes, lights, hitIntersection);
-				panel.set(x, y, 255, color.getRed(), color.getGreen(),
-						color.getBlue());
-			}
-			reporter.update(height);
-		}
-		reporter.done();
-		System.out.println(max);
-
-		// save the output
-		try {
-			ImageIO.write(panel.getImage(), "png", new File("output.png"));
-		} catch (IOException e) {
-		}
-	}
+//	private static void createShowImage(int width, int height, String obj, String texture) {
+//		// initialize the camera
+//		PerspectiveCamera camera = new PerspectiveCamera(width, height,
+//				new Point(0, 0, 0), new Vector(0, 0, 1), new Vector(0, 1, 0),
+//				60);
+//
+//		// initialize the graphical user interface
+//		ImagePanel panel = new ImagePanel(width, height);
+//		// ImagePanel panel = new ImagePanel(width*4, height*4);
+//		RenderFrame frame = new RenderFrame("Sphere", panel);
+//
+//		// initialize the progress reporter
+//		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width
+//				* height, false);
+//		reporter.addProgressListener(frame);
+//
+//		SceneCreator scene = new SceneCreator();
+//
+//		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
+//		Material p2 = new Phong(Color.white, 0.0, 20.0, 0.8, redDiffuse,
+//				Color.WHITE);
+//		Material textureMaterial = createTexture(texture, p2);
+//		// addComplexObject(scene, textureMaterial,
+//		// Transformation.createTranslation(0,0,10) , obj);
+//		addComplexObject(
+//				scene,
+//				textureMaterial,
+//				Transformation.createTranslation(0, 0, 10).append(
+//						Transformation.createRotationY(180)), obj);
+//
+//		scene.add(new PointLight(new Point(-1, 1, 0), Color.WHITE));
+//
+//		// render the scene
+//		List<Intersectable> shapes = scene.getShapes();
+//		List<PointLight> lights = scene.getLights();
+//		int max = Integer.MIN_VALUE;
+//		for (int x = 0; x < width; ++x) {
+//			for (int y = 0; y < height; ++y) {
+//				// create a ray through the center of the pixel.
+//				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
+//				Color color = new Color(0, 0, 0);
+//				Intersection hitIntersection = getClosestIntersection(ray,
+//						shapes);
+//				color = shade(shapes, lights, hitIntersection);
+//				panel.set(x, y, 255, color.getRed(), color.getGreen(),
+//						color.getBlue());
+//			}
+//			reporter.update(height);
+//		}
+//		reporter.done();
+//		System.out.println(max);
+//
+//		// save the output
+//		try {
+//			ImageIO.write(panel.getImage(), "png", new File("output.png"));
+//		} catch (IOException e) {
+//		}
+//	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
 		System.err.println("STARTED RENDERING + BOXES CREATING");
 		// initialize the camera
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,
-				new Point(0, 0, -10), new Vector(0, 0, 1), new Vector(0, 1, 0),
-				60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -10), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
-		// ImagePanel panel = new ImagePanel(width*4, height*4);
+//		 ImagePanel panel = new ImagePanel(width*4, height*4);
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
@@ -170,24 +168,27 @@ public class Renderer {
 	private static void renderTrueColor(SceneCreator scene, int width, int height, PerspectiveCamera camera, ImagePanel panel,ProgressReporter reporter, List<Intersectable> shapes) {
 		// render the scene
 		List<PointLight> lights = scene.getLights();
+		ExtendedColor total = new ExtendedColor(0,0,0);
 		int max = Integer.MIN_VALUE;
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
-				// create a ray through the center of the pixel.
-				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
-				Color color = new Color(0, 0, 0);
-				Intersection hitIntersection = getClosestIntersection(ray,shapes);
-				// for shading
-				color = shade(shapes, lights, hitIntersection);
-//				 for bigger pixels
+				ExtendedColor color = new ExtendedColor(0, 0, 0);
+				List<Sample> samples = camera.generateSamples(x, y, AA_AMOUNT);
+				for(Sample s : samples ) {
+					Ray ray = camera.generateRay(s);
+					Intersection hitIntersection = getClosestIntersection(ray,shapes);
+					color = shade(shapes, lights, hitIntersection);
+					total.addColor(color);
+				}
+				color.divide(AA_AMOUNT);
+				Color finalColor = color.toColor();
+				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
 //				for (int i = 0; i < 4; i++) {
 //					for (int j = 0; j < 4; j++) {
-//						panel.set(4 * x + i, 4 * y + j, 255, color.getRed(),
-//								color.getGreen(), color.getBlue());
+//						panel.set(4 * x + i, 4 * y + j, 255, finalColor.getRed(),
+//								finalColor.getGreen(), finalColor.getBlue());
 //					}
 //				}
-//				 for pixel sized pixels
-				panel.set(x, y, 255, color.getRed(), color.getGreen(),color.getBlue());
 			}
 			reporter.update(height);
 		}
@@ -201,8 +202,7 @@ public class Renderer {
 
 	}
 
-	private static void renderFalseColor(SceneCreator scene, int width,
-			int height, PerspectiveCamera camera, ImagePanel panel,
+	private static void renderFalseColor(SceneCreator scene, int width, int height, PerspectiveCamera camera, ImagePanel panel,
 			ProgressReporter reporter, List<Intersectable> shapes) {
 		// render the scene
 		List<PointLight> lights = scene.getLights();
@@ -210,8 +210,7 @@ public class Renderer {
 			for (int y = 0; y < height; ++y) {
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
-				Intersection hitIntersection = getClosestIntersection(ray,
-						shapes);
+				getClosestIntersection(ray, shapes);
 				if (ray.intersectionCount > MAX) {
 					MAX = ray.intersectionCount;
 				}
@@ -223,7 +222,7 @@ public class Renderer {
 				// create a ray through the center of the pixel.
 				Ray ray = camera.generateRay(new Sample(x + 0.5, y + 0.5));
 				Color color = new Color(0, 0, 0);
-				Intersection hitIntersection = getClosestIntersection(ray,shapes);
+				getClosestIntersection(ray,shapes);
 				color = getFalsecolorBW(ray);
 				panel.set(x, y, 255, color.getRed(), color.getGreen(),color.getBlue());
 			}
@@ -244,9 +243,8 @@ public class Renderer {
 		reporter.done();
 	}
 
-	private static Color shade(List<Intersectable> shapes,
-			List<PointLight> lights, Intersection hitIntersection) {
-		Color color = Color.BLACK;
+	private static ExtendedColor shade(List<Intersectable> shapes, List<PointLight> lights, Intersection hitIntersection) {
+		ExtendedColor color = new ExtendedColor(0,0,0);
 		if (hitIntersection != null) {
 			color = getShading(shapes, lights, hitIntersection);
 		}
@@ -281,12 +279,12 @@ public class Renderer {
 	private static SceneCreator teapot() {
 		SceneCreator scene = new SceneCreator();
 
-		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
+		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.GREEN, Color.WHITE);
 
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
 		// scene.add(new Sphere(id, 4, texture));
-		addComplexObject(scene, red, Transformation.createTranslation(0,-0,30).append(Transformation.createRotationY(0)), "teddy.obj");
+		addComplexObject(scene, red, Transformation.createTranslation(0.5,-0,-9).append(Transformation.createRotationY(90)), "dragon.obj");
 
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
@@ -466,10 +464,10 @@ public class Renderer {
 	 * @param hitIntersection
 	 * @return
 	 */
-	private static Color getShading(List<Intersectable> shapes,
-			List<PointLight> lights, Intersection hitIntersection) {
+	private static ExtendedColor getShading(List<Intersectable> shapes,List<PointLight> lights, Intersection hitIntersection) {
 		Point hitPoint = hitIntersection.getPoint();
-		Color color = Color.BLACK;
+//		Color color = Color.BLACK;
+		ExtendedColor color = new ExtendedColor(0,0,0);
 		for (PointLight pl : lights) {
 			Vector toTheLight = pl.getLocation().subtract(hitPoint);
 			Double distanceToLight = toTheLight.length();
@@ -477,10 +475,10 @@ public class Renderer {
 					toTheLight.normalize());
 			boolean inShadow = inShadow(shapes, pl, distanceToLight, shadowRay, hitPoint);
 			if (!inShadow) {
-				color = addColor(color, hitIntersection.getColor(pl));
+				color = color.addColor(hitIntersection.getColor(pl));
 			}
 		}
-		color = addColor(color, hitIntersection.getConstantColor());
+		color = color.addColor(hitIntersection.getConstantColor());
 		return color;
 	}
 
@@ -514,20 +512,4 @@ public class Renderer {
 		}
 		return false;
 	}
-
-	private static int trim(int number) {
-		if (number > 255)
-			return 255;
-		if (number < 0)
-			return 0;
-		else
-			return number;
-	}
-
-	private static Color addColor(Color color, Color color2) {
-		return new Color(trim(color.getRed() + color2.getRed()),
-				trim(color.getGreen() + color2.getGreen()),
-				trim(color.getBlue() + color2.getBlue()));
-	}
-
 }

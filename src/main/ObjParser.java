@@ -64,7 +64,7 @@ public class ObjParser {
             } else if (line.startsWith(VERTEX)) {
                 processVertex(line);
             }  else if (line.startsWith(TRIANGLE)) {
-            	processfancyTriangle(line);
+            	processTriangle(line);
             } else {
                 System.err.println("This line could not be parsed");
             }

@@ -21,16 +21,16 @@ public class TextureShading extends Material {
 	}
 
 	@Override
-	public Color getShading(Ray ray, Vector normal, Vector direction, Color lightColor) {
+	public ExtendedColor getShading(Ray ray, Vector normal, Vector direction, Color lightColor) {
 		return null;
 	}
 	
-	public Color getAmbientColor() {
+	public ExtendedColor getAmbientColor() {
 		return shadingModel.getAmbientColor();
 	}
 
 	@Override
-	public Color getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D textureCoordinate) {
+	public ExtendedColor getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D textureCoordinate) {
 		int width = texture.getWidth();
 		int height = texture.getHeight();
 		int x = (int) (textureCoordinate.x*width);

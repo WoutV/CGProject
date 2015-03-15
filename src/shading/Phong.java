@@ -21,16 +21,16 @@ public class Phong extends Material {
 	}
 
 	@Override
-	public Color getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D texture) {
+	public ExtendedColor getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D texture) {
 		Vector direction = pl.getLocation().toVector3D().subtract(p.toVector3D());
-		Color diff = diffuse.getShading(ray, normal, direction, pl.getColor());
-		Color phong = getShading(ray, normal, direction, pl.getColor());
+		ExtendedColor diff = diffuse.getShading(ray, normal, direction, pl.getColor());
+		ExtendedColor phong = getShading(ray, normal, direction, pl.getColor());
 //		return phong;
-		return addColor(diff,phong);
+		return phong.addColor(diff);
 	}
 
 	@Override
-	public Color getShading(Ray ray, Vector normal, Vector toTheLight, Color lightColor) {
+	public ExtendedColor getShading(Ray ray, Vector normal, Vector toTheLight, Color lightColor) {
 		Vector unitNormal = normal.scale(1/normal.length());
 		Vector reflect = toTheLight.subtract(unitNormal.scale(2*(toTheLight.dot(normal))));
 		double cos = ray.direction.dot(reflect) / (ray.direction.length() * reflect.length());
@@ -40,10 +40,10 @@ public class Phong extends Material {
 		int r = (int) (color.getRed() * ks * Math.pow(cos,exponent) * lightColor.getRed()/255);
 		int g = (int) (color.getGreen() * ks * Math.pow(cos,exponent)* lightColor.getGreen()/255);
 		int b = (int) (color.getBlue() * ks * Math.pow(cos,exponent) * lightColor.getBlue()/255);
-		r = trim(r);
-		g =trim(g);
-		b = trim(b);
-		return new Color(r,g,b);
+//		r = trim(r);
+//		g =trim(g);
+//		b = trim(b);
+		return new ExtendedColor(r,g,b);
 	}
 	
 	@Override

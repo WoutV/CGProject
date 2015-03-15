@@ -7,6 +7,7 @@ import math.Coordinate2D;
 import math.Point;
 import math.Ray;
 import math.Vector;
+import shading.ExtendedColor;
 import shading.Material;
 
 public class Intersection {
@@ -61,11 +62,11 @@ public class Intersection {
 		this.t = t;
 	}
 	
-	public Color getColor(PointLight pl) {
+	public ExtendedColor getColor(PointLight pl) {
 		return material.getColor(ray, pl, point	, normal, uv);
 	}
 
-	public Color getConstantColor() {
+	public ExtendedColor getConstantColor() {
 		return material.getAmbientColor();
 	}
 }

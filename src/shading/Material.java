@@ -19,19 +19,19 @@ public abstract class Material {
 		this.ambientColor = ambientColor;
 	}
 
-	public abstract Color getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D textureCoordinate);
+	public abstract ExtendedColor getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D textureCoordinate);
 
-	public abstract Color getShading(Ray ray, Vector normal, Vector direction, Color lightColor);
+	public abstract ExtendedColor getShading(Ray ray, Vector normal, Vector direction, Color lightColor);
 
-	public Color getAmbientColor() {
-		return new Color((int)(ambientColor.getRed()*ka),(int)(ambientColor.getGreen()*ka),(int)(ambientColor.getBlue()*ka));
+	public ExtendedColor getAmbientColor() {
+		return new ExtendedColor((int)(ambientColor.getRed()*ka),(int)(ambientColor.getGreen()*ka),(int)(ambientColor.getBlue()*ka));
 	}
 	
-	protected Color addColor(Color color, Color color2) {
-		return new Color(trim(color.getRed() + color2.getRed()),
-				trim(color.getGreen() + color2.getGreen()),
-				trim(color.getBlue() + color2.getBlue()));
-	}
+//	protected Color addColor(Color color, Color color2) {
+//		return new Color(trim(color.getRed() + color2.getRed()),
+//				trim(color.getGreen() + color2.getGreen()),
+//				trim(color.getBlue() + color2.getBlue()));
+//	}
 	
 	protected void setColor(Color color) {
 		this.color = color;

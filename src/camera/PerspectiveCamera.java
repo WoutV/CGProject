@@ -1,5 +1,9 @@
 package camera;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import math.OrthonormalBasis;
 import math.Point;
 import math.Ray;
@@ -17,6 +21,8 @@ public class PerspectiveCamera implements Camera {
 	private final int yResolution;
 	private final Point origin;
 	private final OrthonormalBasis basis;
+	
+	private Random r = new Random();
 
 	private final double width;
 	private final double height;
@@ -87,5 +93,24 @@ public class PerspectiveCamera implements Camera {
 		Vector direction = basis.w.add(basis.u.scale(u).add(basis.v.scale(v)));
 
 		return new Ray(origin, direction);
+	}
+	
+	
+	/**
+	 * Creates a list of samples, size of the list is equal to amount. The samples are jittered on a uniform grid in pixel (x,y)
+	 */
+	public List<Sample> generateSamples(double x, double y, int amount) {
+		int root = (int) Math.sqrt(amount);
+		double interval = 1.0/root;
+		System.out.println("new pixel");
+		List<Sample> result = new ArrayList<Sample>();
+		for(int i = 0; i < root; i++) {
+			for(int j = 0; j < root; j++) {
+				float randx = r.nextFloat();
+				float randy = r.nextFloat();
+				result.add(new Sample(x+(i +randx)*interval,y+(j+randy)*interval));
+			}
+		}
+		return result;
 	}
 }
