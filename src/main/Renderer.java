@@ -28,7 +28,7 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 4;
+	private static final int AA_AMOUNT = 1;
 	public static int MAX;
 
 	/**
@@ -155,7 +155,7 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
-//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output

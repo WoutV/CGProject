@@ -1,8 +1,11 @@
 package light;
 
 import java.awt.Color;
+import java.util.List;
 
-public class Light {
+import math.Point;
+
+public abstract class Light {
 
 	protected Color color;
 
@@ -13,5 +16,7 @@ public class Light {
 	public Color getColor() {
 		return color;
 	}
+	
+	public abstract List<Point> getSamples(int amount);
 
 }
