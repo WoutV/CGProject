@@ -13,6 +13,8 @@ public class AreaLight extends Light {
 	private Random r = new Random();
 	private Point min;
 	private Point max;
+	
+	//TODO : arealight needs more then 2 points. :) 
 
 	public AreaLight(Color color, Point min, Point max) {
 		super(color);
@@ -29,7 +31,7 @@ public class AreaLight extends Light {
 				float randx = r.nextFloat();
 				float randy = r.nextFloat();
 				float randz = r.nextFloat();
-				result.add(new Point(min.x));
+				result.add(new Point(min.x + ()));
 				result.add(new Sample(x+(i +randx)*interval,y+(j+randy)*interval));
 			}
 		}
