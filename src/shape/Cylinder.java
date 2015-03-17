@@ -12,7 +12,7 @@ import shading.Material;
 
 public class Cylinder extends Shape {
 	
-	private static final double EPSILON = 0.00001;
+	private static final double EPSILON = 0.01;
 	private final double height;
 	private final double radius;
 	public Cylinder (Transformation transformation, Material shading, double height, double radius) {
@@ -44,7 +44,7 @@ public class Cylinder extends Shape {
 			double t2 = (-b-dr)/(2*a);
 			double t0 = Math.min(t1, t2);
 	
-			boolean hitShell = (t0 >= 0) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
+			boolean hitShell = (t1 > EPSILON  || t2 > EPSILON) & (transformed.origin.add(dir.scale(t0)).y >= EPSILON & transformed.origin.add(dir.scale(t0)).y < height);
 			
 			Point onTop = new Point(0.0,height,0.0);
 			Vector normal = new Vector(0.0,1.0,0.0);
@@ -54,20 +54,20 @@ public class Cylinder extends Shape {
 			Point onBottom = new Point();
 			Vector bottomNormal = new Vector(0.0,-1.0,0.0);
 			Double hitBottomPlane = (onBottom.toVector3D().subtract(transformed.origin.toVector3D()).dot(bottomNormal))/(transformed.direction.dot(bottomNormal));
-			boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2) - Math.pow(radius,2) <= EPSILON &  Math.abs(hitBottomPlane) >= EPSILON;
+			boolean hitBottom = Math.pow(o.add(dir.scale(hitBottomPlane)).x,2)+ Math.pow(o.add(dir.scale(hitBottomPlane)).z,2) - Math.pow(radius,2) < EPSILON &  Math.abs(hitBottomPlane) > EPSILON;
 			
 			if(hitShell){
 				intersection = t0;
 			} else if(hitTop & hitBottom) {
 				if(hitTopPlane < hitBottomPlane) {
-					intersection = hitTopPlane > 0 ? hitTopPlane : -1.0;
+					intersection = hitTopPlane > EPSILON ? hitTopPlane : -1.0;
 				} else {
-					intersection = hitBottomPlane > 0 ? hitBottomPlane : -1.0;
+					intersection = hitBottomPlane > EPSILON ? hitBottomPlane : -1.0;
 				}
 			} else if(hitBottom) {
-				intersection =  hitBottomPlane > 0 ? hitBottomPlane : -1.0;
+				intersection =  hitBottomPlane > EPSILON ? hitBottomPlane : -1.0;
 			} else if(hitTop) {
-				intersection =  hitTopPlane > 0 ? hitTopPlane : -1.0;
+				intersection =  hitTopPlane > EPSILON ? hitTopPlane : -1.0;
 			} else {
 				intersection =  -1.0;
 			}
@@ -75,7 +75,10 @@ public class Cylinder extends Shape {
 		Point hitPoint = ray.origin.add(ray.direction.scale(intersection));
 		Vector normal = getNormal(hitPoint);
 		normal = transformation.inverseTransposeTransform(normal);
-		return new Intersection(hitPoint, ray, shading, normal, intersection, null);
+		if(!((intersection + 1) < EPSILON)) {
+			return new Intersection(hitPoint, ray, shading, normal, intersection, null);
+		}
+		return null;
 	}
 
 	private Vector getNormal(Point hitPoint) {

@@ -59,6 +59,7 @@ public class BoundingBox extends Intersectable {
 //
 		double max = Math.max(minx, Math.max(miny, minz));
 		double min = Math.min(maxx, Math.min(maxy, maxz));
+		
 		if (min > max) {
 			Intersection hitIntersection = null;
 			for (Intersectable intersectable : content) {

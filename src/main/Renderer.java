@@ -28,7 +28,7 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 1;
+	private static final int AA_AMOUNT = 25;
 	public static int MAX;
 
 	/**
@@ -75,7 +75,7 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-		SceneCreator scene = teapot();
+		SceneCreator scene = box();
 		// createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
 		createImage(scene, width, height);
 	}
@@ -142,7 +142,7 @@ public class Renderer {
 	private static void createImage(SceneCreator scene, int width, int height) {
 		System.err.println("STARTED RENDERING + BOXES CREATING");
 		// initialize the camera
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -10), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -155,7 +155,7 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
-		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -293,40 +293,40 @@ public class Renderer {
 	private static SceneCreator box() {
 		SceneCreator scene = new SceneCreator();
 		Transformation id = Transformation.createTranslation(0, 0, 10);
-		;
-		Transformation toTheLeft = Transformation.createTranslation(-6, -4, 10);
+		Transformation toTheLeft = Transformation.createTranslation(6, -7, 10);
 		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
 		Material p2 = new Phong(Color.white, 0.0, 20.0, 0.8, redDiffuse,
 				Color.WHITE);
 		Material texture = createTexture("textures/dots.jpg", p2);
-		Diffuse yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow, Color.WHITE);
+		Diffuse yellowDiffuse = new Diffuse(0.9, 0.3, Color.yellow, Color.yellow);
 		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200, 200, 200),
 				Color.WHITE);
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
 		addComplexObject(
 				scene,
-				texture,
-				id.append(Transformation.createScale(4, 4, 4)).append(
-						Transformation.createRotationY(180)), "sphere.obj");
-		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
-		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
-				Transformation.createTranslation(0, -4, 0)));
-		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
-				Transformation.createTranslation(-12, 0, 0)));
-		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
-				Transformation.createTranslation(0, 0, 12)));
-		addComplexObject(
-				scene,
-				yellowDiffuse,
-				Transformation.createTranslation(4, -2, 2).append(
-						Transformation.createScale(4, 4, 4).append(
-								Transformation.createRotationY(90))),
-				"dragon.obj");
-
-		//
+				p2,
+				id.append(Transformation.createScale(1,1,1)).append(
+						Transformation.createRotationY(0)), "bunny.obj");
+//		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
+//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
+//		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
+//				Transformation.createTranslation(0, -4, 0)));
+////		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
+////				Transformation.createTranslation(-12, 0, 0)));
+//		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
+//				Transformation.createTranslation(0, 0, 12)));
+//		addComplexObject(
+//				scene,
+//				yellowDiffuse,
+//				Transformation.createTranslation(4, -2, 2).append(
+//						Transformation.createScale(4, 4, 4).append(
+//								Transformation.createRotationY(90))),
+//				"bunny.obj");
+//
+//		//
 		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
-		scene.add(new PointLight(new Point(-10, 2, 5), Color.WHITE));
+//		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
 	}
@@ -466,20 +466,36 @@ public class Renderer {
 	 */
 	private static ExtendedColor getShading(List<Intersectable> shapes,List<PointLight> lights, Intersection hitIntersection) {
 		Point hitPoint = hitIntersection.getPoint();
-//		Color color = Color.BLACK;
-		ExtendedColor color = new ExtendedColor(0,0,0);
+		Color color = new Color(0,0,0);
 		for (PointLight pl : lights) {
 			Vector toTheLight = pl.getLocation().subtract(hitPoint);
 			Double distanceToLight = toTheLight.length();
-			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)),
-					toTheLight.normalize());
+			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)), toTheLight.normalize());
 			boolean inShadow = inShadow(shapes, pl, distanceToLight, shadowRay, hitPoint);
 			if (!inShadow) {
-				color = color.addColor(hitIntersection.getColor(pl));
-			}
+				Vector n = hitIntersection.getNormal();
+				color = addColor(color,hitIntersection.getColor(pl));
+//				color = color.addColor(hitIntersection.getColor(pl));
+//				color = color.addColor(new ExtendedColor((int)Math.abs(n.x*255), (int)Math.abs(n.y*255), (int)Math.abs(n.z*255)));
+			} 
 		}
-		color = color.addColor(hitIntersection.getConstantColor());
-		return color;
+//		System.out.println(hitIntersection.getConstantColor().r+"CONST");
+//		color = color.addColor(hitIntersection.getConstantColor());
+		color = addColor(color,hitIntersection.getConstantColor());
+		return new ExtendedColor(color.getRed(),color.getGreen(),color.getBlue());
+	}
+	
+	public static Color addColor(Color color, ExtendedColor color2) {
+		return new Color(trim(color.getRed()+color2.r), trim(color.getGreen()+color2.g),trim(color.getBlue()+color2.b));
+	}
+	
+	protected static int trim(int number) {
+		if (number > 255)
+			return 255;
+		if (number < 0)
+			return 0;
+		else
+			return number;
 	}
 
 	/**
@@ -491,8 +507,7 @@ public class Renderer {
 	 * @return true if and only if there is a shape closer to the light than the
 	 *         given distance, on the shadow ray
 	 */
-	private static boolean inShadow(List<Intersectable> shapes, PointLight pl,
-			Double distanceToLight, Ray shadowRay, Point hitPoint) {
+	private static boolean inShadow(List<Intersectable> shapes, PointLight pl, Double distanceToLight, Ray shadowRay, Point hitPoint) {
 		for (Intersectable shape : shapes) {
 			Intersection intersection = shape.intersect(shadowRay);
 			if (intersection != null) {
@@ -502,9 +517,7 @@ public class Renderer {
 					Double distanceToPoint = hit.subtract(hitPoint).length();
 					Vector toLight = pl.getLocation().subtract(hit);
 					Double distanceToLight2 = toLight.length();
-					if (Math.abs(t + 1) > 0.00001 & Math.abs(t) > 0.000001
-							& distanceToPoint < distanceToLight
-							& distanceToLight2 < distanceToLight) {
+					if (Math.abs(t + 1) > 0.00001 & Math.abs(t) > 0.00001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
 						return true;
 					}
 				}
