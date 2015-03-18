@@ -30,8 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 16;
-	private static final int SHADOW_AMOUNT = 16;
+	private static final int AA_AMOUNT = 64;
+	private static final int SHADOW_AMOUNT = 1;
 	public static int MAX;
 
 	/**
@@ -183,7 +183,7 @@ public class Renderer {
 					color = shade(shapes, lights, hitIntersection);
 					total.addColor(color);
 				}
-				color.divide(AA_AMOUNT);
+				total.divide(AA_AMOUNT);
 				Color finalColor = color.toColor();
 				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
 //				for (int i = 0; i < 4; i++) {
@@ -300,9 +300,9 @@ public class Renderer {
 		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
 		Material p2 = new Phong(Color.white, 0.0, 20.0, 0.8, redDiffuse,
 				Color.WHITE);
-		Material texture = createTexture("textures/dots.jpg", p2);
+//		Material texture = createTexture("textures/dots.jpg", p2);
 		Diffuse yellowDiffuse = new Diffuse(0.9, 0.3, Color.yellow, Color.yellow);
-		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(200, 200, 200),
+		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(188, 195, 200),
 				Color.WHITE);
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
@@ -310,7 +310,7 @@ public class Renderer {
 				scene,
 				p2,
 				id.append(Transformation.createScale(1,1,1)).append(
-						Transformation.createRotationY(0)), "bunny.obj");
+						Transformation.createRotationY(0)), "sphere.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
 		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
@@ -416,9 +416,8 @@ public class Renderer {
 		return texture;
 	}
 
-	private static void addComplexObject(SceneCreator scene, Material shading,
-			Transformation transformation, String fileName) {
-		ObjParser parser = new ObjParser(fileName);
+	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
+		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
 		try {
 			object = parser.parseObjFile();
