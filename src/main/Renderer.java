@@ -13,6 +13,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import light.AreaLight;
+import light.Light;
 import light.PointLight;
 import math.*;
 import sampling.Sample;
@@ -28,7 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 25;
+	private static final int AA_AMOUNT = 16;
+	private static final int SHADOW_AMOUNT = 16;
 	public static int MAX;
 
 	/**
@@ -38,8 +41,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1080;
-		int height = 1080;
+		int width = 250;
+		int height = 250;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -167,7 +170,7 @@ public class Renderer {
 
 	private static void renderTrueColor(SceneCreator scene, int width, int height, PerspectiveCamera camera, ImagePanel panel,ProgressReporter reporter, List<Intersectable> shapes) {
 		// render the scene
-		List<PointLight> lights = scene.getLights();
+		List<Light> lights = scene.getLights();
 		ExtendedColor total = new ExtendedColor(0,0,0);
 		int max = Integer.MIN_VALUE;
 		for (int x = 0; x < width; ++x) {
@@ -205,7 +208,7 @@ public class Renderer {
 	private static void renderFalseColor(SceneCreator scene, int width, int height, PerspectiveCamera camera, ImagePanel panel,
 			ProgressReporter reporter, List<Intersectable> shapes) {
 		// render the scene
-		List<PointLight> lights = scene.getLights();
+		List<Light> lights = scene.getLights();
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				// create a ray through the center of the pixel.
@@ -243,7 +246,7 @@ public class Renderer {
 		reporter.done();
 	}
 
-	private static ExtendedColor shade(List<Intersectable> shapes, List<PointLight> lights, Intersection hitIntersection) {
+	private static ExtendedColor shade(List<Intersectable> shapes, List<Light> lights, Intersection hitIntersection) {
 		ExtendedColor color = new ExtendedColor(0,0,0);
 		if (hitIntersection != null) {
 			color = getShading(shapes, lights, hitIntersection);
@@ -310,12 +313,12 @@ public class Renderer {
 						Transformation.createRotationY(0)), "bunny.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
-//		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
-//				Transformation.createTranslation(0, -4, 0)));
-////		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
-////				Transformation.createTranslation(-12, 0, 0)));
-//		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
-//				Transformation.createTranslation(0, 0, 12)));
+		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
+				Transformation.createTranslation(0, -4, 0)));
+		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
+				Transformation.createTranslation(-12, 0, 0)));
+		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
+				Transformation.createTranslation(0, 0, 12)));
 //		addComplexObject(
 //				scene,
 //				yellowDiffuse,
@@ -325,9 +328,10 @@ public class Renderer {
 //				"bunny.obj");
 //
 //		//
-		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
+//		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
+		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,4,5), new Point(6,5,5)));
 //		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
+//		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
 	}
 
@@ -464,25 +468,33 @@ public class Renderer {
 	 * @param hitIntersection
 	 * @return
 	 */
-	private static ExtendedColor getShading(List<Intersectable> shapes,List<PointLight> lights, Intersection hitIntersection) {
+	private static ExtendedColor getShading(List<Intersectable> shapes,List<Light> lights, Intersection hitIntersection) {
 		Point hitPoint = hitIntersection.getPoint();
-		Color color = new Color(0,0,0);
-		for (PointLight pl : lights) {
-			Vector toTheLight = pl.getLocation().subtract(hitPoint);
-			Double distanceToLight = toTheLight.length();
-			Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)), toTheLight.normalize());
-			boolean inShadow = inShadow(shapes, pl, distanceToLight, shadowRay, hitPoint);
-			if (!inShadow) {
-				Vector n = hitIntersection.getNormal();
-				color = addColor(color,hitIntersection.getColor(pl));
-//				color = color.addColor(hitIntersection.getColor(pl));
-//				color = color.addColor(new ExtendedColor((int)Math.abs(n.x*255), (int)Math.abs(n.y*255), (int)Math.abs(n.z*255)));
-			} 
+		ExtendedColor total = new ExtendedColor(0,0,0);
+		for (Light pl : lights) {
+			ExtendedColor color = new ExtendedColor(0, 0, 0);
+			List<Point> samples = pl.getSamples(SHADOW_AMOUNT);
+			for(Point s : samples ) {
+				Vector toTheLight = s.subtract(hitPoint);
+				Double distanceToLight = toTheLight.length();
+				Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)), toTheLight.normalize());
+				boolean inShadow = inShadow(shapes, s, distanceToLight, shadowRay, hitPoint);
+				if (!inShadow) {
+					Vector n = hitIntersection.getNormal();
+//					color = color.addColor(color,hitIntersection.getColor(pl));
+					color = color.addColor(hitIntersection.getColor(pl.getColor(),s));
+	//				color = color.addColor(new ExtendedColor((int)Math.abs(n.x*255), (int)Math.abs(n.y*255), (int)Math.abs(n.z*255)));
+				} 
+			}
+			color = color.divide(SHADOW_AMOUNT);
+			total = total.addColor(color);
 		}
+//		color.divide(SHADOW_AMOUNT);
 //		System.out.println(hitIntersection.getConstantColor().r+"CONST");
-//		color = color.addColor(hitIntersection.getConstantColor());
-		color = addColor(color,hitIntersection.getConstantColor());
-		return new ExtendedColor(color.getRed(),color.getGreen(),color.getBlue());
+		total = total.addColor(hitIntersection.getConstantColor());
+//		color = addColor(color,hitIntersection.getConstantColor());
+//		return new ExtendedColor(color.getRed(),color.getGreen(),color.getBlue());
+		return total;
 	}
 	
 	public static Color addColor(Color color, ExtendedColor color2) {
@@ -507,7 +519,7 @@ public class Renderer {
 	 * @return true if and only if there is a shape closer to the light than the
 	 *         given distance, on the shadow ray
 	 */
-	private static boolean inShadow(List<Intersectable> shapes, PointLight pl, Double distanceToLight, Ray shadowRay, Point hitPoint) {
+	private static boolean inShadow(List<Intersectable> shapes, Point p, Double distanceToLight, Ray shadowRay, Point hitPoint) {
 		for (Intersectable shape : shapes) {
 			Intersection intersection = shape.intersect(shadowRay);
 			if (intersection != null) {
@@ -515,7 +527,8 @@ public class Renderer {
 				Point hit = intersection.getPoint();
 				if (hit != null) {
 					Double distanceToPoint = hit.subtract(hitPoint).length();
-					Vector toLight = pl.getLocation().subtract(hit);
+//					Vector toLight = pl.getLocation().subtract(hit);
+					Vector toLight = p.subtract(hit);
 					Double distanceToLight2 = toLight.length();
 					if (Math.abs(t + 1) > 0.00001 & Math.abs(t) > 0.00001 & distanceToPoint < distanceToLight & distanceToLight2 < distanceToLight) {
 						return true;

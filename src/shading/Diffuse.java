@@ -2,7 +2,7 @@ package shading;
 
 import java.awt.Color;
 
-import light.PointLight;
+import light.Light;
 import math.Coordinate2D;
 import math.Point;
 import math.Ray;
@@ -25,12 +25,12 @@ public class Diffuse extends Material {
 	 * @param hitShape
 	 * @return the color of the given point, depending on the lights and shapes in the scene, and the surface normal of the shape to be shaded
 	 */
-	@Override
-	public ExtendedColor getColor(Ray ray, PointLight light, Point p, Vector normal, Coordinate2D texturecoord) {
-		Vector direction = light.getLocation().toVector3D().subtract(p.toVector3D());
-		ExtendedColor color = getShading(ray, normal, direction, light.getColor());
-		return color;
-	}
+//	@Override
+//	public ExtendedColor getColor(Ray ray, Light light, Point p, Vector normal, Coordinate2D texturecoord) {
+//		Vector direction = light.getLocation().toVector3D().subtract(p.toVector3D());
+//		ExtendedColor color = getShading(ray, normal, direction, light.getColor());
+//		return color;
+//	}
 	
 	@Override
 	public ExtendedColor getShading(Ray ray, Vector normal, Vector toTheLight, Color lightColor) {
@@ -46,6 +46,14 @@ public class Diffuse extends Material {
 //		g = trim(g);
 //		b = trim(b);
 		return new ExtendedColor(r,g,b);
+	}
+
+	@Override
+	public ExtendedColor getColor(Ray ray, Color lightColor, Point lightSample,
+			Point p, Vector normal, Coordinate2D textureCoordinate) {
+		Vector direction = lightSample.toVector3D().subtract(p.toVector3D());
+		ExtendedColor color = getShading(ray, normal, direction, lightColor);
+		return color;
 	}
 
 }

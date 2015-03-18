@@ -3,13 +3,12 @@ package main;
 import java.util.ArrayList;
 import java.util.List;
 
-import light.PointLight;
-import shape.BoundingBox;
+import light.Light;
 import shape.Intersectable;
 import shape.Shape;
 
 public class SceneCreator {
-	private List<PointLight> lights = new ArrayList<PointLight>();
+	private List<Light> lights = new ArrayList<Light>();
 	private List<Intersectable> shapes = new ArrayList<Intersectable>();
 	
 	
@@ -31,11 +30,11 @@ public class SceneCreator {
 		return toReturn;
 	}
 
-	public void add(PointLight light) {
+	public void add(Light light) {
 		this.lights.add(light);
 	}
 	
-	public List<PointLight> getLights() {
+	public List<Light> getLights() {
 		return this.lights;
 	}
 }

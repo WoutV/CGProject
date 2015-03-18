@@ -2,6 +2,7 @@ package shading;
 
 import java.awt.Color;
 
+import light.Light;
 import light.PointLight;
 import math.Coordinate2D;
 import math.Point;
@@ -19,7 +20,7 @@ public abstract class Material {
 		this.ambientColor = ambientColor;
 	}
 
-	public abstract ExtendedColor getColor(Ray ray, PointLight pl, Point p, Vector normal, Coordinate2D textureCoordinate);
+	public abstract ExtendedColor getColor(Ray ray, Color lightColor, Point lightSample, Point p, Vector normal, Coordinate2D textureCoordinate);
 
 	public abstract ExtendedColor getShading(Ray ray, Vector normal, Vector direction, Color lightColor);
 

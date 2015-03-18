@@ -2,6 +2,7 @@ package shape;
 
 import java.awt.Color;
 
+import light.Light;
 import light.PointLight;
 import math.Coordinate2D;
 import math.Point;
@@ -62,8 +63,8 @@ public class Intersection {
 		this.t = t;
 	}
 	
-	public ExtendedColor getColor(PointLight pl) {
-		return material.getColor(ray, pl, point	, normal, uv);
+	public ExtendedColor getColor(Color lightColor, Point sample) {
+		return material.getColor(ray, lightColor, sample, point	, normal, uv);
 	}
 
 	public ExtendedColor getConstantColor() {
