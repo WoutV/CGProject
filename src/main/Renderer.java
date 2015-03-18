@@ -328,7 +328,7 @@ public class Renderer {
 //				"bunny.obj");
 //
 //		//
-//		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
+//		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
 		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,4,5), new Point(6,5,5)));
 //		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
 //		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
