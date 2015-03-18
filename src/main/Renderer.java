@@ -312,7 +312,7 @@ public class Renderer {
 				id.append(Transformation.createScale(1,1,1)).append(
 						Transformation.createRotationY(0)), "sphere.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
-//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
+		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
 		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
 				Transformation.createTranslation(0, -4, 0)));
 		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
