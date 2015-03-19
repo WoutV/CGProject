@@ -30,8 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 64;
-	private static final int SHADOW_AMOUNT = 1;
+	private static final int AA_AMOUNT = 25;
+	private static final int SHADOW_AMOUNT = 25;
 	public static int MAX;
 
 	/**
@@ -41,8 +41,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 250;
-		int height = 250;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -309,10 +309,10 @@ public class Renderer {
 		addComplexObject(
 				scene,
 				p2,
-				id.append(Transformation.createScale(1,1,1)).append(
-						Transformation.createRotationY(0)), "sphere.obj");
+				id.append(Transformation.createScale(8,8,8)).append(
+						Transformation.createRotationY(0)), "dragon.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
-		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
+//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
 		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
 				Transformation.createTranslation(0, -4, 0)));
 		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
