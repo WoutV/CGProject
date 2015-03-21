@@ -30,8 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 25;
-	private static final int SHADOW_AMOUNT = 25;
+	private static final int AA_AMOUNT = 1;
+	private static final int SHADOW_AMOUNT = 4;
 	public static int MAX;
 
 	/**
@@ -309,7 +309,7 @@ public class Renderer {
 		addComplexObject(
 				scene,
 				p2,
-				id.append(Transformation.createScale(8,8,8)).append(
+				id.append(Transformation.createScale(2,2,2)).append(
 						Transformation.createRotationY(0)), "dragon.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
@@ -417,7 +417,9 @@ public class Renderer {
 	}
 
 	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
+        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/bunny.obj");
+
+//		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
 		try {
 			object = parser.parseObjFile();
