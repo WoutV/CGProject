@@ -102,7 +102,6 @@ public class PerspectiveCamera implements Camera {
 	public List<Sample> generateSamples(double x, double y, int amount) {
 		int root = (int) Math.sqrt(amount);
 		double interval = 1.0/root;
-//		System.out.println("new pixel");
 		List<Sample> result = new ArrayList<Sample>();
 		for(int i = 0; i < root; i++) {
 			for(int j = 0; j < root; j++) {

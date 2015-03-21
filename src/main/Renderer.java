@@ -30,7 +30,7 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 1;
+	private static final int AA_AMOUNT = 4;
 	private static final int SHADOW_AMOUNT = 4;
 	public static int MAX;
 
@@ -153,8 +153,7 @@ public class Renderer {
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
-		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width
-				* height, false);
+		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
@@ -308,7 +307,7 @@ public class Renderer {
 				Color.WHITE);
 		addComplexObject(
 				scene,
-				p2,
+				redDiffuse,
 				id.append(Transformation.createScale(2,2,2)).append(
 						Transformation.createRotationY(0)), "dragon.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
@@ -498,11 +497,11 @@ public class Renderer {
 		return total;
 	}
 	
-	public static Color addColor(Color color, ExtendedColor color2) {
+	private static Color addColor(Color color, ExtendedColor color2) {
 		return new Color(trim(color.getRed()+color2.r), trim(color.getGreen()+color2.g),trim(color.getBlue()+color2.b));
 	}
 	
-	protected static int trim(int number) {
+	private static int trim(int number) {
 		if (number > 255)
 			return 255;
 		if (number < 0)
