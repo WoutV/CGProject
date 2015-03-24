@@ -30,8 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 4;
-	private static final int SHADOW_AMOUNT = 4;
+	private static final int AA_AMOUNT = 16;
+	private static final int SHADOW_AMOUNT = 16;
 	public static int MAX;
 
 	/**
@@ -41,8 +41,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 200;
+		int height = 200;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -157,7 +157,7 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
-//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -286,7 +286,7 @@ public class Renderer {
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
 		// scene.add(new Sphere(id, 4, texture));
-		addComplexObject(scene, red, Transformation.createTranslation(0.5,-0,-9).append(Transformation.createRotationY(90)), "dragon.obj");
+		addComplexObject(scene, red, Transformation.createTranslation(0.5,-0,-9).append(Transformation.createRotationY(90)), "bunny.obj");
 
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
@@ -309,7 +309,7 @@ public class Renderer {
 				scene,
 				redDiffuse,
 				id.append(Transformation.createScale(2,2,2)).append(
-						Transformation.createRotationY(0)), "dragon.obj");
+						Transformation.createRotationY(0)), "bunny.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
 		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
@@ -328,7 +328,7 @@ public class Renderer {
 //
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
-		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,4,5), new Point(6,5,5)));
+		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,2,5), new Point(7,2,5)));
 //		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
 //		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
@@ -416,9 +416,9 @@ public class Renderer {
 	}
 
 	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/bunny.obj");
-
-//		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
+//        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/bunny.obj");
+//
+		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
 		try {
 			object = parser.parseObjFile();
