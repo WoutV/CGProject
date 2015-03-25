@@ -100,16 +100,26 @@ public class PerspectiveCamera implements Camera {
 	 * Creates a list of samples, size of the list is equal to amount. The samples are jittered on a uniform grid in pixel (x,y)
 	 */
 	public List<Sample> generateSamples(double x, double y, int amount) {
-		int root = (int) Math.sqrt(amount);
-		double interval = 1.0/root;
-		List<Sample> result = new ArrayList<Sample>();
-		for(int i = 0; i < root; i++) {
-			for(int j = 0; j < root; j++) {
-				float randx = r.nextFloat();
-				float randy = r.nextFloat();
-				result.add(new Sample(x+(i +randx)*interval,y+(j+randy)*interval));
-			}
-		}
-		return result;
+        if(amount!=1) {
+            int root = (int) Math.sqrt(amount);
+            double interval = 1.0 / root;
+            List<Sample> result = new ArrayList<Sample>();
+//            System.out.println("new pixel");
+            for (int i = 0; i < root; i++) {
+                for (int j = 0; j < root; j++) {
+                    float randx = r.nextFloat();
+                    float randy = r.nextFloat();
+                    result.add(new Sample(x + (i + randx) * interval, y + (j + randy) * interval));
+//                    System.out.println(x + (i + randx) * interval);
+//                    System.out.println(y + (j + randy) * interval);
+                }
+            }
+            return result;
+        }
+        else {
+            List<Sample> result = new ArrayList<Sample>();
+            result.add(new Sample(x+0.5,y+0.5));
+            return result;
+        }
 	}
 }

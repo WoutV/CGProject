@@ -30,7 +30,7 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 16;
+	private static final int AA_AMOUNT = 1;
 	private static final int SHADOW_AMOUNT = 16;
 	public static int MAX;
 
@@ -41,8 +41,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 200;
-		int height = 200;
+		int width = 1000;
+		int height =1000;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -157,7 +157,7 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
-		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -309,10 +309,10 @@ public class Renderer {
 				scene,
 				redDiffuse,
 				id.append(Transformation.createScale(2,2,2)).append(
-						Transformation.createRotationY(0)), "bunny.obj");
+						Transformation.createTranslation(0,-1,0)), "bunny.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
-		scene.add(new Plane(new Vector(0, 1, 0), whiteDiffuse, new Point(),
+		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
 				Transformation.createTranslation(0, -4, 0)));
 		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
 				Transformation.createTranslation(-12, 0, 0)));
@@ -416,9 +416,9 @@ public class Renderer {
 	}
 
 	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-//        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/bunny.obj");
+        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/"+fileName);
 //
-		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
+//		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
 		try {
 			object = parser.parseObjFile();
