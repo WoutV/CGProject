@@ -2,6 +2,7 @@ package shape;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import math.Ray;
@@ -125,7 +126,6 @@ public class BoundingBox extends Intersectable {
 			double maxz2 = Double.NEGATIVE_INFINITY;
 			BoundingBox first = null;
 			BoundingBox second = null;
-			List<Intersectable> newContent = new ArrayList<Intersectable>();
 			List<Intersectable> firstList = new ArrayList<Intersectable>();
 			List<Intersectable> secondList = new ArrayList<Intersectable>();
 			for(Intersectable t : all) {
@@ -150,21 +150,138 @@ public class BoundingBox extends Intersectable {
 					if(max[2] > maxz) { maxz = max[2];}
 				}
 			}
-			if(!(firstList.isEmpty() | secondList.isEmpty())) {
-				first = new BoundingBox(new double[]{minx,miny,minz},new double[]{maxx,maxy,maxz});
-				for(int i = 0;i<firstList.size();i++) {
-					first.add(firstList.get(i));
-				}
-				second = new BoundingBox(new double[]{minx2,miny2,minz2},new double[]{maxx2,maxy2,maxz2});
-				for(int i = 0;i<secondList.size();i++) {
-					second.add(secondList.get(i));
-				}
-				first.split((axis+1)%3);
-				newContent.add(first);
-				second.split((axis+1)%3);
-				newContent.add(second);
-				content = newContent;
-			}
+			double[] min1 = {minx,miny, minz};
+			double[] min2 = {minx2,miny2, minz2};
+			double[] max1 = {maxx, maxy, maxz};
+			double[] max2 = {maxx2, maxy2, maxz2};
+			setNewContent(axis, min1, max1, min2, max2, firstList, secondList);
 		}
 	}
+
+	private void setNewContent(int axis, double[] min1, double[] max1,double[] min2, double[] max2, List<Intersectable> firstList,
+			List<Intersectable> secondList) {
+		
+		BoundingBox first;
+		BoundingBox second;
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		if(!(firstList.isEmpty() | secondList.isEmpty())) {
+			first = new BoundingBox(min1, max1);
+			for(int i = 0;i<firstList.size();i++) {
+				first.add(firstList.get(i));
+			}
+			second = new BoundingBox(min2, max2);
+			for(int i = 0;i<secondList.size();i++) {
+				second.add(secondList.get(i));
+			}
+			first.split((axis+1)%3);
+			newContent.add(first);
+			second.split((axis+1)%3);
+			newContent.add(second);
+			content = newContent;
+		}
+	}
+	
+	public void splitSorted(int axis) {
+		double minx = Double.MAX_VALUE;
+		double miny = Double.MAX_VALUE;
+		double minz = Double.MAX_VALUE;
+		double maxx = Double.NEGATIVE_INFINITY;
+		double maxy = Double.NEGATIVE_INFINITY;
+		double maxz = Double.NEGATIVE_INFINITY;
+		double minx2 = Double.MAX_VALUE;
+		double miny2 = Double.MAX_VALUE;
+		double minz2 = Double.MAX_VALUE;
+		double maxx2 = Double.NEGATIVE_INFINITY;
+		double maxy2 = Double.NEGATIVE_INFINITY;
+		double maxz2 = Double.NEGATIVE_INFINITY;
+		List<Intersectable> all = new ArrayList<Intersectable>();
+		for(Intersectable in : content) {
+			all.addAll(in.getAll());
+		}
+		Intersectable[] sorted = new Intersectable[all.size()];
+		for(int i = 0; i < all.size(); i++) {
+			sorted[i] = all.get(i);
+		}
+		quickSort(sorted, 0, sorted.length-1, axis);
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		List<Intersectable> firstList = new ArrayList<Intersectable>();
+		List<Intersectable> secondList = new ArrayList<Intersectable>();
+		for(int i = 0;i < sorted.length/2; i++) {
+			firstList.add(sorted[i]);
+			double [] min = sorted[i].getMinCoordinates();
+			if(min[0] < minx) { minx = min[0];}
+			if(min[1] < miny) { miny = min[1];}
+			if(min[2] < minz) { minz = min[2];}
+			double [] max = sorted[i].getMaxCoordinates();
+			if(max[0] > maxx) { maxx = max[0];}
+			if(max[1] > maxy) { maxy = max[1];}
+			if(max[2] > maxz) { maxz = max[2];}
+		}
+		for(int i = sorted.length/2; i< sorted.length-1;i++) {
+			secondList.add(sorted[i]);
+			double [] min = sorted[i].getMinCoordinates();
+			if(min[0] < minx2) { minx2 = min[0];}
+			if(min[1] < miny2) { miny2 = min[1];}
+			if(min[2] < minz2) { minz2 = min[2];}
+			double [] max = sorted[i].getMaxCoordinates();
+			if(max[0] > maxx2) { maxx2 = max[0];}
+			if(max[1] > maxy2) { maxy2 = max[1];}
+			if(max[2] > maxz2) { maxz2 = max[2];}
+		}
+		double[] min1 = {minx,miny, minz};
+		double[] min2 = {minx2,miny2, minz2};
+		double[] max1 = {maxx, maxy, maxz};
+		double[] max2 = {maxx2, maxy2, maxz2};
+//		BoundingBox first = new BoundingBox(new double[]{minx,miny,minz},new double[]{maxx,maxy,maxz});
+//		for(int i = 0;i<firstList.size();i++) {
+//			first.add(firstList.get(i));
+//		}
+//		BoundingBox second = new BoundingBox(new double[]{minx2,miny2,minz2},new double[]{maxx2,maxy2,maxz2});
+//		for(int i = 0;i<secondList.size();i++) {
+//			second.add(secondList.get(i));
+//		}
+//		first.split((axis+1)%3);
+//		newContent.add(first);
+//		second.split((axis+1)%3);
+//		newContent.add(second);
+//		content = newContent;
+		setNewContent(axis, min1, max1, min2, max2, firstList, secondList);
+	}
+
+	private int partition(Intersectable[] list, int left, int right, int axis) {
+	      int i = left, j = right;
+	      Intersectable tmp;
+	      double pivot = list[(left + right) / 2].getMinCoordinates()[axis];
+	      while (i <= j) {
+
+	            while (list[i].getMinCoordinates()[axis] < pivot) {
+	                  i++;
+	            }
+	            while (list[j].getMinCoordinates()[axis] > pivot) {
+	                  j--;
+	            }
+	            if (i <= j) {
+	                  tmp = list[i];
+	                  list[i] = list[j];
+	                  list[j] = tmp;
+	                  i++;
+	                  j--;
+	            }
+	      }
+	      return i;
+	}
+
+	 
+
+	void quickSort(Intersectable[] list, int left, int right, int axis) {
+	      int index = partition(list, left, right, axis);
+	      if (left < index - 1) {
+	            quickSort(list, left, index - 1, axis);
+	      }
+	      if (index < right) {
+	            quickSort(list, index, right, axis);
+	      }	
+	}
+
+	
 }

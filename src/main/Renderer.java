@@ -30,8 +30,8 @@ import camera.PerspectiveCamera;
  */
 public class Renderer {
 
-	private static final int AA_AMOUNT = 1;
-	private static final int SHADOW_AMOUNT = 16;
+	private static final int AA_AMOUNT = 4;
+	private static final int SHADOW_AMOUNT = 1;
 	public static int MAX;
 
 	/**
@@ -41,8 +41,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1000;
-		int height =1000;
+		int width = 100;
+		int height =100;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -157,7 +157,7 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes();
-//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -309,15 +309,15 @@ public class Renderer {
 				scene,
 				redDiffuse,
 				id.append(Transformation.createScale(2,2,2)).append(
-						Transformation.createTranslation(0,-1,0)), "bunny.obj");
+						Transformation.createTranslation(0,0,-7)), "bunny.obj");
 //		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
-		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
-				Transformation.createTranslation(0, -4, 0)));
-		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
-				Transformation.createTranslation(-12, 0, 0)));
-		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
-				Transformation.createTranslation(0, 0, 12)));
+//		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
+//				Transformation.createTranslation(0, -4, 0)));
+//		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
+//				Transformation.createTranslation(-12, 0, 0)));
+//		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
+//				Transformation.createTranslation(0, 0, 12)));
 //		addComplexObject(
 //				scene,
 //				yellowDiffuse,
@@ -328,9 +328,9 @@ public class Renderer {
 //
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
-		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,2,5), new Point(7,2,5)));
+//		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,2,5), new Point(7,2,5)));
 //		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
-//		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
+		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
 	}
 
