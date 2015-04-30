@@ -29,6 +29,8 @@ public class ProgressReporter {
 	private String plusses = "";
 	private String spaces = "";
 	private int maximumPrintLength = 0;
+	
+	public String time;
 
 	/**
 	 * Creates a new {@link ProgressReporter} for a task with the given amount
@@ -157,6 +159,8 @@ public class ProgressReporter {
 			String timeString = String.format(Locale.ENGLISH, "(%.2fs)",
 					(System.currentTimeMillis() - startTime) * 0.001);
 			System.out.print(timeString);
+			time = String.format(Locale.ENGLISH, "%.2f",
+					(System.currentTimeMillis() - startTime) * 0.001);
 
 			// print trailing spaces to overwrite previous printouts
 			int timeStringLength = timeString.length();

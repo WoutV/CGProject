@@ -244,7 +244,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	}
 	
 	@Override
-	public Intersectable getBoundingBox() {
+	public Intersectable getBoundingBox(String s) {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
 		BoundingBox bb = new BoundingBox(min, max);

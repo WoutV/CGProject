@@ -96,7 +96,7 @@ public class Cone extends Shape {
 	}
 	
 	@Override
-	public Intersectable getBoundingBox() {
+	public Intersectable getBoundingBox(String m) {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
 		BoundingBox bb = new BoundingBox(min, max);

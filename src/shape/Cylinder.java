@@ -114,7 +114,7 @@ public class Cylinder extends Shape {
 	}
 	
 	@Override
-	public Intersectable getBoundingBox() {
+	public Intersectable getBoundingBox(String s) {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
 		BoundingBox bb = new BoundingBox(min, max);

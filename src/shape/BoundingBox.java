@@ -101,7 +101,9 @@ public class BoundingBox extends Intersectable {
 	@Override
 	public Collection<Intersectable> getAll() {
 		List<Intersectable> toReturn = new ArrayList<Intersectable>();
-		toReturn.addAll(content);
+		for(Intersectable i : content) {
+			toReturn.addAll(i.getAll());
+		}
 		return toReturn;
 	}
 	
@@ -124,8 +126,6 @@ public class BoundingBox extends Intersectable {
 			double maxx2 = Double.NEGATIVE_INFINITY;
 			double maxy2 = Double.NEGATIVE_INFINITY;
 			double maxz2 = Double.NEGATIVE_INFINITY;
-			BoundingBox first = null;
-			BoundingBox second = null;
 			List<Intersectable> firstList = new ArrayList<Intersectable>();
 			List<Intersectable> secondList = new ArrayList<Intersectable>();
 			for(Intersectable t : all) {
@@ -181,6 +181,29 @@ public class BoundingBox extends Intersectable {
 		}
 	}
 	
+	private void setNewSortedContent(int axis, double[] min1, double[] max1,double[] min2, double[] max2, List<Intersectable> firstList,
+			List<Intersectable> secondList) {
+		
+		BoundingBox first;
+		BoundingBox second;
+		List<Intersectable> newContent = new ArrayList<Intersectable>();
+		if(!(firstList.isEmpty() | secondList.isEmpty())) {
+			first = new BoundingBox(min1, max1);
+			for(int i = 0;i<firstList.size();i++) {
+				first.add(firstList.get(i));
+			}
+			second = new BoundingBox(min2, max2);
+			for(int i = 0;i<secondList.size();i++) {
+				second.add(secondList.get(i));
+			}
+			first.splitSorted((axis+1)%3);
+			newContent.add(first);
+			second.splitSorted((axis+1)%3);
+			newContent.add(second);
+			content = newContent;
+		}
+	}
+	
 	public void splitSorted(int axis) {
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
@@ -217,7 +240,7 @@ public class BoundingBox extends Intersectable {
 			if(max[1] > maxy) { maxy = max[1];}
 			if(max[2] > maxz) { maxz = max[2];}
 		}
-		for(int i = sorted.length/2; i< sorted.length-1;i++) {
+		for(int i = sorted.length/2; i< sorted.length;i++) {
 			secondList.add(sorted[i]);
 			double [] min = sorted[i].getMinCoordinates();
 			if(min[0] < minx2) { minx2 = min[0];}
@@ -232,20 +255,7 @@ public class BoundingBox extends Intersectable {
 		double[] min2 = {minx2,miny2, minz2};
 		double[] max1 = {maxx, maxy, maxz};
 		double[] max2 = {maxx2, maxy2, maxz2};
-//		BoundingBox first = new BoundingBox(new double[]{minx,miny,minz},new double[]{maxx,maxy,maxz});
-//		for(int i = 0;i<firstList.size();i++) {
-//			first.add(firstList.get(i));
-//		}
-//		BoundingBox second = new BoundingBox(new double[]{minx2,miny2,minz2},new double[]{maxx2,maxy2,maxz2});
-//		for(int i = 0;i<secondList.size();i++) {
-//			second.add(secondList.get(i));
-//		}
-//		first.split((axis+1)%3);
-//		newContent.add(first);
-//		second.split((axis+1)%3);
-//		newContent.add(second);
-//		content = newContent;
-		setNewContent(axis, min1, max1, min2, max2, firstList, secondList);
+		setNewSortedContent(axis, min1, max1, min2, max2, firstList, secondList);
 	}
 
 	private int partition(Intersectable[] list, int left, int right, int axis) {
@@ -273,7 +283,7 @@ public class BoundingBox extends Intersectable {
 
 	 
 
-	void quickSort(Intersectable[] list, int left, int right, int axis) {
+	private void quickSort(Intersectable[] list, int left, int right, int axis) {
 	      int index = partition(list, left, right, axis);
 	      if (left < index - 1) {
 	            quickSort(list, left, index - 1, axis);

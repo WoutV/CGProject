@@ -16,6 +16,10 @@ public class TriangleMesh extends Shape {
 		//empty
 	}
 	
+	public TriangleMesh(TriangleMesh m) {
+		this.triangles = new ArrayList<Triangle>(m.getTriangles());
+	}
+	
 	public void setShading(Material material) {
 		this.shading = material;
 		for(Triangle tr : triangles) {
@@ -97,12 +101,21 @@ public class TriangleMesh extends Shape {
 	}
 	
 	@Override
-	public Intersectable getBoundingBox() {
+	public Intersectable getBoundingBox(String method) {
 		double [] min = getMinCoordinates();
 		double [] max = getMaxCoordinates();
 		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
-		bb.split(0);
+		switch (method) {
+		case "geometric":
+			bb.split(0);
+			break;
+		case "sorted":
+			bb.splitSorted(0);
+			break;
+		default:
+			break;
+		}
 		return bb;
 	}
 

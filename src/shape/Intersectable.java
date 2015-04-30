@@ -36,10 +36,11 @@ public abstract class Intersectable {
 	public abstract Collection<Intersectable> getAll();
 
 	/**
+	 * @param method 
 	 * @return the bounding box for this intersectable (default for bounding
 	 *         boxes, and shapes that cannot be contained e.g. planes)
 	 */
-	public Intersectable getBoundingBox() {
+	public Intersectable getBoundingBox(String method) {
 		return this;
 	}
 
