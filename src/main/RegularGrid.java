@@ -51,7 +51,9 @@ public class RegularGrid extends Intersectable {
 						}
 					}
 				}
+				
 			}
+			
 		}
 		return hitIntersection;
 	}
