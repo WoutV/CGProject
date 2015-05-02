@@ -57,7 +57,7 @@ public class BoundingBox extends Intersectable {
 			minz = (max[2]-ray.origin.z) / ray.direction.z;
 			maxz = (min[2]-ray.origin.z) / ray.direction.z;
 		}
-//
+		
 		double max = Math.max(minx, Math.max(miny, minz));
 		double min = Math.min(maxx, Math.min(maxy, maxz));
 		
@@ -99,7 +99,7 @@ public class BoundingBox extends Intersectable {
 	}
 	
 	@Override
-	public Collection<Intersectable> getAll() {
+	public List<Intersectable> getAll() {
 		List<Intersectable> toReturn = new ArrayList<Intersectable>();
 		for(Intersectable i : content) {
 			toReturn.addAll(i.getAll());
@@ -226,7 +226,6 @@ public class BoundingBox extends Intersectable {
 			sorted[i] = all.get(i);
 		}
 		quickSort(sorted, 0, sorted.length-1, axis);
-		List<Intersectable> newContent = new ArrayList<Intersectable>();
 		List<Intersectable> firstList = new ArrayList<Intersectable>();
 		List<Intersectable> secondList = new ArrayList<Intersectable>();
 		for(int i = 0;i < sorted.length/2; i++) {
@@ -291,6 +290,22 @@ public class BoundingBox extends Intersectable {
 	      if (index < right) {
 	            quickSort(list, index, right, axis);
 	      }	
+	}
+
+	public void add(List<Intersectable> all) {
+		for(Intersectable i : all) {
+			add(i);
+		}
+	}
+	
+	
+	@Override
+	public boolean overlap(BoundingBox other) {
+		for(int i = 0; i<3;i++){
+			if(max[i]<other.min[i]) {return false;}
+			if(min[i]>other.max[i]) {return false;}
+		}
+		return true;
 	}
 
 	

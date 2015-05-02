@@ -237,7 +237,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	}
 	
 	@Override
-	public Collection<Intersectable> getAll() {
+	public List<Intersectable> getAll() {
 		List<Intersectable> toReturn = new ArrayList<Intersectable>();
 		toReturn.add(this);
 		return toReturn;

@@ -102,7 +102,7 @@ public class Sphere extends Shape {
 	}
 	
 	@Override
-	public Collection<Intersectable> getAll() {
+	public List<Intersectable> getAll() {
 		List<Intersectable> toReturn = new ArrayList<Intersectable>();
 		toReturn.add(this);
 		return toReturn;

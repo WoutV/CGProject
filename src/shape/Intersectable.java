@@ -1,6 +1,6 @@
 package shape;
 
-import java.util.Collection;
+import java.util.List;
 
 import math.Ray;
 import math.Transformation;
@@ -15,9 +15,11 @@ public abstract class Intersectable {
 
 	protected Transformation transformation;
 	protected final double EPSILON = 0.00001;
+	private Ray lastRay;
 
 	public Intersectable() {
 		super();
+		lastRay = null;
 	}
 
 	/**
@@ -33,7 +35,7 @@ public abstract class Intersectable {
 
 	public abstract double[] getMaxCoordinates();
 
-	public abstract Collection<Intersectable> getAll();
+	public abstract List<Intersectable> getAll();
 
 	/**
 	 * @param method 
@@ -42,6 +44,18 @@ public abstract class Intersectable {
 	 */
 	public Intersectable getBoundingBox(String method) {
 		return this;
+	}
+
+	public boolean overlap(BoundingBox cell) {
+		return false;
+	}
+
+	public Ray getLastRay() {
+		return this.lastRay;
+	}
+	
+	public void setLastRay(Ray ray) {
+		this.lastRay = ray;
 	}
 
 }
