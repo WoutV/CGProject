@@ -19,7 +19,8 @@ public class SceneCreator {
 	
 	public List<Intersectable> getShapes(String method) {
 //		return this.shapes;
-		return createBVH(method);
+//		return createBVH(method);
+		return createRegularGrid(10);
 	}
 	
 	private List<Intersectable> createBVH(String method) {
@@ -62,7 +63,7 @@ public class SceneCreator {
 	}
 	
 	private List<Intersectable> createRegularGrid(int n) {		
-		List<Intersectable> cells = new ArrayList<Intersectable>();
+		
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
 		double minz = Double.MAX_VALUE;
@@ -72,6 +73,10 @@ public class SceneCreator {
 		for(Intersectable t : shapes) {
 			double[] minb =t.getMinCoordinates();
 			double [] maxb = t.getMaxCoordinates();
+//			for(int i = 0;i<3;i++)
+//				System.out.println(minb[i]);
+//			for(int i = 0;i<3;i++)
+//				System.out.println(maxb[i]);
 			if(minb[0] < minx) { minx = minb[0];}
 			if(minb[1] < miny) { miny = minb[1];}
 			if(minb[2] < minz) { minz = minb[2];}
@@ -81,20 +86,27 @@ public class SceneCreator {
 		}
 		double[] min = {minx,miny,minz};
 		double[] max = {maxx,maxy,maxz};
+		
 		double xStep = (maxx-minx)/n;
 		double yStep = (maxy-miny)/n;
 		double zStep = (maxz-minz)/n;
+		System.out.println(xStep);
+		System.out.println(yStep);
+		System.out.println(zStep);
 		
 		List<Intersectable> allBoxes = getAllBoundingBoxes();
 		
+		System.out.println("creating cellzzzzz");
+		System.out.println(allBoxes.size());
+		Intersectable[][][] cells = new Intersectable[n][n][n];
 		for(int i = 0;i<n;i++) {
 			for(int j = 0;j<n;j++) {
 				for(int k = 0;k<n;k++) {
-					double[] minBoundary = {min[0]+i*xStep,min[1]+j*yStep,min[3]+k*zStep};
-					double[] maxBoundary = {min[0]+(i+1)*xStep,min[1]+(j+1)*yStep,min[3]+(k+1)*zStep};
+					double[] minBoundary = {min[0]+i*xStep,min[1]+j*yStep,min[2]+k*zStep};
+					double[] maxBoundary = {minBoundary[0]+xStep,minBoundary[1]+yStep,minBoundary[2]+zStep};
 					BoundingBox cell = new BoundingBox(minBoundary, maxBoundary);
 					checkCell(cell, allBoxes);
-					cells.add(cell);
+					cells[i][j][k] = cell;
 				}
 			}
 		}
@@ -119,6 +131,7 @@ public class SceneCreator {
 		for(Intersectable bb : boxes) {
 			if(bb.overlap(cell)) {
 				cell.add(bb.getAll());
+				System.out.println(bb.getAll().get(0).getClass());
 			}
 		}
 	}

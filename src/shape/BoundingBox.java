@@ -298,7 +298,6 @@ public class BoundingBox extends Intersectable {
 		}
 	}
 	
-	
 	@Override
 	public boolean overlap(BoundingBox other) {
 		for(int i = 0; i<3;i++){

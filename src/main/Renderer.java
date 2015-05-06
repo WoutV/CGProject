@@ -93,10 +93,10 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-//		SceneCreator scene = randomBalls();
+		SceneCreator scene = box();
 		// createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
-//		createImage(scene, width, height);
-		testHeuristic(width, height);
+		createImage(scene, width, height);
+//		testHeuristic(width, height);
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
@@ -114,7 +114,8 @@ public class Renderer {
 		reporter.addProgressListener(frame);
 
 		List<Intersectable> shapes = scene.getShapes("sorted");
-		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+		System.out.println("rendering");
+//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -313,12 +314,12 @@ public class Renderer {
 				Color.WHITE);
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
-		addComplexObject(
-				scene,
-				redDiffuse,
-				id.append(Transformation.createScale(1,1,1)).append(
-						Transformation.createTranslation(0,0,0)), "bunny.obj");
-//		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
+//		addComplexObject(
+//				scene,
+//				redDiffuse,
+//				id.append(Transformation.createScale(1,1,1)).append(
+//						Transformation.createTranslation(0,0,0)), "bunny.obj");
+		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
 //		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
 //		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
 //				Transformation.createTranslation(0, -4, 0)));
@@ -330,8 +331,7 @@ public class Renderer {
 //				scene,
 //				yellowDiffuse,
 //				Transformation.createTranslation(4, -2, 2).append(
-//						Transformation.createScale(4, 4, 4).append(
-//								Transformation.createRotationY(90))),
+//								Transformation.createRotationY(90)),
 //				"bunny.obj");
 //
 //		//
