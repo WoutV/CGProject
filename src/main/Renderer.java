@@ -29,6 +29,7 @@ import shading.ExtendedColor;
 import shading.Material;
 import shading.Phong;
 import shading.TextureShading;
+import shape.Cylinder;
 import shape.Intersectable;
 import shape.Intersection;
 import shape.Sphere;
@@ -93,7 +94,7 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-		SceneCreator scene = box();
+		SceneCreator scene = randomBalls();
 		// createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
 		createImage(scene, width, height);
 //		testHeuristic(width, height);
@@ -182,7 +183,7 @@ public class Renderer {
 		// render the scene
 		List<Light> lights = scene.getLights();
 		ExtendedColor total = new ExtendedColor(0,0,0);
-		int max = Integer.MIN_VALUE;
+//		int max = Integer.MIN_VALUE;
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				ExtendedColor color = new ExtendedColor(0, 0, 0);
@@ -319,8 +320,8 @@ public class Renderer {
 //				redDiffuse,
 //				id.append(Transformation.createScale(1,1,1)).append(
 //						Transformation.createTranslation(0,0,0)), "bunny.obj");
-		scene.add(new Sphere(toTheLeft, 4, yellowDiffuse));
-//		scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
+//		scene.add(new Sphere(toTheLeft, 4, redDiffuse));
+		scene.add(new Cylinder(toTheLeft, redDiffuse, 5, 2));
 //		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
 //				Transformation.createTranslation(0, -4, 0)));
 //		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
@@ -571,7 +572,7 @@ public class Renderer {
 				Ray shadowRay = new Ray(hitPoint.add(toTheLight.scale(0.000001)), toTheLight.normalize());
 				boolean inShadow = inShadow(shapes, s, distanceToLight, shadowRay, hitPoint);
 				if (!inShadow) {
-					Vector n = hitIntersection.getNormal();
+//					Vector n = hitIntersection.getNormal();
 //					color = color.addColor(color,hitIntersection.getColor(pl));
 					color = color.addColor(hitIntersection.getColor(pl.getColor(),s));
 	//				color = color.addColor(new ExtendedColor((int)Math.abs(n.x*255), (int)Math.abs(n.y*255), (int)Math.abs(n.z*255)));

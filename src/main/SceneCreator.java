@@ -19,11 +19,12 @@ public class SceneCreator {
 	
 	public List<Intersectable> getShapes(String method) {
 //		return this.shapes;
-//		return createBVH(method);
-		return createRegularGrid(10);
+		return createBVH(method);
+//		return createRegularGrid();
 	}
 	
 	private List<Intersectable> createBVH(String method) {
+		if(method.equals(null)) {method = "geometric";}
 		System.out.println(shapes.size());
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
@@ -62,7 +63,7 @@ public class SceneCreator {
 		return toReturn;
 	}
 	
-	private List<Intersectable> createRegularGrid(int n) {		
+	private List<Intersectable> createRegularGrid() {		
 		
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
@@ -87,14 +88,16 @@ public class SceneCreator {
 		double[] min = {minx,miny,minz};
 		double[] max = {maxx,maxy,maxz};
 		
+		
+		List<Intersectable> allBoxes = getAllBoundingBoxes();
+		int n =  (int) Math.pow(allBoxes.size(), 1.0/3);
+		System.out.println("size of grid: "+n);
 		double xStep = (maxx-minx)/n;
 		double yStep = (maxy-miny)/n;
 		double zStep = (maxz-minz)/n;
 		System.out.println(xStep);
 		System.out.println(yStep);
 		System.out.println(zStep);
-		
-		List<Intersectable> allBoxes = getAllBoundingBoxes();
 		
 		System.out.println("creating cellzzzzz");
 		System.out.println(allBoxes.size());
@@ -131,7 +134,7 @@ public class SceneCreator {
 		for(Intersectable bb : boxes) {
 			if(bb.overlap(cell)) {
 				cell.add(bb.getAll());
-				System.out.println(bb.getAll().get(0).getClass());
+//				System.out.println(bb.getAll().get(0).getClass());
 			}
 		}
 	}
