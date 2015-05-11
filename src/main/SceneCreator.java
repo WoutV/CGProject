@@ -19,8 +19,8 @@ public class SceneCreator {
 	
 	public List<Intersectable> getShapes(String method) {
 //		return this.shapes;
-		return createBVH(method);
-//		return createRegularGrid();
+//		return createBVH(method);
+		return createRegularGrid();
 	}
 	
 	private List<Intersectable> createBVH(String method) {
@@ -91,16 +91,17 @@ public class SceneCreator {
 		
 		List<Intersectable> allBoxes = getAllBoundingBoxes();
 		int n =  (int) Math.pow(allBoxes.size(), 1.0/3);
+//		int n = 15;
 		System.out.println("size of grid: "+n);
-		double xStep = (maxx-minx)/n;
-		double yStep = (maxy-miny)/n;
-		double zStep = (maxz-minz)/n;
+		double xStep = Math.abs((maxx-minx)/n);
+		double yStep = Math.abs((maxy-miny)/n);
+		double zStep = Math.abs((maxz-minz)/n);
 		System.out.println(xStep);
 		System.out.println(yStep);
 		System.out.println(zStep);
-		
+//		
 		System.out.println("creating cellzzzzz");
-		System.out.println(allBoxes.size());
+		System.out.println("Amount of boxes to be checked " + allBoxes.size());
 		Intersectable[][][] cells = new Intersectable[n][n][n];
 		for(int i = 0;i<n;i++) {
 			for(int j = 0;j<n;j++) {
@@ -114,7 +115,11 @@ public class SceneCreator {
 			}
 		}
 		List<Intersectable> result = new ArrayList<Intersectable>();
-		result.add(new RegularGrid(cells,xStep,yStep,zStep,n));
+		Intersectable grid = new RegularGrid(cells,xStep,yStep,zStep,n);
+		BoundingBox bb = new BoundingBox(min,max);
+		bb.add(grid);
+		result.add(bb);
+		System.out.println("grid created G");
 		return result;
 	}
 
@@ -127,7 +132,7 @@ public class SceneCreator {
 		for(Intersectable shape : allShapes) {
 			allBoxes.add(shape.getBoundingBox(null));
 		}
-		return allBoxes;
+		return allShapes;
 	}
 
 	private void checkCell(BoundingBox cell, List<Intersectable> boxes) {
@@ -137,6 +142,8 @@ public class SceneCreator {
 //				System.out.println(bb.getAll().get(0).getClass());
 			}
 		}
+//		if(cell.getAll().size() > 0)
+//			System.out.println("amount added: " + cell.getAll().size());
 	}
 
 	public void add(Light light) {

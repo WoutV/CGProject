@@ -290,7 +290,4 @@ sorted
 14.70
 14.56
 14.56
-geometric
-#########
-geometric
-#########
+

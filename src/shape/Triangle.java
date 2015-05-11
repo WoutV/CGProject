@@ -141,7 +141,7 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		return null;
 	}
 
-	/**
+	/**russian
 	 * @param p
 	 * @return The normal in the given point, based on the barycentric coordinates. Not necessarily perpendicular to triangle, but perpendicular
 	 * to the mesh the triangle is part of.

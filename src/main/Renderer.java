@@ -57,8 +57,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1000;
-		int height =1000;
+		int width = 100;
+		int height = 100;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -94,7 +94,7 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-		SceneCreator scene = randomBalls();
+		SceneCreator scene = box();
 		// createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
 		createImage(scene, width, height);
 //		testHeuristic(width, height);
@@ -103,19 +103,20 @@ public class Renderer {
 	private static void createImage(SceneCreator scene, int width, int height) {
 		System.err.println("STARTED RENDERING + BOXES CREATING");
 		// initialize the camera
+		
+
+		List<Intersectable> shapes = scene.getShapes("sorted");
+		System.out.println("rendering");
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
-		ImagePanel panel = new ImagePanel(width, height);
-//		 ImagePanel panel = new ImagePanel(width*4, height*4);
+//		ImagePanel panel = new ImagePanel(width, height);
+		 ImagePanel panel = new ImagePanel(width*4, height*4);
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
 		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 		reporter.addProgressListener(frame);
-
-		List<Intersectable> shapes = scene.getShapes("sorted");
-		System.out.println("rendering");
 //		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
@@ -130,7 +131,7 @@ public class Renderer {
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(2.5,2.5, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 		ImagePanel panel = new ImagePanel(width, height);
 		generateMultipleScenes(width, height, camera, panel, "geometric");
-		generateMultipleScenes(width, height, camera, panel, "sorted");
+//		generateMultipleScenes(width, height, camera, panel, "sorted");
 
 		// save the output
 		
@@ -140,20 +141,20 @@ public class Renderer {
 			int height, PerspectiveCamera camera, ImagePanel panel, String method) {
 		
 		RenderFrame frame = new RenderFrame("Sphere", panel);
-		File file = new File("results.txt");
-        BufferedWriter output;
-		try {
-			output = new BufferedWriter(new FileWriter(file,true));
-			output.write(method);
-			output.newLine();
-			output.write("#########");
-			output.newLine();
-            output.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		for(int i = 0;i<25;i++) {
-			SceneCreator scene = teapots();
+//		File file = new File("results.txt");
+//        BufferedWriter output;
+//		try {
+//			output = new BufferedWriter(new FileWriter(file,true));
+//			output.write(method);
+//			output.newLine();
+//			output.write("#########");
+//			output.newLine();
+//            output.close();
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+		for(int i = 0;i<1;i++) {
+			SceneCreator scene = randomBalls();
 			List<Intersectable> shapes = scene.getShapes(method);
 			ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 			reporter.addProgressListener(frame);
@@ -162,16 +163,16 @@ public class Renderer {
 	
 			String time = reporter.time;
 			
-			File out = new File("results.txt");
-            BufferedWriter outp;
-			try {
-				outp = new BufferedWriter(new FileWriter(out,true));
-				outp.write(time);
-				outp.newLine();
-	            outp.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+//			File out = new File("results.txt");
+//            BufferedWriter outp;
+//			try {
+//				outp = new BufferedWriter(new FileWriter(out,true));
+//				outp.write(time);
+//				outp.newLine();
+//	            outp.close();
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
 			try {
 				ImageIO.write(panel.getImage(), "png", new File("output.png"));
 			} catch (IOException e) {
@@ -196,13 +197,13 @@ public class Renderer {
 				}
 				total.divide(AA_AMOUNT);
 				Color finalColor = color.toColor();
-				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
-//				for (int i = 0; i < 4; i++) {
-//					for (int j = 0; j < 4; j++) {
-//						panel.set(4 * x + i, 4 * y + j, 255, finalColor.getRed(),
-//								finalColor.getGreen(), finalColor.getBlue());
-//					}
-//				}
+//				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
+				for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
+						panel.set(4 * x + i, 4 * y + j, 255, finalColor.getRed(),
+								finalColor.getGreen(), finalColor.getBlue());
+					}
+				}
 			}
 			reporter.update(height);
 		}
@@ -321,20 +322,21 @@ public class Renderer {
 //				id.append(Transformation.createScale(1,1,1)).append(
 //						Transformation.createTranslation(0,0,0)), "bunny.obj");
 //		scene.add(new Sphere(toTheLeft, 4, redDiffuse));
-		scene.add(new Cylinder(toTheLeft, redDiffuse, 5, 2));
+//		scene.add(new Sphere(Transformation.createTranslation(-6,7, 10), 4, redDiffuse));
+//		scene.add(new Cylinder(toTheLeft, redDiffuse, 5, 2));
 //		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
 //				Transformation.createTranslation(0, -4, 0)));
 //		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
 //				Transformation.createTranslation(-12, 0, 0)));
 //		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
 //				Transformation.createTranslation(0, 0, 12)));
-//		addComplexObject(
-//				scene,
-//				yellowDiffuse,
-//				Transformation.createTranslation(4, -2, 2).append(
-//								Transformation.createRotationY(90)),
-//				"bunny.obj");
-//
+		addComplexObject(
+				scene,
+				yellowDiffuse,
+				Transformation.createTranslation(0, -2,-2).append(
+								Transformation.createRotationY(90)),
+				"bunny.obj");
+
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
 //		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,2,5), new Point(7,2,5)));
@@ -357,7 +359,7 @@ public class Renderer {
 			scene.add(new Sphere(trans, 0.3, color));
 		}
 		Diffuse red = new Diffuse(0.9, 0.0, Color.RED, Color.white);
-		addComplexObject(scene, red, Transformation.createTranslation(0,0,0).append(Transformation.createRotationY(90)), "bunny.obj");
+//		addComplexObject(scene, red, Transformation.createTranslation(0,0,0).append(Transformation.createRotationY(90)), "bunny.obj");
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
 		return scene;
 	}
@@ -471,26 +473,26 @@ public class Renderer {
 		// Transformation.createTranslation(0, 0, 12)));
 
 		//
-		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
-		scene.add(new PointLight(new Point(-10, 2, 5), Color.WHITE));
+//		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
+//		scene.add(new PointLight(new Point(-10, 2, 5), Color.WHITE));
 		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		scene.add(new PointLight(new Point(1, 0, -10000), Color.WHITE));
-		scene.add(new PointLight(new Point(-1, 0, -10000), Color.WHITE));
+//		scene.add(new PointLight(new Point(1, 0, -10000), Color.WHITE));
+//		scene.add(new PointLight(new Point(-1, 0, -10000), Color.WHITE));
 
 		addComplexObject(scene, greenPhong,
-				Transformation.createTranslation(0, 0, -7), "dragon.obj");
-		addComplexObject(scene, yellow,
-				Transformation.createTranslation(-1, 0, -7), "dragon.obj");
-		addComplexObject(scene, bluePhong,
-				Transformation.createTranslation(1, 0, -7), "dragon.obj");
-		addComplexObject(scene, red,
-				Transformation.createTranslation(-0.5, 1, -7), "dragon.obj");
-		addComplexObject(scene, orangePhong,
-				Transformation.createTranslation(0.5, 1, -7), "dragon.obj");
-		addComplexObject(scene, indigoPhong,
-				Transformation.createTranslation(-0.5, -1, -7), "dragon.obj");
-		addComplexObject(scene, violetPhong,
-				Transformation.createTranslation(0.5, -1, -7), "dragon.obj");
+				Transformation.createTranslation(0, 0, 0), "dragon.obj");
+//		addComplexObject(scene, yellow,
+//				Transformation.createTranslation(-1, 0, -7), "dragon.obj");
+//		addComplexObject(scene, bluePhong,
+//				Transformation.createTranslation(1, 0, -7), "dragon.obj");
+//		addComplexObject(scene, red,
+//				Transformation.createTranslation(-0.5, 1, -7), "dragon.obj");
+//		addComplexObject(scene, orangePhong,
+//				Transformation.createTranslation(0.5, 1, -7), "dragon.obj");
+//		addComplexObject(scene, indigoPhong,
+//				Transformation.createTranslation(-0.5, -1, -7), "dragon.obj");
+//		addComplexObject(scene, violetPhong,
+//				Transformation.createTranslation(0.5, -1, -7), "dragon.obj");
 		return scene;
 	}
 
@@ -508,9 +510,9 @@ public class Renderer {
 	}
 
 	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-//        ObjParser parser = new ObjParser("/home/wout/Documents/IDeaprojects/CGProject/"+fileName);
+        ObjParser parser = new ObjParser(fileName);
 //
-		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
+//		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
 		try {
 			object = parser.parseObjFile();

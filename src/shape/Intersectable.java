@@ -15,7 +15,7 @@ public abstract class Intersectable {
 
 	protected Transformation transformation;
 	protected final double EPSILON = 0.00001;
-	private Ray lastRay;
+	private Ray lastRay = null;
 
 	public Intersectable() {
 		super();
@@ -47,7 +47,11 @@ public abstract class Intersectable {
 	}
 
 	public boolean overlap(BoundingBox cell) {
-		return false;
+		for(int i = 0; i<3;i++){
+			if(getMaxCoordinates()[i]<cell.getMinCoordinates()[i]) {return false;}
+			if(getMinCoordinates()[i]>cell.getMaxCoordinates()[i]) {return false;}
+		}
+		return true;
 	}
 
 	public Ray getLastRay() {
