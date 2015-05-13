@@ -62,4 +62,8 @@ public abstract class Intersectable {
 		this.lastRay = ray;
 	}
 
+	public double getMiddleCoordinates(int axis) {
+		return (getMinCoordinates()[axis]+getMaxCoordinates()[axis])/2;
+	}
+
 }

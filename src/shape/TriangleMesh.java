@@ -100,23 +100,23 @@ public class TriangleMesh extends Shape {
 		return toReturn;
 	}
 	
-	@Override
-	public Intersectable getBoundingBox(String method) {
-		double [] min = getMinCoordinates();
-		double [] max = getMaxCoordinates();
-		BoundingBox bb = new BoundingBox(min, max);
-		bb.add(this);
-		switch (method) {
-		case "geometric":
-			bb.split(0);
-			break;
-		case "sorted":
-			bb.splitSorted(0);
-			break;
-		default:
-			break;
-		}
-		return bb;
-	}
+//	@Override
+//	public Intersectable getBoundingBox(String method) {
+//		double [] min = getMinCoordinates();
+//		double [] max = getMaxCoordinates();
+//		BoundingBox bb = new BoundingBox(min, max);
+//		bb.add(this);
+//		switch (method) {
+//		case "geometric":
+//			bb.split(0);
+//			break;
+//		case "sorted":
+//			bb.splitSorted(0);
+//			break;
+//		default:
+//			break;
+//		}
+//		return bb;
+//	}
 
 }

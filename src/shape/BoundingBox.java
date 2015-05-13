@@ -107,12 +107,12 @@ public class BoundingBox extends Intersectable {
 		return toReturn;
 	}
 	
-	public void split(int axis) {
+	public void split(int axis, String metric) {
 		List<Intersectable> all = new ArrayList<Intersectable>();
 		for(Intersectable in : content) {
 			all.addAll(in.getAll());
 		}
-		double limit = min[axis] + (max[axis]-min[axis])/2;
+		double limit = (max[axis] + min[axis])/2;
 		if(!(all.size() < 2)){
 			double minx = Double.MAX_VALUE;
 			double miny = Double.MAX_VALUE;
@@ -129,12 +129,24 @@ public class BoundingBox extends Intersectable {
 			List<Intersectable> firstList = new ArrayList<Intersectable>();
 			List<Intersectable> secondList = new ArrayList<Intersectable>();
 			for(Intersectable t : all) {
-				double [] min = t.getMinCoordinates();
-				if(min[axis] > limit) {
+				double[] minc = t.getMinCoordinates();
+				double[] maxc = t.getMaxCoordinates();
+				boolean left = false;
+				switch (metric) {
+				case "min":
+					left = (minc[axis] > limit);
+					break;
+				case "mid":
+					left = (maxc[axis]+minc[axis])/2 > limit;
+					break;
+				default:
+					left = (minc[axis] > limit);
+				}
+				if(left) {
 					secondList.add(t);
-					if(min[0] < minx2) { minx2 = min[0];}
-					if(min[1] < miny2) { miny2 = min[1];}
-					if(min[2] < minz2) { minz2 = min[2];}
+					if(minc[0] < minx2) { minx2 = minc[0];}
+					if(minc[1] < miny2) { miny2 = minc[1];}
+					if(minc[2] < minz2) { minz2 = minc[2];}
 					double [] max = t.getMaxCoordinates();
 					if(max[0] > maxx2) { maxx2 = max[0];}
 					if(max[1] > maxy2) { maxy2 = max[1];}
@@ -154,12 +166,14 @@ public class BoundingBox extends Intersectable {
 			double[] min2 = {minx2,miny2, minz2};
 			double[] max1 = {maxx, maxy, maxz};
 			double[] max2 = {maxx2, maxy2, maxz2};
-			setNewContent(axis, min1, max1, min2, max2, firstList, secondList);
+			System.out.println(firstList.size()+"in eerste box");
+			System.out.println(secondList.size()+"in tweede");
+			setNewContent(axis, min1, max1, min2, max2, firstList, secondList, metric);
 		}
 	}
 
 	private void setNewContent(int axis, double[] min1, double[] max1,double[] min2, double[] max2, List<Intersectable> firstList,
-			List<Intersectable> secondList) {
+			List<Intersectable> secondList, String metric) {
 		
 		BoundingBox first;
 		BoundingBox second;
@@ -173,16 +187,16 @@ public class BoundingBox extends Intersectable {
 			for(int i = 0;i<secondList.size();i++) {
 				second.add(secondList.get(i));
 			}
-			first.split((axis+1)%3);
+			first.split((axis+1)%3, metric);
 			newContent.add(first);
-			second.split((axis+1)%3);
+			second.split((axis+1)%3, metric);
 			newContent.add(second);
 			content = newContent;
 		}
 	}
 	
 	private void setNewSortedContent(int axis, double[] min1, double[] max1,double[] min2, double[] max2, List<Intersectable> firstList,
-			List<Intersectable> secondList) {
+			List<Intersectable> secondList, String metric) {
 		
 		BoundingBox first;
 		BoundingBox second;
@@ -196,15 +210,15 @@ public class BoundingBox extends Intersectable {
 			for(int i = 0;i<secondList.size();i++) {
 				second.add(secondList.get(i));
 			}
-			first.splitSorted((axis+1)%3);
+			first.splitSorted((axis+1)%3, metric);
 			newContent.add(first);
-			second.splitSorted((axis+1)%3);
+			second.splitSorted((axis+1)%3, metric);
 			newContent.add(second);
 			content = newContent;
 		}
 	}
 	
-	public void splitSorted(int axis) {
+	public void splitSorted(int axis, String metric) {
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
 		double minz = Double.MAX_VALUE;
@@ -225,7 +239,7 @@ public class BoundingBox extends Intersectable {
 		for(int i = 0; i < all.size(); i++) {
 			sorted[i] = all.get(i);
 		}
-		quickSort(sorted, 0, sorted.length-1, axis);
+		quickSort(sorted, 0, sorted.length-1, axis, metric);
 		List<Intersectable> firstList = new ArrayList<Intersectable>();
 		List<Intersectable> secondList = new ArrayList<Intersectable>();
 		for(int i = 0;i < sorted.length/2; i++) {
@@ -254,41 +268,83 @@ public class BoundingBox extends Intersectable {
 		double[] min2 = {minx2,miny2, minz2};
 		double[] max1 = {maxx, maxy, maxz};
 		double[] max2 = {maxx2, maxy2, maxz2};
-		setNewSortedContent(axis, min1, max1, min2, max2, firstList, secondList);
+		setNewSortedContent(axis, min1, max1, min2, max2, firstList, secondList, metric);
 	}
 
-	private int partition(Intersectable[] list, int left, int right, int axis) {
-	      int i = left, j = right;
-	      Intersectable tmp;
-	      double pivot = list[(left + right) / 2].getMinCoordinates()[axis];
-	      while (i <= j) {
-
-	            while (list[i].getMinCoordinates()[axis] < pivot) {
-	                  i++;
-	            }
-	            while (list[j].getMinCoordinates()[axis] > pivot) {
-	                  j--;
-	            }
-	            if (i <= j) {
-	                  tmp = list[i];
-	                  list[i] = list[j];
-	                  list[j] = tmp;
-	                  i++;
-	                  j--;
-	            }
-	      }
-	      return i;
+	private int partition(Intersectable[] list, int left, int right, int axis, String metric) {
+		
+		
+		switch (metric) {
+		case "min":
+			return partitionMin(list,left,right,axis);
+		case "mid":
+			return partitionMiddle(list, left,right,axis);
+		default:
+			return partitionMin(list,left,right,axis);
+		}
+		
+		
+	      
 	}
 
 	 
 
-	private void quickSort(Intersectable[] list, int left, int right, int axis) {
-	      int index = partition(list, left, right, axis);
+	private int partitionMiddle(Intersectable[] list, int left, int right,
+			int axis) {
+		int i = left, j = right;
+		Intersectable tmp;
+//		double min = list[(left + right) / 2].getMinCoordinates()[axis];
+//		double max = list[(left + right) / 2].getMaxCoordinates()[axis];
+		double pivot = list[(left+right)/2].getMiddleCoordinates(axis);
+		while (i <= j) {
+			while (list[i].getMiddleCoordinates(axis) < pivot) {
+				i++;
+			}
+			while (list[j].getMiddleCoordinates(axis) > pivot) {
+				j--;
+			}
+			if (i <= j) {
+				tmp = list[i];
+				list[i] = list[j];
+				list[j] = tmp;
+				i++;
+				j--;
+			}
+		}
+		return i;
+	}
+
+	private int partitionMin(Intersectable[] list, int left, int right, int axis) {
+		int i = left, j = right;
+		Intersectable tmp;
+		double pivot = list[(left + right) / 2].getMinCoordinates()[axis];
+		while (i <= j) {
+
+			while (list[i].getMinCoordinates()[axis] < pivot) {
+				i++;
+			}
+			while (list[j].getMinCoordinates()[axis] > pivot) {
+				j--;
+			}
+			if (i <= j) {
+				tmp = list[i];
+				list[i] = list[j];
+				list[j] = tmp;
+				i++;
+				j--;
+			}
+		}
+		return i;
+
+	}
+
+	private void quickSort(Intersectable[] list, int left, int right, int axis, String metric) {
+	      int index = partition(list, left, right, axis, metric);
 	      if (left < index - 1) {
-	            quickSort(list, left, index - 1, axis);
+	            quickSort(list, left, index - 1, axis, metric);
 	      }
 	      if (index < right) {
-	            quickSort(list, index, right, axis);
+	            quickSort(list, index, right, axis, metric);
 	      }	
 	}
 

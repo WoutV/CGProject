@@ -47,7 +47,7 @@ public class Renderer {
 	private static final int AA_AMOUNT = 1;
 	private static final int SHADOW_AMOUNT = 1;
 	public static int MAX;
-	private static Random rand = new Random();
+	
 	private static HashMap<String,TriangleMesh> objects = new HashMap<String,TriangleMesh>();
 
 	/**
@@ -57,8 +57,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 100;
-		int height = 100;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -94,10 +94,10 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-		SceneCreator scene = box();
-		// createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
-		createImage(scene, width, height);
-//		testHeuristic(width, height);
+//		SceneCreator scene = SceneCreator.box();
+//		 createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
+//		createImage(scene, width, height);
+		testHeuristic(width, height);
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
@@ -105,13 +105,13 @@ public class Renderer {
 		// initialize the camera
 		
 
-		List<Intersectable> shapes = scene.getShapes("sorted");
+		List<Intersectable> shapes = scene.getShapes("bvh","geometric","");
 		System.out.println("rendering");
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
-//		ImagePanel panel = new ImagePanel(width, height);
-		 ImagePanel panel = new ImagePanel(width*4, height*4);
+		ImagePanel panel = new ImagePanel(width, height);
+//		 ImagePanel panel = new ImagePanel(width*4, height*4);
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 
 		// initialize the progress reporter
@@ -128,34 +128,67 @@ public class Renderer {
 	}
 	
 	private static void testHeuristic(int width, int height) {
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(2.5,2.5, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 		ImagePanel panel = new ImagePanel(width, height);
-		generateMultipleScenes(width, height, camera, panel, "geometric");
-//		generateMultipleScenes(width, height, camera, panel, "sorted");
+//		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric","", "randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted","", "randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "grid", "","", "randomballs");
 
+//		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric","", "cornerballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "","cornerballs");
+//		generateMultipleScenes(width, height, camera, panel, "grid", "","", "cornerballs");
+		
+		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "mid", "teapots");
+		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "min", "teapots");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "teapots");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "grid", null, "teapots");
 		// save the output
 		
 	}
 
 	private static void generateMultipleScenes(int width,
-			int height, PerspectiveCamera camera, ImagePanel panel, String method) {
+			int height, PerspectiveCamera camera, ImagePanel panel, String method, String sort, String metric, String sceneType) {
 		
 		RenderFrame frame = new RenderFrame("Sphere", panel);
-//		File file = new File("results.txt");
-//        BufferedWriter output;
-//		try {
-//			output = new BufferedWriter(new FileWriter(file,true));
-//			output.write(method);
-//			output.newLine();
-//			output.write("#########");
-//			output.newLine();
-//            output.close();
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		}
-		for(int i = 0;i<1;i++) {
-			SceneCreator scene = randomBalls();
-			List<Intersectable> shapes = scene.getShapes(method);
+		File file = new File("results.txt");
+        BufferedWriter output;
+		try {
+			output = new BufferedWriter(new FileWriter(file,true));
+			output.write(sceneType);
+			output.newLine();
+			output.write(method);
+			output.newLine();
+			if(sort!=null){
+				output.write(sort);
+				output.newLine();
+			}
+			if(metric!=null){
+				output.write(metric);
+				output.newLine();
+			}
+			output.write("#########");
+			output.newLine();
+            output.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		for(int i = 0;i<100;i++) {
+			SceneCreator scene = null;
+			switch (sceneType) {
+			case "randomballs":
+				scene = SceneCreator.randomBalls();
+				break;
+			case "cornerballs":
+				scene = SceneCreator.randomBallsCorner2();
+				break;
+			case "teapots":
+				scene = SceneCreator.teapots();
+				break;
+			default:
+				break;
+			}
+			List<Intersectable> shapes = scene.getShapes(method,sort, metric);
 			ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 			reporter.addProgressListener(frame);
 //			renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
@@ -163,16 +196,16 @@ public class Renderer {
 	
 			String time = reporter.time;
 			
-//			File out = new File("results.txt");
-//            BufferedWriter outp;
-//			try {
-//				outp = new BufferedWriter(new FileWriter(out,true));
-//				outp.write(time);
-//				outp.newLine();
-//	            outp.close();
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
+			File out = new File("results.txt");
+            BufferedWriter outp;
+			try {
+				outp = new BufferedWriter(new FileWriter(out,true));
+				outp.write(time);
+				outp.newLine();
+	            outp.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			try {
 				ImageIO.write(panel.getImage(), "png", new File("output.png"));
 			} catch (IOException e) {
@@ -197,13 +230,13 @@ public class Renderer {
 				}
 				total.divide(AA_AMOUNT);
 				Color finalColor = color.toColor();
-//				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
-				for (int i = 0; i < 4; i++) {
-					for (int j = 0; j < 4; j++) {
-						panel.set(4 * x + i, 4 * y + j, 255, finalColor.getRed(),
-								finalColor.getGreen(), finalColor.getBlue());
-					}
-				}
+				panel.set(x, y, 255, finalColor.getRed(), finalColor.getGreen(),finalColor.getBlue());
+//				for (int i = 0; i < 4; i++) {
+//					for (int j = 0; j < 4; j++) {
+//						panel.set(4 * x + i, 4 * y + j, 255, finalColor.getRed(),
+//								finalColor.getGreen(), finalColor.getBlue());
+//					}
+//				}
 			}
 			reporter.update(height);
 		}
@@ -289,212 +322,7 @@ public class Renderer {
 		return color;
 	}
 
-	private static SceneCreator teapot() {
-		SceneCreator scene = new SceneCreator();
-
-		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.GREEN, Color.WHITE);
-
-		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
-				Color.WHITE);
-		// scene.add(new Sphere(id, 4, texture));
-		addComplexObject(scene, red, Transformation.createTranslation(0,0,0).append(Transformation.createRotationY(90)), "teapot.obj");
-
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
-
-	private static SceneCreator box() {
-		SceneCreator scene = new SceneCreator();
-		Transformation id = Transformation.createTranslation(0, 0, 10);
-		Transformation toTheLeft = Transformation.createTranslation(6, -7, 10);
-		Diffuse redDiffuse = new Diffuse(0.9, 0.0, Color.RED, Color.WHITE);
-		Material p2 = new Phong(Color.white, 0.0, 20.0, 0.8, redDiffuse,
-				Color.WHITE);
-//		Material texture = createTexture("textures/dots.jpg", p2);
-		Diffuse yellowDiffuse = new Diffuse(0.9, 0.3, Color.yellow, Color.yellow);
-		Material whiteDiffuse = new Diffuse(0.9, 0.1, new Color(188, 195, 200),
-				Color.WHITE);
-		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
-				Color.WHITE);
-//		addComplexObject(
-//				scene,
-//				redDiffuse,
-//				id.append(Transformation.createScale(1,1,1)).append(
-//						Transformation.createTranslation(0,0,0)), "bunny.obj");
-//		scene.add(new Sphere(toTheLeft, 4, redDiffuse));
-//		scene.add(new Sphere(Transformation.createTranslation(-6,7, 10), 4, redDiffuse));
-//		scene.add(new Cylinder(toTheLeft, redDiffuse, 5, 2));
-//		scene.add(new Plane(new Vector(0, 1, 0), yellowDiffuse, new Point(),
-//				Transformation.createTranslation(0, -4, 0)));
-//		scene.add(new Plane(new Vector(1, 0, 0), redDiffuse, new Point(),
-//				Transformation.createTranslation(-12, 0, 0)));
-//		scene.add(new Plane(new Vector(0, 0, -1), whiteDiffuse, new Point(),
-//				Transformation.createTranslation(0, 0, 12)));
-		addComplexObject(
-				scene,
-				yellowDiffuse,
-				Transformation.createTranslation(0, -2,-2).append(
-								Transformation.createRotationY(90)),
-				"bunny.obj");
-
-//		//
-//		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
-//		scene.add(new AreaLight(Color.white	, new Point(5,5,5), new Point(5,2,5), new Point(7,2,5)));
-//		scene.add(new PointLight(new Point(10, 0, 5), Color.WHITE));
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
 	
-	private static SceneCreator randomBalls() {
-		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<5000;i++) {
-			float x = rand.nextFloat();
-			float y = rand.nextFloat();
-			float z = rand.nextFloat();
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
-			Transformation trans = Transformation.createTranslation(x*5,y*5,z);
-			scene.add(new Sphere(trans, 0.3, color));
-		}
-		Diffuse red = new Diffuse(0.9, 0.0, Color.RED, Color.white);
-//		addComplexObject(scene, red, Transformation.createTranslation(0,0,0).append(Transformation.createRotationY(90)), "bunny.obj");
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
-	
-	private static SceneCreator teapots() {
-		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<500;i++) {
-			float x = rand.nextFloat();
-			float y = rand.nextFloat();
-			float z = rand.nextFloat();
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
-			addComplexObject(scene, color, Transformation.createTranslation(x*5,y*5,z).append(Transformation.createScale(0.1,0.1,0.1)), "teapot.obj");
-		}		
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
-	
-	private static SceneCreator randomBallsCorner() {
-		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<5000;i++) {
-			float x = rand.nextFloat();
-			float y = rand.nextFloat();
-			float z = rand.nextFloat();
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			System.out.println(255*r);
-			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
-			Transformation trans = Transformation.createTranslation(x+5,y+5,z);
-			scene.add(new Sphere(trans, 0.1, color));
-		}
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
-	
-	private static SceneCreator randomBallsCorner2() {
-		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<2500;i++) {
-			float x = rand.nextFloat();
-			float y = rand.nextFloat();
-			float z = rand.nextFloat();
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			System.out.println(255*r);
-			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
-			Transformation trans = Transformation.createTranslation(x+5,y+5,z);
-			scene.add(new Sphere(trans, 0.1, color));
-		}
-		for(int i = 0;i<2500;i++) {
-			float x = rand.nextFloat();
-			float y = rand.nextFloat();
-			float z = rand.nextFloat();
-			float r = rand.nextFloat();
-			float g = rand.nextFloat();
-			float b = rand.nextFloat();
-			System.out.println(255*r);
-			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
-			Transformation trans = Transformation.createTranslation(-x,-y,z);
-			scene.add(new Sphere(trans, 0.1, color));
-		}
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-		return scene;
-	}
-
-	/**
-	 * Initialize the scene. Add other shapes and lights here.
-	 * 
-	 * @return
-	 */
-	private static SceneCreator rainbowDragons() {
-		// materials
-
-		SceneCreator scene = new SceneCreator();
-		Diffuse redDiffuse = new Diffuse(0.9, 0.1, Color.RED, Color.WHITE);
-		Diffuse yellowDiffuse = new Diffuse(0.9, 0.1, Color.yellow, Color.WHITE);
-		Diffuse orange = new Diffuse(0.9, 0.1, new Color(255, 127, 0),
-				Color.WHITE);
-		Diffuse green = new Diffuse(0.9, 0.1, new Color(0, 255, 0), Color.WHITE);
-		Diffuse blue = new Diffuse(0.9, 0.1, new Color(0, 0, 255), Color.WHITE);
-		Diffuse indigo = new Diffuse(0.9, 0.1, new Color(75, 0, 130),
-				Color.WHITE);
-		Diffuse violet = new Diffuse(0.9, 0.1, new Color(143, 0, 255),
-				Color.WHITE);
-		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
-				Color.WHITE);
-		Material yellow = new Phong(Color.white, 0.0, 25.0, 0.8, yellowDiffuse,
-				Color.WHITE);
-		Material orangePhong = new Phong(Color.white, 0.0, 25.0, 0.8, orange,
-				Color.WHITE);
-		Material greenPhong = new Phong(Color.white, 0.0, 25.0, 0.8, green,
-				Color.WHITE);
-		Material bluePhong = new Phong(Color.white, 0.0, 25.0, 0.8, blue,
-				Color.WHITE);
-		Material indigoPhong = new Phong(Color.white, 0.0, 25.0, 0.8, indigo,
-				Color.WHITE);
-
-		Material violetPhong = new Phong(Color.white, 0.0, 25.0, 0.8, violet,
-				Color.WHITE);
-
-		// scene.add(new Sphere(id, 4, p1));
-		// scene.add(new Cylinder(toTheLeft, yellowDiffuse, 5, 2));
-		// scene.add(new Plane(new Vector(0,1,0), whiteDiffuse, new Point(),
-		// Transformation.createTranslation(0, -4, 0)));
-		// scene.add(new Plane(new Vector(1,0,0), redDiffuse, new Point(),
-		// Transformation.createTranslation(-12, 0, 0)));
-		// scene.add(new Plane(new Vector(0,0,-1), whiteDiffuse, new Point(),
-		// Transformation.createTranslation(0, 0, 12)));
-
-		//
-//		scene.add(new PointLight(new Point(5, 5, 0), Color.WHITE));
-//		scene.add(new PointLight(new Point(-10, 2, 5), Color.WHITE));
-		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
-//		scene.add(new PointLight(new Point(1, 0, -10000), Color.WHITE));
-//		scene.add(new PointLight(new Point(-1, 0, -10000), Color.WHITE));
-
-		addComplexObject(scene, greenPhong,
-				Transformation.createTranslation(0, 0, 0), "dragon.obj");
-//		addComplexObject(scene, yellow,
-//				Transformation.createTranslation(-1, 0, -7), "dragon.obj");
-//		addComplexObject(scene, bluePhong,
-//				Transformation.createTranslation(1, 0, -7), "dragon.obj");
-//		addComplexObject(scene, red,
-//				Transformation.createTranslation(-0.5, 1, -7), "dragon.obj");
-//		addComplexObject(scene, orangePhong,
-//				Transformation.createTranslation(0.5, 1, -7), "dragon.obj");
-//		addComplexObject(scene, indigoPhong,
-//				Transformation.createTranslation(-0.5, -1, -7), "dragon.obj");
-//		addComplexObject(scene, violetPhong,
-//				Transformation.createTranslation(0.5, -1, -7), "dragon.obj");
-		return scene;
-	}
 
 	private static Material createTexture(String fileName, Material shadingModel) {
 		File file = new File(fileName);
@@ -509,22 +337,7 @@ public class Renderer {
 		return texture;
 	}
 
-	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-        ObjParser parser = new ObjParser(fileName);
-//
-//		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
-		TriangleMesh object = null;
-		try {
-			object = parser.parseObjFile();
-			object.setTransformation(transformation);
-			object.setShading(shading);
-			scene.add(object);
-		} catch (FileNotFoundException e1) {
-			System.err.println("File not found!");
-		} catch (IOException e1) {
-			System.err.println("Error in processing .obj file!");
-		}
-	}
+	
 
 	/**
 	 * Calculates the intersection that is closest to the ray origin, and in

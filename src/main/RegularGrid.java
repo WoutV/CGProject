@@ -31,15 +31,12 @@ public class RegularGrid extends Intersectable {
 		Intersectable currentCell = null;
 		Intersection hitIntersection = null;
 		int[] next = getFirstCell(ray);
-//		System.out.println("FIRST "+next[0]+" "+next[1]+" "+next[2]);
 		
 		Vector dir = ray.direction;
-//		int traversed = 0;
 		
 		try {
 			currentCell = cells[next[0]][next[1]][next[2]];
 		} catch (IndexOutOfBoundsException e) {
-//			System.out.println("crossed "+traversed);
 			return hitIntersection;
 		}
 		Intersection inters = currentCell.intersect(ray);
@@ -55,27 +52,19 @@ public class RegularGrid extends Intersectable {
 		double tStepx = Math.abs(x / dir.x);
 		double tStepy = Math.abs(y / dir.y);
 		double tStepz = Math.abs(z / dir.z);
-//		System.out.println("NEXT COORDINATES");
-//		System.out.println(nextX);
-//		System.out.println(nextY);
-//		System.out.println(nextZ);
 		double min = Double.MAX_VALUE;
 		boolean done = false;
 		while(!done) {
-//			System.out.println("Nextcell "+next[0]+" "+next[1]+" "+next[2]);
 			if(next[0] == -1 | next[1] == -1 | next[2] == -1) {return null;}
 			try {
 				currentCell = cells[next[0]][next[1]][next[2]];
 			} catch (IndexOutOfBoundsException e) {
-//				System.out.println("crossed "+traversed);
 				return hitIntersection;
 			}
-//			System.out.println("elementen in deze cel: " + currentCell.getAll().size());
 			for (Intersectable i : currentCell.getAll()) {
-//				System.out.println(i.getClass());
 				Intersection newI = i.intersect(ray);
 				if (newI!=null && isInCell(currentCell, newI.getPoint())) {
-//					if (!ray.equals(i.getLastRay())) {
+					if (!ray.equals(i.getLastRay())) {
 						i.setLastRay(ray);
 						Double t = newI.getT();
 						if (t + 1 > 0.001 & t > 0.01) {
@@ -84,10 +73,10 @@ public class RegularGrid extends Intersectable {
 								hitIntersection = newI;
 							}
 						}
-//					}
+					}
 				}
 			}
-//			traversed++;
+			if(hitIntersection!=null) {return hitIntersection;}
 			if (getMin(nextX,nextY,nextZ).equals(nextX)) {
 				next[0]++;
 				nextX+=tStepx;
@@ -99,7 +88,6 @@ public class RegularGrid extends Intersectable {
 				nextZ+=tStepz;
 			}
 		}
-//		System.out.println("crossed "+traversed);
 		return hitIntersection;
 	}
 
@@ -132,7 +120,6 @@ public class RegularGrid extends Intersectable {
 		} else { 
 			result[2] = Double.MAX_VALUE;
 		}
-		
 		return result;
 	}
 
@@ -164,45 +151,6 @@ public class RegularGrid extends Intersectable {
 			}
 		}
 		return cellNb;
-	}
-
-	private double getIntersection(Intersectable cell, Ray ray) {
-		double minx, maxx;
-		double miny,maxy;
-		double minz,maxz;
-		double[] min = cell.getMinCoordinates();
-		double[] max = cell.getMaxCoordinates();
-		if(ray.direction.x >= 0){
-			minx = (min[0]-ray.origin.x) / ray.direction.x;
-			maxx = (max[0]-ray.origin.x) / ray.direction.x;
-		} else {
-			minx = (max[0]-ray.origin.x) / ray.direction.x;
-			maxx = (min[0]-ray.origin.x) / ray.direction.x;
-		}
-		
-		if(ray.direction.y >= 0){
-			miny = (min[1]-ray.origin.y) / ray.direction.y;
-			maxy = (max[1]-ray.origin.y) / ray.direction.y;
-		} else {
-			miny = (max[1]-ray.origin.y) / ray.direction.y;
-			maxy = (min[1]-ray.origin.y) / ray.direction.y;
-		}
-
-		if(ray.direction.z >= 0){
-			minz= (min[2]-ray.origin.z) / ray.direction.z;
-			maxz = (max[2]-ray.origin.z) / ray.direction.z;
-		} else {
-			minz = (max[2]-ray.origin.z) / ray.direction.z;
-			maxz = (min[2]-ray.origin.z) / ray.direction.z;
-		}
-		
-		double tmin = Math.max(minx, Math.max(miny, minz));
-		double tmax = Math.min(maxx, Math.min(maxy, maxz));
-		
-		if(tmin <= tmax) {
-			return tmin;
-		}
-		return Double.MAX_VALUE;
 	}
 
 	private boolean isInCell(Intersectable currentCell, Point point) {
