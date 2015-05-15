@@ -105,9 +105,9 @@ public class Renderer {
 		// initialize the camera
 		
 
-		List<Intersectable> shapes = scene.getShapes("bvh","geometric","");
+		List<Intersectable> shapes = scene.getShapes("bvh","sorted","");
 		System.out.println("rendering");
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -5), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -138,9 +138,9 @@ public class Renderer {
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "","cornerballs");
 //		generateMultipleScenes(width, height, camera, panel, "grid", "","", "cornerballs");
 		
-		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "mid", "teapots");
-		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "min", "teapots");
-		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "mid", "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "min", "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "teapots");
 		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "teapots");
 //		generateMultipleScenes(width, height, camera, panel, "grid", null, "teapots");
 		// save the output
@@ -151,7 +151,7 @@ public class Renderer {
 			int height, PerspectiveCamera camera, ImagePanel panel, String method, String sort, String metric, String sceneType) {
 		
 		RenderFrame frame = new RenderFrame("Sphere", panel);
-		File file = new File("results.txt");
+		File file = new File("results2.txt");
         BufferedWriter output;
 		try {
 			output = new BufferedWriter(new FileWriter(file,true));
@@ -173,7 +173,7 @@ public class Renderer {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for(int i = 0;i<100;i++) {
+		for(int i = 0;i<59;i++) {
 			SceneCreator scene = null;
 			switch (sceneType) {
 			case "randomballs":
@@ -196,7 +196,7 @@ public class Renderer {
 	
 			String time = reporter.time;
 			
-			File out = new File("results.txt");
+			File out = new File("results2.txt");
             BufferedWriter outp;
 			try {
 				outp = new BufferedWriter(new FileWriter(out,true));

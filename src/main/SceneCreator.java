@@ -1,7 +1,10 @@
 package main;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +79,8 @@ public class SceneCreator {
 			break;
 		case "sorted":
 			box.splitSorted(0, metric);
+			
+	        
 //			box.splitSorted(0);
 			break;
 		default:
@@ -222,7 +227,7 @@ public class SceneCreator {
 				yellowDiffuse,
 				Transformation.createTranslation(0, -2,-2).append(
 								Transformation.createRotationY(90)),
-				"bunny.obj");
+				"dragon.obj");
 
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));

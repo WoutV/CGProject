@@ -1,5 +1,9 @@
 package shape;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -239,7 +243,19 @@ public class BoundingBox extends Intersectable {
 		for(int i = 0; i < all.size(); i++) {
 			sorted[i] = all.get(i);
 		}
+		long start = System.currentTimeMillis();
 		quickSort(sorted, 0, sorted.length-1, axis, metric);
+		long stop = System.currentTimeMillis();
+		File file = new File("time.txt");
+		BufferedWriter output;
+		try {
+			output = new BufferedWriter(new FileWriter(file,true));
+			output.write("elapsed: "+(stop-start));
+			output.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		List<Intersectable> firstList = new ArrayList<Intersectable>();
 		List<Intersectable> secondList = new ArrayList<Intersectable>();
 		for(int i = 0;i < sorted.length/2; i++) {
@@ -281,10 +297,7 @@ public class BoundingBox extends Intersectable {
 			return partitionMiddle(list, left,right,axis);
 		default:
 			return partitionMin(list,left,right,axis);
-		}
-		
-		
-	      
+		} 
 	}
 
 	 
