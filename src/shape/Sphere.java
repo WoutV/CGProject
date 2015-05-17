@@ -18,6 +18,8 @@ import math.Vector;
  */
 public class Sphere extends Shape {
 	public final double radius;
+	private double[] minCoordinates;
+	private double[] maxCoordinates;
 	/**
 	 * Creates a new {@link Sphere} with the given radius and which is
 	 * transformed by the given {@link Transformation}.
@@ -40,7 +42,35 @@ public class Sphere extends Shape {
 		this.transformation = transformation;
 		this.radius = radius;
 		this.shading = shading;
+		calculateMinCoordinates();
+		setProjectedArea();
 	}
+
+	private void calculateMinCoordinates() {
+		double[] min = {-radius,-radius,-radius};
+		double[] max = {radius,radius,radius};
+		List<Point> testset = new ArrayList<Point>();
+		testset.add(transformation.transform(new Point(-radius,-radius,-radius)));
+		testset.add(transformation.transform(new Point(-radius,-radius,radius)));
+		testset.add(transformation.transform(new Point(-radius,radius,-radius)));
+		testset.add(transformation.transform(new Point(-radius,radius,radius)));
+		testset.add(transformation.transform(new Point(radius,-radius,-radius)));
+		testset.add(transformation.transform(new Point(radius,-radius,radius)));
+		testset.add(transformation.transform(new Point(radius,radius,-radius)));
+		testset.add(transformation.transform(new Point(radius,radius,radius)));
+		for(Point p : testset) {
+			if(p.x > max[0]) {max[0] = p.x;}
+			if(p.y > max[1]) {max[1] = p.y;}
+			if(p.z > max[2]) {max[2] = p.z;}
+			if(p.x < min[0]) {min[0] = p.x;}
+			if(p.y < min[1]) {min[1] = p.y;}
+			if(p.z < min[2]) {min[2] = p.z;}
+		}
+		this.minCoordinates = min;
+		this.maxCoordinates = max;
+	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -90,15 +120,12 @@ public class Sphere extends Shape {
 
 	@Override
 	public double[] getMinCoordinates() {
-		Point trans = transformation.transform(new Point());
-		return new double[]{trans.x-radius,trans.y-radius,trans.z-radius};
+		return this.minCoordinates;
 	}
 	
 	@Override
 	public double[] getMaxCoordinates() {
-		Point trans = transformation.transform(new Point());
-		return new double[] { trans.x + radius, trans.y + radius,
-				trans.z + radius };
+		return this.maxCoordinates;
 	}
 	
 	@Override
@@ -115,5 +142,18 @@ public class Sphere extends Shape {
 		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
 		return bb;
+	}
+
+	@Override
+	protected void setProjectedArea() {
+		Point trans = transformation.transform(new Point(radius,0,0));
+		Point o = transformation.transform(new Point());
+		double d = trans.subtract(o).length();
+		this.area = Math.PI*d*d;
+	}
+
+	@Override
+	public double getCost() {
+		return 1.3;
 	}
 }

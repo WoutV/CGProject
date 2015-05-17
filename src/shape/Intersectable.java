@@ -2,6 +2,7 @@ package shape;
 
 import java.util.List;
 
+import math.Point;
 import math.Ray;
 import math.Transformation;
 
@@ -16,11 +17,20 @@ public abstract class Intersectable {
 	protected Transformation transformation;
 	protected final double EPSILON = 0.00001;
 	private Ray lastRay = null;
+	protected double projectedArea;
+	protected double area;
 
 	public Intersectable() {
 		super();
 		lastRay = null;
+//		setProjectedArea();
 	}
+	
+	public double getProjectedArea() {
+		return this.area;
+	}
+
+//	protected abstract void setProjectedArea();
 
 	/**
 	 * Returns the intersection object where the ray hits the intersectable.
@@ -66,4 +76,7 @@ public abstract class Intersectable {
 		return (getMinCoordinates()[axis]+getMaxCoordinates()[axis])/2;
 	}
 
+	protected abstract void setProjectedArea();
+
+	public abstract double getCost();
 }

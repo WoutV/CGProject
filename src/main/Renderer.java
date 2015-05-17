@@ -94,10 +94,10 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-//		SceneCreator scene = SceneCreator.box();
+		SceneCreator scene = SceneCreator.box();
 //		 createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
-//		createImage(scene, width, height);
-		testHeuristic(width, height);
+		createImage(scene, width, height);
+//		testHeuristic(width, height);
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
@@ -105,7 +105,7 @@ public class Renderer {
 		// initialize the camera
 		
 
-		List<Intersectable> shapes = scene.getShapes("bvh","sorted","");
+		List<Intersectable> shapes = scene.getShapes("bvh","sorted","mid","longest");
 		System.out.println("rendering");
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -5), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
@@ -141,14 +141,16 @@ public class Renderer {
 //		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "mid", "teapots");
 //		generateMultipleScenes(width, height, camera, panel, "bvh",  "geometric", "min", "teapots");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "teapots");
-		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "longest","teapots");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","teapots");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "longest","teapots");
 //		generateMultipleScenes(width, height, camera, panel, "grid", null, "teapots");
 		// save the output
 		
 	}
 
 	private static void generateMultipleScenes(int width,
-			int height, PerspectiveCamera camera, ImagePanel panel, String method, String sort, String metric, String sceneType) {
+			int height, PerspectiveCamera camera, ImagePanel panel, String method, String sort, String metric, String whichaxis, String sceneType) {
 		
 		RenderFrame frame = new RenderFrame("Sphere", panel);
 		File file = new File("results2.txt");
@@ -167,13 +169,17 @@ public class Renderer {
 				output.write(metric);
 				output.newLine();
 			}
+			if(whichaxis!=null){
+				output.write(whichaxis);
+				output.newLine();
+			}
 			output.write("#########");
 			output.newLine();
             output.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for(int i = 0;i<59;i++) {
+		for(int i = 0;i<25;i++) {
 			SceneCreator scene = null;
 			switch (sceneType) {
 			case "randomballs":
@@ -183,12 +189,12 @@ public class Renderer {
 				scene = SceneCreator.randomBallsCorner2();
 				break;
 			case "teapots":
-				scene = SceneCreator.teapots();
+				scene = SceneCreator.teapots(250);
 				break;
 			default:
 				break;
 			}
-			List<Intersectable> shapes = scene.getShapes(method,sort, metric);
+			List<Intersectable> shapes = scene.getShapes(method,sort, metric, whichaxis);
 			ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 			reporter.addProgressListener(frame);
 //			renderFalseColor(scene, width, height, camera, panel, reporter, shapes);

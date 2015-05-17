@@ -99,6 +99,17 @@ public class TriangleMesh extends Shape {
 		toReturn.addAll(triangles);
 		return toReturn;
 	}
+
+	@Override
+	protected void setProjectedArea() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getCost() {
+		return triangles.size()*1.5;
+	}
 	
 //	@Override
 //	public Intersectable getBoundingBox(String method) {

@@ -1,7 +1,6 @@
 package shape;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import math.Point;
@@ -15,11 +14,39 @@ public class Cylinder extends Shape {
 	private static final double EPSILON = 0.01;
 	private final double height;
 	private final double radius;
+	private double[] minCoordinates;
+	private double[] maxCoordinates;
 	public Cylinder (Transformation transformation, Material shading, double height, double radius) {
 		this.height = height;
 		this.radius = radius;
 		this.transformation = transformation;
 		this.shading = shading;
+		calculateMinCoordinates();
+		setProjectedArea();
+	}
+
+	private void calculateMinCoordinates() {
+		double[] min = {-radius,0,-radius};
+		double[] max = {radius,height,radius};
+		List<Point> testset = new ArrayList<Point>();
+		testset.add(transformation.transform(new Point(-radius,0,-radius)));
+		testset.add(transformation.transform(new Point(radius,0,-radius)));
+		testset.add(transformation.transform(new Point(-radius,0,radius)));
+		testset.add(transformation.transform(new Point(radius,0,radius)));
+		testset.add(transformation.transform(new Point(-radius,height,-radius)));
+		testset.add(transformation.transform(new Point(radius,height,-radius)));
+		testset.add(transformation.transform(new Point(-radius,height,radius)));
+		testset.add(transformation.transform(new Point(radius,height,radius)));
+		for(Point p : testset) {
+			if(p.x > max[0]) {max[0] = p.x;}
+			if(p.y > max[1]) {max[1] = p.y;}
+			if(p.z > max[2]) {max[2] = p.z;}
+			if(p.x < min[0]) {min[0] = p.x;}
+			if(p.y < min[1]) {min[1] = p.y;}
+			if(p.z < min[2]) {min[2] = p.z;}
+		}
+		this.minCoordinates = min;
+		this.maxCoordinates = max;
 	}
 
 	@Override
@@ -96,14 +123,16 @@ public class Cylinder extends Shape {
 	
 	@Override
 	public double[] getMinCoordinates() {
-		Point trans = transformation.transform(new Point(-radius,0,-radius));
-		return new double[]{trans.x,trans.y,trans.z};
+//		Point trans = transformation.transform(new Point(-radius,0,-radius));
+//		return new double[]{trans.x,trans.y,trans.z};
+		return minCoordinates;
 	}
 	
 	@Override
 	public double[] getMaxCoordinates() {
-		Point trans = transformation.transform(new Point(radius,height,radius));
-		return new double[]{trans.x,trans.y,trans.z};
+//		Point trans = transformation.transform(new Point(radius,height,radius));
+//		return new double[]{trans.x,trans.y,trans.z};
+		return maxCoordinates;
 	}
 	
 	@Override
@@ -120,6 +149,21 @@ public class Cylinder extends Shape {
 		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
 		return bb;
+	}
+	
+	@Override
+	protected void setProjectedArea() {
+		Point top = transformation.transform(new Point(0,height, 0));
+		Point side = transformation.transform(new Point(radius,0,0));
+		Point o = transformation.transform(new Point());
+		double h = top.subtract(o).length();
+		double r = side.subtract(o).length();
+		this.area = Math.PI*r*(h+r)/2;
+	}
+
+	@Override
+	public double getCost() {
+		return 2.0;
 	}
 
 }

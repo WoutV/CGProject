@@ -28,8 +28,12 @@ public class Triangle extends Shape {
 	private Coordinate2D textureCoord1;
 	private Coordinate2D textureCoord2;
 	private Coordinate2D textureCoord3;
+
+	private double[] minCoordinates;
+
+	private double[] maxCoordinates;
 	
-	public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Material shading) {
+public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Material shading) {
 		
 		if (transformation == null)
 			throw new NullPointerException("the given transformation is null!");
@@ -49,6 +53,8 @@ public class Triangle extends Shape {
 		this.normal1 = normal;
 		this.normal2 = normal;
 		this.normal3 = normal;
+		setMinCoordinates();
+		setProjectedArea();
 	}
 	
 public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3,  Material shading) {
@@ -73,6 +79,9 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal1 = n1;
 		this.normal2 = n2;
 		this.normal3 = n3;
+		setMinCoordinates();
+
+		setProjectedArea();
 	}
 
 	public Triangle(Point p1, Point p2, Point p3, Vector n1, Vector n2, Vector n3, Coordinate2D c1, Coordinate2D c2, Coordinate2D c3) {
@@ -87,7 +96,11 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.textureCoord1 = c1;
 		this.textureCoord2 = c2;
 		this.textureCoord3 = c3;
+		setMinCoordinates();
+		setProjectedArea();
 	}
+
+	
 
 	public Triangle(Point p1, Point p2, Point p3) {
 		this.point1 = p1;
@@ -98,6 +111,34 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		this.normal1 = normal;
 		this.normal2 = normal;
 		this.normal3 = normal;
+		setMinCoordinates();
+		setProjectedArea();
+	}
+	
+	private void setMinCoordinates() {
+		Point trans1 = null;
+		Point trans2 = null;
+		Point trans3 = null;
+		if(transformation!=null) {
+			trans1 = transformation.transform(point1);
+			trans2 = transformation.transform(point2);
+			trans3 = transformation.transform(point3);
+		} else {
+			trans1 = point1;
+			trans2 = point2;
+			trans3 = point3;
+		}
+		double minx = Math.min(trans1.x, Math.min(trans2.x,trans3.x));
+		double miny = Math.min(trans1.y, Math.min(trans2.y,trans3.y));
+		double minz = Math.min(trans1.z, Math.min(trans2.z,trans3.z));
+
+		minCoordinates = new double[]{minx,miny,minz};
+		
+		double maxx = Math.max(trans1.x, Math.max(trans2.x,trans3.x));
+		double maxy = Math.max(trans1.y, Math.max(trans2.y,trans3.y));
+		double maxz = Math.max(trans1.z, Math.max(trans2.z,trans3.z));
+
+		maxCoordinates = new double[]{maxx,maxy,maxz};
 	}
 
 	/* (non-Javadoc)
@@ -206,6 +247,8 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	
 	public void setTransformation(Transformation transformation) {
 		this.transformation = transformation;
+		setMinCoordinates();
+		setProjectedArea();
 	}
 	
 	public void setShading(Material shading) {
@@ -214,26 +257,12 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 	
 	@Override
 	public double[] getMinCoordinates() {
-		Point trans1 = transformation.transform(point1);
-		Point trans2 = transformation.transform(point2);
-		Point trans3 = transformation.transform(point3);
-		double minx = Math.min(trans1.x, Math.min(trans2.x,trans3.x));
-		double miny = Math.min(trans1.y, Math.min(trans2.y,trans3.y));
-		double minz = Math.min(trans1.z, Math.min(trans2.z,trans3.z));
-
-		return new double[]{minx,miny,minz};
+		return this.minCoordinates;
 	}
 	
 	@Override
 	public double[] getMaxCoordinates() {
-		Point trans1 = transformation.transform(point1);
-		Point trans2 = transformation.transform(point2);
-		Point trans3 = transformation.transform(point3);
-		double minx = Math.max(trans1.x, Math.max(trans2.x,trans3.x));
-		double miny = Math.max(trans1.y, Math.max(trans3.y,trans2.y));
-		double minz = Math.max(trans1.z, Math.max(trans2.z,trans3.z));
-
-		return new double[]{minx,miny,minz};
+		return this.maxCoordinates;
 	}
 	
 	@Override
@@ -250,6 +279,30 @@ public Triangle(Transformation transformation, Point p1, Point p2, Point p3, Vec
 		BoundingBox bb = new BoundingBox(min, max);
 		bb.add(this);
 		return bb;
+	}
+
+	@Override
+	protected void setProjectedArea() {
+		Point trans1 = null;
+		Point trans2 = null;
+		Point trans3 = null;
+		if(transformation!=null) {
+			trans1 = transformation.transform(point1);
+			trans2 = transformation.transform(point2);
+			trans3 = transformation.transform(point3);
+		} else {
+			trans1 = point1;
+			trans2 = point2;
+			trans3 = point3;
+		}
+		Vector v1 = trans2.subtract(trans1);
+		Vector v2 = trans3.subtract(trans1);
+		this.area = v1.cross(v2).length()/4;
+	}
+
+	@Override
+	public double getCost() {
+		return 1.5;
 	}
 	
 }

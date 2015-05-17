@@ -213,4 +213,16 @@ public class RegularGrid extends Intersectable {
 		}
 		return toReturn;
 	}
+
+	@Override
+	protected void setProjectedArea() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double getCost() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -55,4 +55,14 @@ public class Plane extends Shape {
 		toReturn.add(this);
 		return toReturn;
 	}
+
+	@Override
+	protected void setProjectedArea() {
+		//
+	}
+
+	@Override
+	public double getCost() {
+		return 1.2;
+	}
 }

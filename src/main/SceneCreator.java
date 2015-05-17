@@ -1,13 +1,12 @@
 package main;
 
 import java.awt.Color;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import light.Light;
@@ -19,6 +18,7 @@ import shading.Material;
 import shading.Phong;
 import shape.BoundingBox;
 import shape.Intersectable;
+import shape.Plane;
 import shape.Shape;
 import shape.Sphere;
 import shape.TriangleMesh;
@@ -29,24 +29,28 @@ public class SceneCreator {
 	
 	private static Random rand = new Random();
 	
+	private Map<String, TriangleMesh> objects = new HashMap<String, TriangleMesh>();
+	
 	
 	public void add(Shape shape) {
 		this.shapes.add(shape);
 	}
 	
-	public List<Intersectable> getShapes(String method, String split, String metric) {
+	public List<Intersectable> getShapes(String method, String split, String metric, String whichaxis) {
 //		return this.shapes;
 		switch (method) {
 		case "grid":
 			return createRegularGrid();
 		case "bvh":
-			return createBVH(split, metric);
+			return createBVH(split, metric, whichaxis);
 		default:
-			return createBVH("sorted", "min");
+			return createBVH("sorted", "mid", "longest");
 		}
 	}
 	
-	private List<Intersectable> createBVH(String method, String metric) {
+	private List<Intersectable> createBVH(String method, String metric, String whichaxis) {
+		ArrayList<Intersectable> planes = new ArrayList<Intersectable>();
+		ArrayList<Intersectable> nonplanes = new ArrayList<Intersectable>();
 		if(method.equals(null)) {method = "geometric";}
 		System.out.println(shapes.size());
 		double minx = Double.MAX_VALUE;
@@ -57,41 +61,56 @@ public class SceneCreator {
 		double maxz = Double.NEGATIVE_INFINITY;
 		List<Intersectable> toReturn =  new ArrayList<Intersectable>();
 		for(Intersectable t : shapes) {
-			double[] minb =t.getMinCoordinates();
-			double [] maxb = t.getMaxCoordinates();
-			if(minb[0] < minx) { minx = minb[0];}
-			if(minb[1] < miny) { miny = minb[1];}
-			if(minb[2] < minz) { minz = minb[2];}
-			if(maxb[0] > maxx) { maxx = maxb[0];}
-			if(maxb[1] > maxy) { maxy = maxb[1];}
-			if(maxb[2] > maxz) { maxz = maxb[2];}
+			if(!t.getClass().equals(Plane.class)) {
+				nonplanes.add(t);
+				double[] minb =t.getMinCoordinates();
+				double [] maxb = t.getMaxCoordinates();
+				if(minb[0] < minx) { minx = minb[0];}
+				if(minb[1] < miny) { miny = minb[1];}
+				if(minb[2] < minz) { minz = minb[2];}
+				if(maxb[0] > maxx) { maxx = maxb[0];}
+				if(maxb[1] > maxy) { maxy = maxb[1];}
+				if(maxb[2] > maxz) { maxz = maxb[2];}
+			} else {
+				planes.add(t);
+			}
 		}
 		double[] min = {minx,miny,minz};
 		double[] max = {maxx,maxy,maxz};
 		BoundingBox box = new BoundingBox(min, max);
-		for(Intersectable t : shapes) {
+		for(Intersectable t : nonplanes) {
 			box.add(t);
+		}
+		int firstaxis = 0;
+		if(whichaxis.equals("longest")){
+			double maxDiff = -1.0;
+			for(int i = 0;i<3;i++) {
+				if(max[i]-min[i]>maxDiff) {firstaxis = i;maxDiff = (max[i]-min[i]);}
+			}
 		}
 		switch (method) {
 		case "geometric":
-			box.split(0, metric);
+			box.split(firstaxis, metric, whichaxis);
 //			box.split(0);
 			break;
 		case "sorted":
-			box.splitSorted(0, metric);
-			
-	        
+			box.splitSorted(firstaxis, metric, whichaxis);
 //			box.splitSorted(0);
+			break;
+		case "sah":
+			box.splitSAH(firstaxis, metric, whichaxis);
 			break;
 		default:
 			break;
 		}
 		toReturn.add(box);
+		toReturn.addAll(planes);
 		return toReturn;
 	}
 	
-	private List<Intersectable> createRegularGrid() {		
-		
+	private List<Intersectable> createRegularGrid() {	
+		ArrayList<Intersectable> planes = new ArrayList<Intersectable>();
+		ArrayList<Intersectable> nonplanes = new ArrayList<Intersectable>();
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
 		double minz = Double.MAX_VALUE;
@@ -99,24 +118,25 @@ public class SceneCreator {
 		double maxy = Double.NEGATIVE_INFINITY;
 		double maxz = Double.NEGATIVE_INFINITY;
 		for(Intersectable t : shapes) {
-			double[] minb =t.getMinCoordinates();
-			double [] maxb = t.getMaxCoordinates();
-//			for(int i = 0;i<3;i++)
-//				System.out.println(minb[i]);
-//			for(int i = 0;i<3;i++)
-//				System.out.println(maxb[i]);
-			if(minb[0] < minx) { minx = minb[0];}
-			if(minb[1] < miny) { miny = minb[1];}
-			if(minb[2] < minz) { minz = minb[2];}
-			if(maxb[0] > maxx) { maxx = maxb[0];}
-			if(maxb[1] > maxy) { maxy = maxb[1];}
-			if(maxb[2] > maxz) { maxz = maxb[2];}
+			if(!t.getClass().equals(Plane.class)) {
+				nonplanes.add(t);
+				double[] minb =t.getMinCoordinates();
+				double [] maxb = t.getMaxCoordinates();
+				if(minb[0] < minx) { minx = minb[0];}
+				if(minb[1] < miny) { miny = minb[1];}
+				if(minb[2] < minz) { minz = minb[2];}
+				if(maxb[0] > maxx) { maxx = maxb[0];}
+				if(maxb[1] > maxy) { maxy = maxb[1];}
+				if(maxb[2] > maxz) { maxz = maxb[2];}
+			} else {
+				planes.add(t);
+			}
 		}
 		double[] min = {minx,miny,minz};
 		double[] max = {maxx,maxy,maxz};
 		
 		
-		List<Intersectable> allBoxes = getAllShapes();
+		List<Intersectable> allBoxes = getAllShapes(nonplanes);
 		int n =  (int) Math.pow(allBoxes.size(), 1.0/3);
 //		int n = 15;
 		System.out.println("size of grid: "+n);
@@ -146,14 +166,15 @@ public class SceneCreator {
 		BoundingBox bb = new BoundingBox(min,max);
 		bb.add(grid);
 		result.add(bb);
+		result.addAll(planes);
 		System.out.println("grid created G");
 		return result;
 	}
 
-	private List<Intersectable> getAllShapes() {
+	private List<Intersectable> getAllShapes(ArrayList<Intersectable> nonplanes) {
 		List<Intersectable> allBoxes = new ArrayList<Intersectable>();
 		List<Intersectable> allShapes = new ArrayList<Intersectable>();
-		for(Intersectable in : shapes) {
+		for(Intersectable in : nonplanes) {
 			allShapes.addAll(in.getAll());
 		}
 //		for(Intersectable shape : allShapes) {
@@ -225,9 +246,9 @@ public class SceneCreator {
 		addComplexObject(
 				scene,
 				yellowDiffuse,
-				Transformation.createTranslation(0, -2,-2).append(
+				Transformation.createTranslation(0, -2,0).append(
 								Transformation.createRotationY(90)),
-				"dragon.obj");
+				"bunny.obj");
 
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));
@@ -256,9 +277,9 @@ public class SceneCreator {
 		return scene;
 	}
 	
-	public static SceneCreator teapots() {
+	public static SceneCreator teapots(int nb) {
 		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<500;i++) {
+		for(int i = 0;i<nb;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
@@ -413,7 +434,8 @@ public class SceneCreator {
 	}
 	
 	private static void addComplexObject(SceneCreator scene, Material shading,Transformation transformation, String fileName) {
-        ObjParser parser = new ObjParser(fileName);
+        
+		ObjParser parser = new ObjParser(fileName);
 //
 //		ObjParser parser = new ObjParser("G:/School/CGProject/"+fileName);
 		TriangleMesh object = null;
