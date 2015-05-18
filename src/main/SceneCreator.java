@@ -450,4 +450,20 @@ public class SceneCreator {
 			System.err.println("Error in processing .obj file!");
 		}
 	}
+
+	public static SceneCreator bunnies(int nb) {
+		SceneCreator scene = new SceneCreator();
+		for(int i = 0;i<nb;i++) {
+			float x = rand.nextFloat();
+			float y = rand.nextFloat();
+			float z = rand.nextFloat();
+			float r = rand.nextFloat();
+			float g = rand.nextFloat();
+			float b = rand.nextFloat();
+			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
+			addComplexObject(scene, color, Transformation.createTranslation(-2.5+x*5,-2.5+y*5,z).append(Transformation.createScale(0.1,0.1,0.1)), "teapot.obj");
+		}		
+		scene.add(new PointLight(new Point(0, 0, -10000), Color.WHITE));
+		return scene;
+	}
 }

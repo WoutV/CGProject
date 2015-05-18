@@ -187,7 +187,6 @@ public class BoundingBox extends Intersectable {
 
 	private void setNewContent(int axis, double[] min1, double[] max1,double[] min2, double[] max2, List<Intersectable> firstList,
 			List<Intersectable> secondList, String metric, String whichaxis) {
-		
 		BoundingBox first;
 		BoundingBox second;
 		List<Intersectable> newContent = new ArrayList<Intersectable>();
@@ -311,7 +310,7 @@ public class BoundingBox extends Intersectable {
 	private int partitionMax(Intersectable[] list, int left, int right, int axis) {
 		int i = left, j = right;
 		Intersectable tmp;
-		double pivot = list[(left + right) / 2].getMinCoordinates()[axis];
+		double pivot = list[(left + right) / 2].getMaxCoordinates()[axis];
 		while (i <= j) {
 
 			while (list[i].getMaxCoordinates()[axis] < pivot) {

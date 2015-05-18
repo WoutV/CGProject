@@ -26,8 +26,8 @@ public class Cylinder extends Shape {
 	}
 
 	private void calculateMinCoordinates() {
-		double[] min = {-radius,0,-radius};
-		double[] max = {radius,height,radius};
+		double[] min = {Double.MAX_VALUE,Double.MAX_VALUE, Double.MAX_VALUE};
+		double[] max = {Double.NEGATIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.NEGATIVE_INFINITY};
 		List<Point> testset = new ArrayList<Point>();
 		testset.add(transformation.transform(new Point(-radius,0,-radius)));
 		testset.add(transformation.transform(new Point(radius,0,-radius)));

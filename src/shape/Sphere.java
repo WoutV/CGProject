@@ -47,8 +47,8 @@ public class Sphere extends Shape {
 	}
 
 	private void calculateMinCoordinates() {
-		double[] min = {-radius,-radius,-radius};
-		double[] max = {radius,radius,radius};
+		double[] min = {Double.MAX_VALUE,Double.MAX_VALUE, Double.MAX_VALUE};
+		double[] max = {Double.NEGATIVE_INFINITY,Double.NEGATIVE_INFINITY,Double.NEGATIVE_INFINITY};
 		List<Point> testset = new ArrayList<Point>();
 		testset.add(transformation.transform(new Point(-radius,-radius,-radius)));
 		testset.add(transformation.transform(new Point(-radius,-radius,radius)));
