@@ -46,7 +46,7 @@ public class Renderer {
 
 	private static final int AA_AMOUNT = 1;
 	private static final int SHADOW_AMOUNT = 1;
-	public static int MAX;
+	public static int MAX ;
 	
 	private static HashMap<String,TriangleMesh> objects = new HashMap<String,TriangleMesh>();
 
@@ -94,10 +94,10 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-//		SceneCreator scene = SceneCreator.randomBalls();
+		SceneCreator scene = SceneCreator.randomBallsCorner2(500);
 //		 createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
-//		createImage(scene, width, height);
-		testHeuristic(width, height);
+		createImage(scene, width, height);
+//		testHeuristic(width, height);
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
@@ -105,9 +105,9 @@ public class Renderer {
 		// initialize the camera
 		
 
-		List<Intersectable> shapes = scene.getShapes("bvh","sorted","mid","fixed");
+		List<Intersectable> shapes = scene.getShapes("grid","sah","mid","fixed");
 		System.out.println("rendering");
-		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0, 0, -5), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
+		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
 		// initialize the graphical user interface
 		ImagePanel panel = new ImagePanel(width, height);
@@ -117,7 +117,7 @@ public class Renderer {
 		// initialize the progress reporter
 		ProgressReporter reporter = new ProgressReporter("Rendering", 40, width* height, false);
 		reporter.addProgressListener(frame);
-//		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
+		renderFalseColor(scene, width, height, camera, panel, reporter, shapes);
 		renderTrueColor(scene, width, height, camera, panel, reporter, shapes);
 
 		// save the output
@@ -130,22 +130,20 @@ public class Renderer {
 	private static void testHeuristic(int width, int height) {
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 		ImagePanel panel = new ImagePanel(width, height);
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","cornerballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","cornerballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","cornerballs");
+		
+		
 		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","randomballs");
-		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","randomballs");
-		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","randomballs");
-		
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "fixed","teapots");
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "max", "fixed","teapots");
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","teapots");
-		
-//		generateMultipleScenes(width, height, camera, panel, "grid", "sorted", "min", "fixed","randomballs");
-//		generateMultipleScenes(width, height, camera, panel, "grid", "sorted", "max", "fixed","randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "max", "fixed","randomballs");
 //		
+		
 //		
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "sah", "longest","bunnies");
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "longest","bunnies");
-//		generateMultipleScenes(width, height, camera, panel, "grid", null, "teapots");
+//		generateMultipleScenes(width, height, camera, panel, "grid", "sorted", "mid", "fixed","randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","cornerballs");
 		// save the output
 		
 	}
@@ -154,7 +152,7 @@ public class Renderer {
 			int height, PerspectiveCamera camera, ImagePanel panel, String method, String sort, String metric, String whichaxis, String sceneType) {
 		
 		RenderFrame frame = new RenderFrame("Sphere", panel);
-		File file = new File("resultstwe.txt");
+		File file = new File(method+"_"+sort+"_"+metric+"_"+whichaxis+"_"+sceneType+".txt");
         BufferedWriter output;
 		try {
 			output = new BufferedWriter(new FileWriter(file,true));
@@ -180,17 +178,17 @@ public class Renderer {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for(int i = 0;i<50;i++) {
+		for(int i = 0;i<10;i++) {
 			SceneCreator scene = null;
 			switch (sceneType) {
 			case "randomballs":
-				scene = SceneCreator.randomBalls();
+				scene = SceneCreator.randomBalls(200000);
 				break;
 			case "cornerballs":
-				scene = SceneCreator.randomBallsCorner2();
+				scene = SceneCreator.randomBallsCorner2(500000);
 				break;
 			case "teapots":
-				scene = SceneCreator.teapots(500);
+				scene = SceneCreator.teapots(25);
 				break;
 			case "bunnies":
 				scene = SceneCreator.bunnies(100);
@@ -206,7 +204,7 @@ public class Renderer {
 	
 			String time = reporter.time;
 			
-			File out = new File("resultstwe.txt");
+			File out = new File(method+"_"+sort+"_"+metric+"_"+whichaxis+"_"+sceneType+".txt");
             BufferedWriter outp;
 			try {
 				outp = new BufferedWriter(new FileWriter(out,true));
@@ -309,17 +307,21 @@ public class Renderer {
 
 	private static Color getFalsecolor(Ray ray) {
 		Color color = Color.BLACK;
+		System.out.println(ray.intersectionCount);
+		System.out.println("MAX"+MAX);
 		if (ray.intersectionCount != 1) {
-			if (ray.intersectionCount < MAX / 3) {
+			if (ray.intersectionCount < (int)(MAX / 3)) {
 				double factor = ray.intersectionCount / (MAX / 3.0);
 				color = new Color(0, (int) (255 * factor),
 						(int) (255 - 255 * factor));
-			} else if (ray.intersectionCount < 2 * MAX / 3.0) {
+			} else if (ray.intersectionCount <(int)( 2 * MAX / 3.0)) {
 				double factor = (ray.intersectionCount - (MAX / 3.0))
 						/ (MAX / 3.0);
+				System.out.println(factor);
 				color = new Color((int) (255 * factor), 255, 0);
 			} else {
 				double factor = (ray.intersectionCount - (MAX * 2 / 3.0))/ (MAX / 3.0);
+				System.out.println(factor);
 				color = new Color(255, (int) (255 - 255 * factor), 0);
 			}
 		}

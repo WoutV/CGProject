@@ -137,8 +137,10 @@ public class SceneCreator {
 		
 		
 		List<Intersectable> allBoxes = getAllShapes(nonplanes);
-		int n =  (int) Math.pow(allBoxes.size(), 1.0/3);
-//		int n = 15;
+//		int n =  (int) Math.pow(allBoxes.size(), 1.0/3);
+//		int n =  (int) Math.pow(allBoxes.size()*8, 1.0/3);
+//		int n =  (int) Math.pow(allBoxes.size()/8, 1.0/3);
+		int n = 10;
 		System.out.println("size of grid: "+n);
 		double xStep = Math.abs((maxx-minx)/n);
 		double yStep = Math.abs((maxy-miny)/n);
@@ -258,9 +260,9 @@ public class SceneCreator {
 		return scene;
 	}
 	
-	public static SceneCreator randomBalls() {
+	public static SceneCreator randomBalls(int number) {
 		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<5000;i++) {
+		for(int i = 0;i<number;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
@@ -293,9 +295,9 @@ public class SceneCreator {
 		return scene;
 	}
 	
-	static SceneCreator randomBallsCorner() {
+	static SceneCreator randomBallsCorner(int number) {
 		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<5000;i++) {
+		for(int i = 0;i<number;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
@@ -311,52 +313,48 @@ public class SceneCreator {
 		return scene;
 	}
 	
-	public static SceneCreator randomBallsCorner2() {
+	public static SceneCreator randomBallsCorner2(int number) {
 		SceneCreator scene = new SceneCreator();
-		for(int i = 0;i<1250;i++) {
+		for(int i = 0;i<number/4;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
 			float r = rand.nextFloat();
 			float g = rand.nextFloat();
 			float b = rand.nextFloat();
-//			System.out.println(255*r);
 			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
 			Transformation trans = Transformation.createTranslation(x+1.5,y+1.5,z);
 			scene.add(new Sphere(trans, 0.1, color));
 		}
-		for(int i = 0;i<1250;i++) {
+		for(int i = 0;i<number/4;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
 			float r = rand.nextFloat();
 			float g = rand.nextFloat();
 			float b = rand.nextFloat();
-			System.out.println(255*r);
 			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
 			Transformation trans = Transformation.createTranslation(-2.5+x,-2.5+y,z);
 			scene.add(new Sphere(trans, 0.1, color));
 		}
-		for(int i = 0;i<1250;i++) {
+		for(int i = 0;i<number/4;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
 			float r = rand.nextFloat();
 			float g = rand.nextFloat();
 			float b = rand.nextFloat();
-			System.out.println(255*r);
 			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
 			Transformation trans = Transformation.createTranslation(1.5+x,-2.5+y,z);
 			scene.add(new Sphere(trans, 0.1, color));
 		}
-		for(int i = 0;i<1250;i++) {
+		for(int i = 0;i<number/4;i++) {
 			float x = rand.nextFloat();
 			float y = rand.nextFloat();
 			float z = rand.nextFloat();
 			float r = rand.nextFloat();
 			float g = rand.nextFloat();
 			float b = rand.nextFloat();
-			System.out.println(255*r);
 			Diffuse color = new Diffuse(0.9, 0.0, new Color(r,g,b), Color.WHITE);
 			Transformation trans = Transformation.createTranslation(-2.5+x,1.5+y,z);
 			scene.add(new Sphere(trans, 0.1, color));
