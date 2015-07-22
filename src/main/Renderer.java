@@ -57,8 +57,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 500;
-		int height = 500;
+		int width = 1000;
+		int height = 1000;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -94,10 +94,10 @@ public class Renderer {
 			throw new IllegalArgumentException("the given height cannot be "
 					+ "smaller than or equal to zero!");
 
-		SceneCreator scene = SceneCreator.randomBallsCorner2(500);
+		SceneCreator scene = SceneCreator.box();
 //		 createShowImage( width, height, "bunny.obj", "textures/dots.jpg");
-		createImage(scene, width, height);
-//		testHeuristic(width, height);
+//		createImage(scene, width, height);
+		testHeuristic(width, height);
 	}
 
 	private static void createImage(SceneCreator scene, int width, int height) {
@@ -131,11 +131,11 @@ public class Renderer {
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 		ImagePanel panel = new ImagePanel(width, height);
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","cornerballs");
-//		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","cornerballs");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","cornerballs");
 		
 		
-		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","randomballs");
+//		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "min", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "max", "fixed","randomballs");
@@ -182,7 +182,7 @@ public class Renderer {
 			SceneCreator scene = null;
 			switch (sceneType) {
 			case "randomballs":
-				scene = SceneCreator.randomBalls(200000);
+				scene = SceneCreator.randomBalls(100000);
 				break;
 			case "cornerballs":
 				scene = SceneCreator.randomBallsCorner2(500000);

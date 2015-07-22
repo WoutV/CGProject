@@ -1,6 +1,8 @@
 package main;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+
 import light.Light;
 import light.PointLight;
 import math.Point;
@@ -16,6 +20,7 @@ import math.Transformation;
 import shading.Diffuse;
 import shading.Material;
 import shading.Phong;
+import shading.TextureShading;
 import shape.BoundingBox;
 import shape.Intersectable;
 import shape.Plane;
@@ -231,6 +236,14 @@ public class SceneCreator {
 				Color.WHITE);
 		Material red = new Phong(Color.WHITE, 0.0, 25.0, 0.8, redDiffuse,
 				Color.WHITE);
+		BufferedImage text = null;
+		try {
+			text = ImageIO.read(new File("apple_texture.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Material texture = new TextureShading(Color.RED, 0.8, Color.red, text, red);
 //		addComplexObject(
 //				scene,
 //				redDiffuse,
@@ -247,10 +260,9 @@ public class SceneCreator {
 //				Transformation.createTranslation(0, 0, 12)));
 		addComplexObject(
 				scene,
-				yellowDiffuse,
-				Transformation.createTranslation(0, -2,0).append(
-								Transformation.createRotationY(90)),
-				"bunny.obj");
+				texture,
+				Transformation.IDENTITY,
+				"apple.obj");
 
 //		//
 //		scene.add(new PointLight(new Point(5, 5, 5), Color.WHITE));

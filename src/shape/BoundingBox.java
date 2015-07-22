@@ -1,12 +1,6 @@
 package shape;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import math.Ray;
@@ -20,11 +14,13 @@ import math.Ray;
 public class BoundingBox extends Intersectable {
 	private double[] min;
 	private double[] max;
-	private List<Intersectable> content = new ArrayList<Intersectable>();
+	private List<Intersectable> content; 
+	private Intersectable[] boundingboxes = new Intersectable[2];
 
 	public BoundingBox(double[] min, double[] max) {
 		this.min = min;
 		this.max = max;
+		content = new ArrayList<Intersectable>();
 		setProjectedArea();
 	}
 
@@ -35,6 +31,10 @@ public class BoundingBox extends Intersectable {
 	 */
 	@Override
 	public Intersection intersect(Ray ray) {
+//		if(content != null) {
+//			System.out.println(content.size());
+//		}
+		Intersection hitIntersection = null;
 		ray.intersectionCount++;
 		double minx, maxx;
 		double miny,maxy;
@@ -67,15 +67,68 @@ public class BoundingBox extends Intersectable {
 		double min = Math.min(maxx, Math.min(maxy, maxz));
 		
 		if (min > max) {
-			Intersection hitIntersection = null;
-			for (Intersectable intersectable : content) {
-				Intersection intersection = intersectable.intersect(ray);
-				if(intersection != null) {
-					Double t = intersection.getT();
+			Intersectable first;
+			Intersectable second;
+//			if(content.size() == 1) {
+//				double minInt = Double.MAX_VALUE;
+//				for (Intersectable intersectable : content) {
+//					Intersection intersection = intersectable.intersect(ray);
+//					if(intersection != null) {
+//						Double t = intersection.getT();
+//						if (t + 1 > EPSILON & t > EPSILON) {
+//							if (t < minInt) {
+//								minInt = t;
+//								hitIntersection = intersection;
+//							}
+//						}
+//					}
+//				}
+//			}
+//			if(content.size() == 2) {
+			if(boundingboxes[0] != null && boundingboxes[1] != null) {
+				double minInt = Double.MAX_VALUE; 
+				double firstInter = getIntersect(boundingboxes[0], ray);
+				double secondInter = getIntersect(boundingboxes[1], ray);
+				if(firstInter < secondInter) {
+					first = boundingboxes[0];
+					second = boundingboxes[1];
+				} else {
+					first = boundingboxes[1];
+					second = boundingboxes[0];
+				}
+				Intersection hit = first.intersect(ray);
+				if(hit != null) {
+					Double t = hit.getT();
 					if (t + 1 > EPSILON & t > EPSILON) {
-						if (t < min) {
-							min = t;
-							hitIntersection = intersection;
+						if (t < minInt) {
+							minInt = t;
+							hitIntersection = hit;
+						}
+					}
+				}
+				if(hitIntersection == null) {
+					hit = second.intersect(ray);
+					if(hit != null) {
+						Double t = hit.getT();
+						if (t + 1 > EPSILON & t > EPSILON) {
+							if (t < min) {
+								min = t;
+								hitIntersection = hit;
+							}
+						}
+					}
+				}
+			} else {
+				double minInt = Double.MAX_VALUE;
+				for (Intersectable intersectable : content) {
+					Intersection intersection = intersectable.intersect(ray);
+					if(intersection != null) {
+						Double t = intersection.getT();
+						if (t + 1 > EPSILON & t > EPSILON) {
+							if (t < minInt) {
+								minInt = t;
+								hitIntersection = intersection;
+							}
 						}
 					}
 				}
@@ -83,6 +136,49 @@ public class BoundingBox extends Intersectable {
 			return hitIntersection;
 		}
 		return null;
+	}
+
+	private double getIntersect(Intersectable intersectable, Ray ray) {
+		double[] boxmin = intersectable.getMinCoordinates();
+		double[] boxmax = intersectable.getMaxCoordinates();
+		double minx, maxx;
+		double miny,maxy;
+		double minz,maxz;
+		if(ray.direction.x >= 0){
+			minx = (boxmin[0]-ray.origin.x) / ray.direction.x;
+			maxx = (boxmax[0]-ray.origin.x) / ray.direction.x;
+		} else {
+			minx = (boxmax[0]-ray.origin.x) / ray.direction.x;
+			maxx = (boxmin[0]-ray.origin.x) / ray.direction.x;
+		}
+		
+		if(ray.direction.y >= 0){
+			miny = (boxmin[1]-ray.origin.y) / ray.direction.y;
+			maxy = (boxmax[1]-ray.origin.y) / ray.direction.y;
+		} else {
+			miny = (boxmax[1]-ray.origin.y) / ray.direction.y;
+			maxy = (boxmin[1]-ray.origin.y) / ray.direction.y;
+		}
+
+		if(ray.direction.z >= 0){
+			minz= (boxmin[2]-ray.origin.z) / ray.direction.z;
+			maxz = (boxmax[2]-ray.origin.z) / ray.direction.z;
+		} else {
+			minz = (boxmax[2]-ray.origin.z) / ray.direction.z;
+			maxz = (boxmin[2]-ray.origin.z) / ray.direction.z;
+		}
+		
+		double max = Math.max(minx, Math.max(miny, minz));
+		double min = Math.min(maxx, Math.min(maxy, maxz));
+		if(min > max) {
+			if(max > 0) {
+				return max;				
+			} else {
+				return Double.MAX_VALUE;
+			}
+		} else {
+			return Double.MAX_VALUE;
+		}
 	}
 
 	public void setContent(List<Intersectable> shapes) {
@@ -117,6 +213,7 @@ public class BoundingBox extends Intersectable {
 		for(Intersectable in : content) {
 			all.addAll(in.getAll());
 		}
+//		System.out.println("All :" + all.size());
 		if(whichaxis.equals("longest")){
 			double maxDiff = -1.0;
 			for(int i = 0;i<3;i++) {
@@ -200,10 +297,12 @@ public class BoundingBox extends Intersectable {
 				second.add(secondList.get(i));
 			}
 			first.split((axis+1)%3, metric, whichaxis);
-			newContent.add(first);
+			boundingboxes[0] = first;
 			second.split((axis+1)%3, metric, whichaxis);
-			newContent.add(second);
-			content = newContent;
+//			newContent.add(second);
+			boundingboxes[1] = second;
+//			content = newContent;
+			content = null;
 		}
 	}
 	
@@ -223,10 +322,14 @@ public class BoundingBox extends Intersectable {
 				second.add(secondList.get(i));
 			}
 			first.splitSorted((axis+1)%3, metric,whichaxis);
-			newContent.add(first);
+//			newContent.add(first);
+			boundingboxes[0] = first;
+//			content = newContent;
 			second.splitSorted((axis+1)%3, metric, whichaxis);
-			newContent.add(second);
-			content = newContent;
+			boundingboxes[1] = second;
+//			newContent.add(second);
+//			content = newContent;
+			content = null;
 		}
 	}
 	
@@ -388,6 +491,16 @@ public class BoundingBox extends Intersectable {
 	            quickSort(list, index, right, axis, metric);
 	      }	
 	}
+
+//	private void quickSort(Intersectable[] list, int left, int right, int axis, String metric) {
+//	      int index = partition(list, left, right, axis, metric);
+//	      if (left < index - 1) {
+//	            quickSort(list, left, index - 1, axis, metric);
+//	      }
+//	      if (index < right) {
+//	            quickSort(list, index, right, axis, metric);
+//	      }	
+//	}
 
 	public void add(List<Intersectable> all) {
 		for(Intersectable i : all) {
