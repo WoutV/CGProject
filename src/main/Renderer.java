@@ -57,8 +57,8 @@ public class Renderer {
 	 *            command line arguments.
 	 */
 	public static void main(String[] arguments) {
-		int width = 1000;
-		int height = 1000;
+		int width = 500;
+		int height = 500;
 
 		// parse the command line arguments
 		for (int i = 0; i < arguments.length; ++i) {
@@ -105,7 +105,7 @@ public class Renderer {
 		// initialize the camera
 		
 
-		List<Intersectable> shapes = scene.getShapes("grid","sah","mid","fixed");
+		List<Intersectable> shapes = scene.getShapes("bvh","geometric","mid","fixed");
 		System.out.println("rendering");
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 
@@ -131,7 +131,7 @@ public class Renderer {
 		PerspectiveCamera camera = new PerspectiveCamera(width, height,new Point(0,0, -8), new Vector(0, 0, 1), new Vector(0, 1, 0),	60);
 		ImagePanel panel = new ImagePanel(width, height);
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "sah", "mid", "fixed","cornerballs");
-		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","randomballs");
+		generateMultipleScenes(width, height, camera, panel, "bvh", "sorted", "mid", "fixed","randomballs");
 //		generateMultipleScenes(width, height, camera, panel, "bvh", "geometric", "mid", "fixed","cornerballs");
 		
 		
@@ -178,17 +178,17 @@ public class Renderer {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for(int i = 0;i<10;i++) {
+		for(int i = 0;i<1;i++) {
 			SceneCreator scene = null;
 			switch (sceneType) {
 			case "randomballs":
-				scene = SceneCreator.randomBalls(100000);
+				scene = SceneCreator.randomBalls(500000);
 				break;
 			case "cornerballs":
 				scene = SceneCreator.randomBallsCorner2(500000);
 				break;
 			case "teapots":
-				scene = SceneCreator.teapots(25);
+				scene = SceneCreator.teapots(200);
 				break;
 			case "bunnies":
 				scene = SceneCreator.bunnies(100);
@@ -233,6 +233,7 @@ public class Renderer {
 				for(Sample s : samples ) {
 					Ray ray = camera.generateRay(s);
 					Intersection hitIntersection = getClosestIntersection(ray,shapes);
+//					MAX+= ray.intersectionCount;
 					color = shade(shapes, lights, hitIntersection);
 					total.addColor(color);
 				}
@@ -248,6 +249,8 @@ public class Renderer {
 			}
 			reporter.update(height);
 		}
+//		System.out.println(MAX);
+//		System.out.println(MAX/(width*height));
 		reporter.done();
 		// save the output
 		try {

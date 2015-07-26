@@ -42,6 +42,7 @@ public class SceneCreator {
 	}
 	
 	public List<Intersectable> getShapes(String method, String split, String metric, String whichaxis) {
+		System.out.println("Getting shapes");
 //		return this.shapes;
 		switch (method) {
 		case "grid":
@@ -96,11 +97,10 @@ public class SceneCreator {
 		switch (method) {
 		case "geometric":
 			box.split(firstaxis, metric, whichaxis);
-//			box.split(0);
 			break;
 		case "sorted":
+			System.out.println("SORTING");
 			box.splitSorted(firstaxis, metric, whichaxis);
-//			box.splitSorted(0);
 			break;
 		case "sah":
 			box.splitSAH(firstaxis, metric, whichaxis);
